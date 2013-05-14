@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>组织机构维护</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+
+</head>
+
+<body>
+</body>
+</html>
+<script type="text/javascript">
+Ext.onReady(function(){
+	Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+    var obj=checkUserLogin();	
+    if(!obj) return;
+	var mainViewport=new Ext.Viewport({
+		    id: 'mainViewport',
+		    layout: 'fit',
+		    items: [
+		        {
+		            xtype: 'panel',
+		            id: 'contentPanel',
+		            layout: 'border',
+		            tbar: {
+		                xtype: 'toolbar',
+		                region: 'center',
+		                items: [
+		                    {
+		                        xtype: 'button',
+		                        text: '新增',
+		                        iconCls:'new',
+		                        tooltip: '新增组织机构',
+		                        handler: function () {
+		                        	var tree = Ext.getCmp("orgTree");		                        	
+		                            var selectedNode = tree.getSelectionModel().getSelectedNode();
+		                            if (selectedNode) {
+		                            	insertForm(selectedNode.attributes.id);	                                
+		                            }
+		                            else {
+		                                showMessage('请选中组织机构节点！');
+		                            }
+		                        }
+		                    },
+		                    {
+		                        xtype: 'button',
+		                        text: '保存',
+		                        iconCls:'save',
+		                        handler: function () {
+		                        	var form = Ext.getCmp("orgForm");		                        	
+		                        	if(form.getForm().isValid()){
+		                        		Ext.Ajax.request({
+	                            			url:'/system/SvrService/OrgService/2',
+	                            			method : 'post',
+	                            			params : {
+	                            				FId:Ext.getCmp('FId').getValue(),
+	                            				FName:Ext.getCmp('FName').getValue(),
+	                            				FAno:Ext.getCmp('FAno').getValue(),
+	                            				FParentId:Ext.getCmp('FParentId').getValue(),
+	                            				FSort:Ext.getCmp('FSort').getValue(),
+	                            				FState:getChecked(Ext.getCmp('FState').checked)
+	                            			},
+	                            			success : function(response){
+	                            				var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+	                            				if(responseArray.success){
+	                            					Ext.getCmp('FId').setValue(responseArray.root.FId);
+	                            					Ext.getCmp("orgTree").root.reload();
+	                            				}else{
+	                            					Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'数据保存失败！',
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.INFO
+	                            					});
+	                            				}
+	                            					
+	                            			},
+	                            			failure : function(response) {
+	                            				showMessage('网络错误，保存失败！',true);
+	                            			}
+	                            		});
+		                        	}
+		                        }
+		                    },
+		                    {
+		                        xtype: 'button',
+		                        text: '删除',
+		                        iconCls:'delete',
+		                        tooltip: '删除组织机构，删除后无法恢复。',
+		                        handler:function(){		                        	
+		                        	var tree = Ext.getCmp("orgTree");		                        	
+		                            var selectedNode = tree.getSelectionModel().getSelectedNode();
+		                            if(selectedNode){
+		                            	if(selectedNode.hasChildNodes()){
+		                            		showMessage('有子机构的组织机构不允许删除！');
+		                            		return;
+		                            	}
+		                            	parentNode = selectedNode.parentNode;
+		                            	Ext.Msg.confirm('系统提示','删除后无法恢复，确定删除组织机构吗？', function (btn) {
+			                                if (btn == "yes") {
+			                                	Ext.Ajax.request({
+			                            			url:'/system/SvrService/OrgService/3',
+			                            			method : 'post',
+			                            			params : {
+			                            				FId:Ext.getCmp('FId').getValue()
+			                            			},
+			                            			success : function(response){
+			                            				var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+			                            				if(responseArray.success){
+			                            					parentNode.removeChild(selectedNode);
+			                            				}else{
+			                            					Ext.MessageBox.show({
+			                            						title:'系统提示',
+			                            						msg:'组织机构删除失败！',
+			                            						width:300,
+			                            						buttons: Ext.Msg.OK,
+			                            						icon: Ext.MessageBox.INFO
+			                            					});
+			                            				}
+			                            					
+			                            			},
+			                            			failure : function(response) {
+			                            				showMessage('网络错误，组织机构删除失败！',true);
+			                            			}
+			                            		});
+			                                }else{
+			                                	return;
+			                                }
+			                        	});
+		                            }else {
+		                                showMessage('请选中需要删除的组织机构！');
+		                            }
+		                        }
+		                    }
+		                ]
+		            },
+		            items: [
+		                {
+		                    xtype: 'treepanel',
+		                    id: 'orgTree',
+		                    width: 240,
+		                    margins: '0 2 0 0',
+		                    region: 'west',
+		                    split: true,
+		                    root: {
+		                    	id:'0',
+		                        text: '组织机构',
+		                        expanded:true
+		                    },
+		                    loader: new Ext.tree.TreeLoader({
+		        	        	dataUrl:'/system/SvrService/OrgService/1/'
+		        	        }),
+		        	        listeners: {
+		        	        	click:function(node,e){
+		        	        		e.stopEvent();
+		        	        		if (!node.isLeaf()) {
+		        	                    node.expand();
+		        	                    node.select();
+		        	                }
+		        	        		setFormData(node);
+		        	        	}
+		        	        }
+		                },
+		                {
+		                    xtype: 'form',
+		                    id: 'orgForm',
+		                    frame:true,
+		                    width: 100,
+		                    padding: 10,
+		                    region: 'center',
+		                    labelAlign: 'right',
+		                    items: [
+		                        {
+		                            xtype: 'hidden',
+		                            id: 'FId'
+		                        },
+		                        {
+		                            xtype: 'hidden',
+		                            id: 'FParentId'
+		                        },
+		                        {
+		                            xtype: 'textfield',
+		                            id: 'FName',
+		                            anchor: '60%',
+		                            allowBlank: false,
+                                    blankText: '机构名称不能为空',
+		                            fieldLabel: '机构名称'
+		                        },{
+		                            xtype: 'textfield',
+		                            id: 'FAno',
+		                            anchor: '60%',
+		                            allowBlank: false,
+                                    blankText: '机构编码不能为空',
+		                            fieldLabel: '机构编码'
+		                        },
+		                        {
+		                            xtype: 'numberfield',
+		                            id: 'FSort',
+		                            anchor: '40%',
+		                            allowBlank: false,
+                                    blankText: '排序不能为空',
+		                            fieldLabel: '排序'
+		                        },
+		                        {
+		                            xtype: 'checkbox',
+		                            id: 'FState',
+		                            boxLabel: '启用',
+		                            anchor: '60%',
+		                            fieldLabel: '状态'
+		                        }
+		                    ]
+		                }
+		            ]
+		        }
+		    ]
+	});	
+	
+	function setFormData(node){
+		Ext.getCmp('FName').setValue(node.attributes.text);
+		Ext.getCmp('FAno').setValue(node.attributes.ano);
+        Ext.getCmp('FState').setValue(node.attributes.state=='1'?true:false);
+        Ext.getCmp('FSort').setValue(node.attributes.sort);
+        Ext.getCmp('FParentId').setValue(node.attributes.parent);
+        Ext.getCmp('FId').setValue(node.attributes.id);
+	}
+	function insertForm(id) {
+        Ext.getCmp('FName').setValue('');
+        Ext.getCmp('FAno').setValue('');
+        Ext.getCmp('FState').setValue(true);
+        Ext.getCmp('FSort').setValue('');
+        Ext.getCmp('FId').setValue(0);
+        Ext.getCmp('FParentId').setValue(id);
+    }
+	
+})
+</script>

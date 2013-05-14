@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FilesTree.html</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+    <link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+  </head>
+  
+  <body>
+  	<div class="easyui-layout" data-options="fit:true">
+  		<div data-options="region:'center'" >
+  			 <table id="filetable" ></table>
+  			 <table width="100%">
+  			 	<tr align="reight">
+  			 		<td width="80%"></td>
+  			 		<td><a href="#" id="btn" class="easyui-linkbutton" iconCls="okbut-esaybt" >确认</a></td> 
+  			 	</tr>
+  			</table>
+  			 
+  		</div>
+  	</div>
+  	<div>
+   
+	</div>
+  </body>
+  <script type="text/javascript">
+  	var isvideo;
+  	
+  	var filetext;
+  	var filesize;
+  	var filepath;
+  	var filetype;
+  	
+  	$(document).ready(function(){
+  		$("#btn").linkbutton('disable');
+  		$('#filetable').treegrid({
+  		url: '/buss/vedio/treepath/',
+  		title:"视频文件",
+  		height:380,
+		rownumbers: false,
+		idField: 'id',
+		treeField: 'text',
+		columns:[[
+			{field:'text',title:'名称',width:240},
+			{field:'time',title:'修改日期',width:120,align:'left'},
+			{field:'size',title:'文件大小',width:150,align:'left'},
+		]],
+  		onLoadSuccess:function(node,data){
+  			if(data.length>0)
+  				$(this).treegrid('collapseAll').treegrid('expand',data[0].id);  			
+  		},
+  		onDblClickRow:function(row){
+  			if(row.isDir){
+  				$(this).treegrid('toggle',row.id);
+  			}
+  		},
+  		onClickRow:function(row){
+  			if(!row.isDir){
+  				filetext=row.text;
+  				filesize=row.size;
+  				filepath=row.path;
+  				filetype="."+thistype;
+  				$("#btn").linkbutton('enable');
+  			}else{
+  				$("#btn").linkbutton('disable');
+  			}
+  		}
+  	});
+  	$("#btn").click(function (){parent.closewin(filetext,filesize,filepath,filetype);});
+  	})
+  </script>
+</html>

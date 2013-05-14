@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>bussProRegister.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+    <link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+ 	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+    
+    <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>		
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/swfupload/js/swfupload.js"></script>
+	<script type="text/javascript" src="../../plugin/swfupload/js/swfupload.queue.js"></script>
+	<script type="text/javascript" src="../../plugin/swfupload/js/fileprogress.js"></script>
+	<script type="text/javascript" src="../../plugin/swfupload/js/handlers.js" charset="utf-8"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    <script type="text/javascript" src="../../js/myEasymg.js" ></script>
+	<script type="text/javascript">
+		var FId=-1;
+		var swfUpload;
+		var uptype;
+		var myDate = new Date();
+		var states;
+		
+		function nowTime(format){
+				var dt=new Date();
+				//年份
+				this.Year=dt.getFullYear();
+				//月份
+				this.Month=dt.getMonth()+1;
+				//日期
+				this.Day=dt.getDate();
+				//星期几,数字
+				this.Week=dt.getDay();
+				//星期几，中文
+				this.WeekDay='日一二三四五六'.charAt(dt.getDay());
+				//24制小时
+				this.Hours24=dt.getHours();
+				//12制小时
+				this.Hours12=this.Hours24>12 ? this.Hours24-12 : this.Hours24;
+				//分钟
+				this.Minutes=dt.getMinutes();
+				//秒
+				this.Seconds=dt.getSeconds();
+				
+				format=format.replace("yy",this.Year);
+				format=format.replace("MM",this.Month<10?'0'+this.Month:this.Month);
+				format=format.replace("dd",this.Day<10?'0'+this.Day:this.Day);
+				format=format.replace("HH",this.Hours24<10?'0'+this.Hours24:this.Hours24);
+				format=format.replace("hh",this.Hours12<10?'0'+this.Hours12:this.Hours12);
+				format=format.replace("mm",this.Minutes<10?'0'+this.Minutes:this.Minutes);
+				format=format.replace("ss",this.Seconds<10?'0'+this.Seconds:this.Seconds);
+				format=format.replace("ww",this.Week);
+				format=format.replace("WW",this.WeekDay);
+				//时间显示在页面中哪个标签里，这里是其id
+				return format;
+			}
+		//提交时的数据
+		var sealData={
+			FId:"",
+			FSealId:"",
+			FSealName:"",
+			FRecipientsPeople:"",
+			FRecipientsDate:"",
+			FReturnDate:"",
+			FHandleMan:"",
+			FHandleTime:"",
+			FNote:""
+		}
+		//添加修改验证
+		function addcheck(){
+			if(trim($("#FSealName").combobox("getText"))!=""&&trim($("#FRecipientsPeople").val())!=""&&trim($("#FRecipientsDate").datetimebox('getValue'))!="")
+				return true;
+			else
+				return false;
+		}
+		//登记用章处理情况
+		function djyzcheck(){
+			if(trim($("#FHandleMan").val())!=""&&trim($("#FHandleTime").datetimebox('getValue'))!=""&&trim($("#FNote").val())!="")
+					return true;
+			else
+				return false;
+		}
+		//验证
+		function chekinput(){
+			switch(states){
+				case 1:
+					return addcheck();
+				case 2:
+					return djyzcheck();
+				case 3:
+					return addcheck()&&djyzcheck();
+			}
+		}
+		//设置sealData
+		function setSealData(){
+			sealData.FId=FId;
+			sealData.FSealId=$("#FSealName").combobox("getValue");
+			sealData.FSealName=$("#FSealName").combobox("getText");
+			sealData.FRecipientsPeople=$("#FRecipientsPeople").val();
+			sealData.FRecipientsDate=$("#FRecipientsDate").datetimebox('getValue');
+			sealData.FReturnDate=$("#FReturnDate").datetimebox('getValue');
+			sealData.FHandleMan=$("#FHandleMan").val();
+			sealData.FHandleTime=$("#FHandleTime").datetimebox('getValue');
+			sealData.FNote=$("#FNote").val();
+		}
+		//为弹出框的input赋值
+		function setwin(rowIndex, rowData){
+			//nowdate=myDate.getFullYear()+"-"+myDate.getMonth()+"-"+myDate.getDate()+" "+myDate.getHours()+":"+myDate.getMinutes()+":"+myDate.getSeconds();
+			FId=rowData.FId;
+			//$('#FSealId').val(rowData.FSealId);
+			$("#FSealName").combobox("setValue",rowData.FSealId);
+			$("#FSealName").combobox('setText',rowData.FSealName);
+			$("#FRecipientsPeople").val(rowData.FRecipientsPeople);
+			$("#FRecipientsDate").datetimebox("setValue",rowData.FRecipientsDate);
+			$("#FReturnDate").datetimebox("setValue",rowData.FReturnDate);
+			$("#FHandleMan").val(rowData.FHandleMan);
+			$("#FHandleTime").datetimebox("setValue","");
+			$("#FHandleTime").datetimebox("setValue",rowData.FHandleTime);
+			$("#FNote").val(rowData.FNote);
+		}
+
+		//清空所所有input
+		function winNull(){
+			
+			FId=-1;
+			$("#FSealName").combobox("setValue","");
+			$("#FRecipientsPeople").val("");
+			$("#FRecipientsDate").datetimebox("setValue","");
+			$("#FHandleMan").val("");
+			$("#FNote").val("");
+			$("#FHandleTime").datetimebox("setValue","");
+			$("#FReturnDate").datetimebox("setValue","");
+		}
+		//添加登记
+		function add(){
+			states=1;
+			$('#FSealName').combobox('reload');
+			winNull();
+			$("#divwindow").dialog('setTitle','添加用章申领登记');
+			$("#FHandleMan").attr('disabled','true');
+			$("#FHandleTime").datetimebox('disable');
+			$("#FReturnDate").datetimebox('disable');
+			$("#FSealName").combobox('enable');
+			$("#FRecipientsPeople").removeAttr('disabled');
+			$("#FRecipientsDate").datetimebox('enable');
+			$("#divwindow").dialog('open');
+			
+		}
+		//修改登记
+		function updata(){
+			$("#divwindow").dialog('setTitle','修改用章登记');
+			var row =$("#tableregister").datagrid('getSelected');
+		
+			if(row){
+				if(row.FHandleMan==""){
+					states=1
+					$("#FHandleMan").attr('disabled','true');
+					$("#FHandleTime").datetimebox('disable');
+					$("#FReturnDate").datetimebox('disable');
+					$("#FSealName").combobox('enable');
+					$("#FRecipientsPeople").removeAttr('disabled');
+					$("#FRecipientsDate").datetimebox('enable');
+				}else{
+					states=3;
+					$("#FHandleMan").removeAttr('disabled');
+					$("#FHandleTime").datetimebox('enable');
+					$("#FReturnDate").datetimebox('disable');
+					$("#FSealName").combobox('disable');
+					$("#FRecipientsPeople").removeAttr('disabled');
+					$("#FRecipientsDate").datetimebox('enable');
+				}
+				$("#divwindow").dialog('open');
+			}else{
+				$.messager.alert('温馨提示','请选择要修改信息','info');
+			}
+		}
+		//登记处理情况
+			function chuli(){
+				states=2;
+				$("#divwindow").dialog('setTitle','用章处理登记');
+				var row =$("#tableregister").datagrid('getSelected');
+				if(row){
+					if(row.FPrintPictures.length==0){
+						$.messager.alert('温馨提示','该用章未上传图片','info');
+						return false;
+					}
+					if($("#FReturnDate").datetimebox('getValue')==""){
+						$.messager.alert('温馨提示','该用章未归还不能处理','info');
+						return false;
+					}
+					if(row.FProcessingImages.length==0){
+						$.messager.alert('温馨提示','请先上传处理图片','info');
+						return false;
+					}
+					$("#FHandleMan").removeAttr('disabled');
+					$("#FHandleTime").datetimebox('enable');
+					$("#FReturnDate").datetimebox('disable');
+					$("#FSealName").combobox('disable');
+					$("#FRecipientsPeople").attr('disabled','true');
+					$("#FRecipientsDate").datetimebox('disable');
+					$("#divwindow").dialog('open')
+				}else{
+					$.messager.alert('温馨提示','请选择要处理的信息','info');
+				}
+			}
+		//还章
+		function huanzhang(){
+			var row =$("#tableregister").datagrid('getSelected');
+			
+			if(row){
+				if(row.FPrintPictures.length==0){
+					$.messager.alert('温馨提示','该用章未上传图片','info');
+					return false;
+				}
+				if($("#FReturnDate").datetimebox('getValue')!=""){
+					$.messager.alert('温馨提示','该用章已经归还','info');
+					return false;
+				}
+				var nowdate=nowTime('yy-MM-dd HH:mm:ss');
+				$("#FReturnDate").datetimebox('setValue',nowdate);
+				setSealData();
+				$.post(
+					"/buss/chapter/1",
+					sealData,
+					function(data){
+						if(data){
+							if(data.success){
+								$.messager.alert('温馨提示','归还成功','info');
+								$("#tableregister").datagrid('reload');
+							}else{
+								$.messager.alert('温馨提示','归还失败','info');
+							}
+						}else{
+							$.messager.alert('温馨提示','网络错误,请稍后再试或与管理员联系','info');
+						}
+					}
+				);
+			}else{
+				$.messager.alert('温馨提示','请选择归还的证章','info');
+			}
+		}
+		//删除登记
+		function rdelete(){
+			if(FId==-1){
+				$.messager.alert('温馨提示','请选择要删除信息','info');
+			}else{
+				var row=$("#tableregister").datagrid('getSelected');
+				$.messager.confirm('温馨提示', '确认要删除['+row.FSealName+']', function(r){
+					if (!r){
+						return false;
+					}else{
+						$.post(
+							"/buss/chapter/2",
+							{
+								'FId':FId
+							},
+							function(data){
+								if(!data){
+									$.messager.alert('温馨提示','网络错误！请稍后再试','warning');
+									$("#tableregister").datagrid('reload');
+									//return false;
+								}
+								if(data.success){
+									$.messager.alert('温馨提示',data.message);
+									$("#tableregister").datagrid('reload');
+								}else{
+									$.messager.alert('温馨提示',data.message,'error');
+								}
+							}
+						);
+					}
+				});
+				
+			}
+		}
+		//保存按钮
+		function savec(){
+			var row=$("#tableregister").datagrid('getSelected');
+			$.loadmg('温馨提示','正在保存...');
+			setSealData();
+			if(FId==-1){
+				
+				$.post(
+					"/buss/chapter/0",
+					sealData,
+					function(data){
+						if(!data){
+								$.tipmg('温馨提示','网络错误,请稍后','warning');
+								return false;
+							}
+							if(data.success){
+								$.tipmg('温馨提示',data.message);
+								$("#tableregister").datagrid('reload');
+							}else{
+								$.tipmg('温馨提示',data.message,'error');
+							}
+					}
+				);
+			}else{
+				$.post(
+					"/buss/chapter/1",
+					sealData,
+					function(data){
+						if(!data){
+								$.tipmg('温馨提示','网络错误,请稍后','warning');
+								return false;
+							}
+						if(data.success){
+								$.tipmg('温馨提示',data.message,'success');
+								$("#tableregister").datagrid('reload');
+						}else{
+								$.tipmg('温馨提示',data.message,'error');
+						}
+					}
+				);
+			}
+			$("#divwindow").dialog('close');
+		}
+		function clowin(){
+			$("#divwindow").dialog('close');
+		}
+		
+		//grid工具栏
+		var rtoobar =[{
+			text:'领章登记',	
+  			iconCls:"insertbut-easytb",
+  			handler:add
+		},{
+			text:'还章',
+			iconCls:"checkfile-esaytb",
+			handler:huanzhang
+		},{
+			text:'登记处理情况',
+			iconCls:"checkfile-esaytb",
+			handler:chuli
+		},{
+			text:'修改',
+			iconCls:"checkfile-esaytb",
+			handler:updata
+		},{
+			text:'删除',
+			iconCls:"delete-easytb",
+			handler:rdelete
+		},{
+			text:'上传印样',
+			iconCls:"fileuoload-esaytb",
+			handler:upyy
+		},{
+			text:'上传处理图片',
+			iconCls:"fileuoload-esaytb",
+			handler:upimage
+		}];
+		//上传印样
+		function upyy(){
+			var row=$("#tableregister").datagrid('getSelected');
+			if(!row){	
+				$.messager.alert('温馨提示','请选择信息','info');
+				return false;
+			}
+			uptype=true;
+			$("#divupImage").dialog('setTitle','上传印样');
+			$('#imageName').val("");
+			$("#divupImage").dialog('open');
+		}
+		//上传处理图片
+		function upimage(){
+			var row=$("#tableregister").datagrid('getSelected');
+			if(!row){
+				$.messager.alert('温馨提示','请选择信息','info');
+				return false;
+			}
+			if($("#FReturnDate").datetimebox('getValue')==""){
+				$.messager.alert('温馨提示','请先归还印章','info');
+				return false;
+			}
+			uptype=false;
+			$("#divupImage").dialog('setTitle','上传处理图片');
+			$('#imageName').val("");
+			$("#divupImage").dialog('open');
+		}
+		function startUpload(){
+			
+			swfUpload.startUpload();
+			$("#divupImage").dialog('close');
+			$.loadmg('温馨提示','正在上传,请稍等..');
+		}
+		//dialog底部按钮
+		var dbuttons=[{
+			text:'保存',
+			iconCls:"okbut-esaybt",
+			handler:savec
+		},{
+			text:'关闭',
+			iconCls:"delete-easytb",
+			handler:clowin
+		}];
+		var ubuttons=[{
+			text:'保存',
+			iconCls:"okbut-esaybt",
+			handler:startUpload
+		},{
+			text:'关闭',
+			iconCls:"delete-easytb",
+			handler:function(){
+				$("#divupImage").dialog('close');
+			}
+		}];
+		//文件上传方法
+		function CreateSwfFile(data){
+			settings= {
+				upload_url :"/buss/upimage/1;jsessionid="+data,
+				flash_url :"../../plugin/swfupload/swfupload.swf",
+				file_size_limit :"3MB",//上传文件体积上限，单位MB
+				file_post_name :"file",
+				file_types :"*.jpg",//允许上传的文件类型 
+				file_types_description :"All F iles",//文件类型描述
+				file_upload_limit : "0",//限定用户一次性最多上传多少个文件，在上传过程中，该数字会累加，如果设置为“0”，则表示没有限制
+				use_query_string : true,
+				file_queue_limit : "1",
+				
+				debug : false,
+				button_cursor : SWFUpload.CURSOR.HAND,
+				button_window_mode : SWFUpload.WINDOW_MODE.TRANSPARENT,
+				button_image_url: "../../plugin/swfupload/images/selectsxt2.png",					 
+				button_width: "88",
+				button_height: "22",
+				button_placeholder_id: "addfile",
+				button_text: '<span></span>',
+				button_text_style: ".theFont { font-size: 12;}",					
+				button_text_left_padding: 1,
+				button_text_top_padding: 0,					
+				
+				file_queued_handler : function(){
+					
+				},//在file_dialog_complete_handler事件之前触发
+				swfupload_loaded_handler : function(){},// 当Flash控件成功加载后触发的事件处理函数
+				file_dialog_start_handler : function(){
+					this.cancelUpload();
+				},// 当文件选取对话框弹出前出发的事件处理函数
+
+				file_dialog_complete_handler : function(){
+					var file =this.getFile(0);
+					$('#imageName').val(file.name);
+					$('#imagetype').val(file.size);
+				},//当文件选取对话框关闭后触发的事件处理
+
+				upload_start_handler : setp,// 开始上传文件前触发的事件处理函数
+
+				upload_success_handler : this.onUploadSuccess,// 文件上传成功后触发的事件处理函数 
+				swfupload_loaded_handler : function(){},// 当Flash控件成功加载后触发的事件处理函数  
+				upload_progress_handler : function(){},//刚打开与服务器的连接与文件上传过程中
+				upload_complete_handler : this.onUploadComplete,//上传完成时，在upload_success_handler之后触发
+				upload_error_handler : this.onUploadError,//上传失败时触发
+				file_queue_error_handler : this.onFileError//文件上传数量、类型、大小不符合时
+			}
+			//自定义属性，是否停止上传
+			swfUpload = new SWFUpload(settings);
+			swfUpload.stopped = false;
+		}
+		
+		function onUploadSuccess() {
+			$.tipmg('温馨提示','上传成功！','success');
+			$("#tableregister").datagrid('reload');
+		}
+		function onUploadError(){
+			$.tipmg('温馨提示','上传失败！','warning');
+		}
+		function onFileError(file,n){
+			switch(n){
+				case -100:
+					$.messager.alert('系统提示','最多能选择一个文件','error');
+					break;
+				case -110:
+					$.messager.alert('系统提示','文件超过大小','error');
+					break;
+				case -120:
+					$.messager.alert('系统提示','文件大小不能为0','error');
+					break;
+				case -130:
+					$.messager.alert('系统提示','文件类型不正确,请选择 .jpg文件','error');
+					break;
+			}
+		}
+		function setp(file){
+			$("#divload").dialog('open');
+			 var post_params = swfUpload.settings.post_params;
+			jQuery.extend(post_params,{
+					FId:FId,
+					Size:file.size,
+					itype:uptype
+			});
+			swfUpload.setPostParams(post_params);
+		}
+		
+		function styledatebox(date){
+			var year=date.getFullYear();
+			var month=date.getMonth();
+			var day=date.getDate();
+			var hours=date.getHours();
+			var minutes=date.getMinutes();
+			var seconds=date.getSeconds();
+			return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+		}
+		//查看图片方法
+		function lookImage(im){
+			$('#imge').attr("src",im.src);
+			/*if(imtype){
+				$('#imge').attr("src","/buss/loadimage1/"+FId);
+			}else{
+				$('#imge').attr("src","/buss/loadimage1/"+FId);
+			}*/
+			$("#divlookImage").dialog('open');
+		}
+		
+		$(document).ready(function() {
+			
+			
+			$("#tableregister").datagrid({
+					url:"/buss/chapter/3",
+	  				singleSelect:true,
+	  				rownumbers:true,
+	  				pagination:true,
+	  				fit:true,
+	  				toolbar:rtoobar,
+	  				columns:[[
+	  					{field:'FSealName',title:'印章名称',width:120,halign:'center',align:'left',rowspan:2},
+	  					{field:'FPrintPictures',title:'印样图片',width:70,halign:'center',align:'left',rowspan:2,valign:"middle",formatter:function(value,rec){
+	  							if(value!=""){
+	  								return "<img id='"+rec.FId+"' src='/buss/loadimage1/"+rec.FId+"?"+Math.random()+"' height='60px' width='60px' alt='查看原图' onClick='lookImage(this)'>"
+	  							}else{
+	  								return "<span style='color:red'>未上传文件</span>";
+	  							}
+	  						}
+	  					}, 
+	  					{title:'领用情况',width:120,align:'left',colspan:3,halign:'center'},
+	  					{title:'处理情况',width:120,align:'left',colspan:3,halign:'center',valign:"middle"},
+	  					{field:'FNote',title:'备注',width:100,align:'center',rowspan:2,valign:'middle'}
+	  				],[
+	  					{field:'FRecipientsPeople',title:'领用人',width:100,align:'left',valign:"middle"},
+	  					{field:'FRecipientsDate',title:'领用日期',width:120,align:'left',valign:"middle"},
+	  					{field:'FReturnDate',title:'归还日期',width:120,align:'left',valign:"middle"},
+	  					{field:'FProcessingImages',title:'图片',width:70,align:'left',valign:"middle",formatter:function(value,rec){
+	  							if(value!=""){
+	  								return "<img id='"+rec.FId+"' src='/buss/loadimage2/"+rec.FId+"?"+Math.random()+"' height='60px' width='60px' alt='查看原图' onClick='lookImage(this)'>"
+	  							}else{
+	  								return "<span style='color:red'>未上传文件</span>";
+	  							}
+	  						}
+	  					},
+	  					{field:'FHandleMan',title:'处理人',width:100,align:'left',valign:"middle"},
+	  					{field:'FHandleTime',title:'处理时间',width:120,align:'left',valign:"middle"}
+	  				]],
+	  				onClickRow:setwin,
+	  				onLoadSuccess:function(){
+	  					$('#FSealName').combobox({
+							url:'/buss/chapter/5',
+							valueField:'id',
+			   				textField:'text',
+			   				width:400
+						});
+	  				}
+				});
+			
+			$("#divwindow").dialog({
+				width:500,
+				height:300,
+				title:'用章登记信息',
+				iconCls:'checkfile-esaytb',
+				modal:true,
+				closed:true,
+				collapsible:false,
+				minimizable:false,
+				draggable:true,
+				closable:true,
+				shadow:true,
+				buttons:dbuttons,
+				loadingMessage:"<img src='../../images/large-loading.gif' />正在加载请稍后..."
+			});
+			$("#divupImage").dialog({
+				width:300,
+				height:150,
+				title:'图片上传',
+				iconCls:'checkfile-esaytb',//2013-3-1 14:25:46
+				modal:true,
+				closed:true,
+				collapsible:false,
+				minimizable:false,
+				draggable:true,
+				closable:true,
+				shadow:true,
+				buttons:ubuttons,
+				loadingMessage:"<img src='../../images/large-loading.gif' />正在加载请稍后..."
+			});
+			$("#FReturnDate").datetimebox({
+				width:160,
+				editable:false,
+				formatter:styledatebox
+			});
+			$("#FRecipientsDate").datetimebox({
+				width:160,
+				editable:false,
+				formatter:styledatebox
+			});
+			
+			$("#FHandleTime").datetimebox({
+				width:160,
+				editable:false,
+				formatter:styledatebox
+			});
+			$("#divlookImage").dialog({
+				width:450,
+				height:450,
+				title:'图片查看器',
+				iconCls:'checkfile-esaytb',
+				modal:true,
+				closed:true,
+				collapsible:false,
+				minimizable:false,
+				draggable:true,
+				closable:true,
+				shadow:true,
+				loadingMessage:"<img src='../../images/large-loading.gif' />正在加载请稍后..."
+			});
+			$("#divload").dialog({
+				width:300,
+				height:200,
+				//title:'图片上传',
+				iconCls:'checkfile-esaytb',
+				modal:true,
+				closed:true,
+				collapsible:false,
+				minimizable:false,
+				draggable:true,
+				//closable:true,
+				shadow:true,
+				//buttons:ubuttons,
+				loadingMessage:"<img src='../../images/large-loading.gif' />正在加载请稍后..."
+			});
+			
+			$.ajax({
+				url:"/buss/upimage/2",
+				type:'post',
+				async:false,//true为异步提交，false同步
+				success:function(data){
+					if(data.success){
+						CreateSwfFile(data.root);	
+					}else{
+						$.messager.alert('温馨提示','请重新登录');
+					}
+				}
+			});
+		});
+		
+		
+	</script>
+  </head>
+  
+  <body>
+   	<table id="tableregister"></table>
+	<div id="divwindow" align="center">
+		<table id='windowtb' style="width:600;height:400">
+			<tr>
+				<td height='1px'></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td align="right" nowrap>
+					印章名称:
+				</td>
+				<td colspan="3">
+					<input type="hidden" id="FSealId"/>
+					<input class="easyui-validatebox" type="text" id="FSealName" name="FSealName" data-options="required:true,editable:false" style="width:98%" readonly/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" nowrap>
+					领用人:
+				</td>
+				<td >
+					<input class="easyui-validatebox" type="text" id="FRecipientsPeople" name="FRecipientsPeople" data-options="required:true" style="width:98%"/>
+				</td>
+				<td align="right" nowrap>
+					领用时间:
+				</td>
+				<td>
+					<input id="FRecipientsDate" name="FRecipientsDate" data-options="required:true,editable:false" style="width:98%" readonly/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" nowrap>
+					归还时间:
+				</td>
+				<td>
+					<input id="FReturnDate" name="FReturnDate" style="width:98%" readonly/>
+				</td>
+				<td align="right" nowrap>
+				</td>
+				<td>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" nowrap>
+						处理人:
+				</td>
+				<td>
+					<input class="easyui-validatebox" type="text" id="FHandleMan" name="FHandleMan"  style="width:98%" />
+				</td>
+				<td align="right" nowrap>
+						处理时间:
+				</td>
+				<td>
+					<input class="easyui-validatebox" type="text" id="FHandleTime" name="FHandleTime" style="width:98%" readonly/>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" nowrap>
+						备注:
+				</td>
+				<td colspan="3">
+					<textarea id="FNote" name="FNote" style="height:80px;width:98%;"></textarea>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="divupImage" align="top">
+		<table>
+			<tr>
+				<td>
+					<input class="easyui-validatebox" type="text" id="imageName" readonly/>
+				</td>
+				<td>
+					<a href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true" ><span id='addfile'></span></a>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="divlookImage" align="center">
+		<img id="imge" height='410px' width='420px'/>
+	</div>
+  </body>
+</html>

@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>项目收费登记</title><div style="background-color: #000400"></div>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+ 	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+ 	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	
+	<style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 98%;
+			width: 98%;
+		}	
+	</style>
+ 	
+ 	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+    <script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>		
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+    
+	
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+  </head>
+   <script type="text/javascript" src="../../js/myEasymg.js" ></script>
+  <script type="text/javascript">
+  	var isEdit=false;
+	var editRow;
+	var collectionId="";
+	var invoiceId="";
+	var myDate=new Date();
+	var addorupdate=false;
+	var grid;
+	var money=0;
+	var selectCRow=0;
+	var selectIRow=0;
+	
+	//清除查询
+	function clears(){
+		$('#name').val("");
+		$('#number').val("");
+		$('#pm').val();
+		$('#tablecollection').datagrid('load',{
+			name:$('#name').val(),
+			number:$('#number').val(),
+			pm:$('#pm').val()
+		});
+	}
+	//选择c的行
+	function selectCollRow(data){
+		//alert(data.rows.length);
+		if(data.rows.length >0){
+			//alert(11);
+			$('#tablecollection').datagrid('selectRow',selectCRow);
+		}else{
+			//invoicerrLoad();
+			invoiceLoad();
+		}
+	}
+  	//修改收费信息
+  	function updateCollectoin(){
+  		if(isEdit){
+  			
+  		}else{
+  			$.messager.alert('温馨提示','您还没有进行信息修改','info');
+  			return false;
+  		}
+  		cEndedit();
+  		var rec= $('#tablecollection').datagrid('getSelected');
+  		selectCRow=$('#tablecollection').datagrid('getRowIndex',$('#tablecollection').datagrid('getSelected'));
+  		if(rec.FReceivable!=0){
+  			rec.FContractYjCharge=0;
+  		}
+  		//alert(rec.FReceivable+"----"+rec.FSupporterReceipt)
+  		if(rec.FSupporterReceipt-(rec.FReceivable+rec.FContractYjCharge)>0){
+  			isEdit=true;
+  			if(rec.FContractYjCharge==0){
+	  			$('#tablecollection').datagrid('beginEdit', editRow);
+	  			//$.jBox.error('协作单位收费不能大于项目收费', '系统提示');
+	  			$.messager.alert('温馨提示','协作单位收费不能大于项目收费','warning');
+	  		}else{
+	  			//$.jBox.error('协作单位收费不能大于预计收费', '系统提示');
+	  			$.messager.alert('协作单位收费不能大于预计收费','warning');
+	  		}
+	  			return false;
+  		}
+  		
+  		//$.jBox.tip("正在保存，请稍等..", 'loading');
+  		$.loadmg('温馨提示','正在保存..');
+  		$.post(
+  			"/buss/collection/1",
+  			{
+  				"CFId":rec.FId,
+  				"CFOutstanding":rec.FOutstanding,
+  				"CFReceivable":rec.FReceivable,
+  				"CFRecordUser":rec.FRecordUser,
+  				"CFRecordTime":rec.FRecordTime,
+  				"CFState":rec.FState,
+  				"FContractYjCharge":rec.FContractYjCharge,
+  				"CFSupporterReceipt":rec.FSupporterReceipt,
+  				"CFTaskId":rec.FTaskId,
+  				"CFAccounts":rec.FAccounts
+  			},
+  			function(data){
+  				if(data.success){
+  						$.tipmg('温馨提示',data.message,'success');
+						//$.jBox.tip(data.message, 'success');
+						select();
+					}else{
+						$.tipmg('温馨提示',data.message,'warning');
+						//$.jBox.tip(data.message, 'failure');
+						select();
+					}
+  			}
+  		);
+  	}
+  	//结束编辑
+  	function cEndedit(){
+  		$('#tablecollection').datagrid('endEdit', editRow);
+  		isEdit=false;
+  	}
+  	function iEndedit(){
+  		$('#tableinvoice').datagrid('endEdit', editRow);
+  		isEdit=false;
+  	}
+  	function rEndedit(){
+  		$('#tablereceipt').datagrid('endEdit', editRow);
+  		isEdit=false;
+  	}
+  	//删除项目收费信息
+  	function deleteCollection(){
+  		selectIRow=0;
+  		selectCRow=0;
+  		if(!islock()){
+  			return false;
+  		}
+  		var rec= $('#tablecollection').datagrid('getSelected');
+  		//$.jBox.confirm("确定要删除数据吗？", "提示", function(v, h, f){
+  		$.messager.confirm('温馨提示','确定要删除数据吗？',function(r){
+  			if (r) {
+  				//$.jBox.tip("正在删除,请稍等...", 'loading');
+  				$.loadmg('温馨提示','正在删除,请稍等...');
+  				$.post(
+  					"/buss/collection/2",
+  					{
+  						"CFId":rec.FId,
+  						"CFOutstanding":rec.FOutstanding,
+  						"CFReceivable":rec.FReceivable,
+  						"CFRecordUser":rec.FRecordUser,
+  						"CFRecordTime":rec.FRecordTime,
+  						"CFState":rec.FState,
+  						"CFSupporterReceipt":rec.FSupporterReceipt,
+  						"CFTaskId":rec.FTaskId,
+  						"CFAccounts":rec.FAccounts
+  					},
+  					function(data){
+  						if(data.success){
+							//$.jBox.tip(data.message, 'success');
+							$.tipmg('温馨提示',data.message,'success');
+						}else{
+							//$.jBox.tip(data.message, 'failure');
+							$.tipmg('温馨提示',data.message,'warning');
+						}
+						select();
+  					});
+  			}else{
+  				select();
+  				return true;	
+  			}
+  		});
+  	}
+  	var IFrame='<iframe src="{0}" style="width:100%;height:100%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';
+  	//添加收费信息
+  	function addCollection(){
+  		if(isEdit){
+  			isSave();
+  			return isEdit;
+  		}
+  		var win =$(IFrame.format('/html/module/controls/addCollection.html'));
+  		$.lightbox(win, {
+			    modal  : true,
+				width   : 600,
+			    height  : 440
+			  });
+		return false;
+  	}
+  	//添加Invoice
+  	function postInvoice(){
+  		if(isEdit){
+  			
+  		}else{
+  			//$.jBox.info("您还没有进行数据修改","系统提示")
+  			$.messager.alert('温馨提示','您还没有进行数据修改','info');
+  			return false;
+  		}
+  		iEndedit();
+  		var reci= $('#tableinvoice').datagrid('getRows');
+  		var recC=$('#tablecollection').datagrid('getSelected');
+  		var rec=$('#tableinvoice').datagrid('getSelected');
+  		/*for(var i;i<reci.length;i++){
+  			allm+=reci[i].FInvoiceMoney;
+  		
+  		}*/
+  		$.post("/buss/invoice/5",
+  		{
+  			"collectionId":collectionId
+  		},
+  		function(data){
+  			var allm=data.root.chaE;
+  			if(allm<rec.FInvoiceMoney){
+	  			isEdit=true;
+	  			$('#tableinvoice').datagrid('beginEdit', editRow);
+	  			//$.jBox.info("发票金额不能大于项目待收款","系统提示")
+	  			$.messager.alert('温馨提示','发票金额不能大于项目待收款','info');
+	  			return false;
+  			}
+  			$.loadmg("温馨提示","正在保存,请稍等..");
+	  		$.post(
+	  			"/buss/invoice/0",
+	  			{
+	  				"FCollectionId":collectionId,
+	  				"IFInvoiceMoney":rec.FInvoiceMoney,
+	  				"IFInvoiceTime":rec.FInvoiceTime,
+	  				"FDifference":rec.FInvoiceMoney
+	  			},
+	  			function(data){
+	  				if(data.success){
+							//$.jBox.tip(data.message, 'success');
+							$.tipmg("温馨提示",data.message,"success");
+						}else{
+							$.tipmg("温馨提示",data.message,"error");
+							//$.jBox.tip(data.message, 'failure');
+						}
+						invoicerLoad();
+	  			}
+	  		);
+  		});
+  		
+  		//$.jBox.tip("正在保存，请稍等..", 'loading');
+  		
+  	}
+  	//添加receipt
+  	function postreceipt(){
+  		selectCRow=$('#tablecollection').datagrid('getRowIndex',$('#tablecollection').datagrid('getSelected'));
+  		selectIRow= $('#tableinvoice').datagrid('getRowIndex',$('#tableinvoice').datagrid('getSelected'));
+  		if(isEdit){
+  		}else{
+  			//$.jBox.info("您还没有进行数据修改","系统提示")
+  			$.messager.alert('温馨提示','您还没有进行数据修改','info');
+  			return false;
+  		}
+  		rEndedit();
+  		var recI= $('#tableinvoice').datagrid('getSelected');
+  		var rec=$('#tablereceipt').datagrid('getSelected');
+  		if(rec.FReceiptMoney>recI.FDifference){
+  			isEdit=true;
+  			$('#tablereceipt').datagrid('beginEdit', editRow);
+  			//$.jBox.info("收款金额不能大于发票待收款","系统提示")
+  			$.messager.alert('温馨提示','收款金额不能大于发票待收款','info');
+  			return false;
+  		}
+  		$.loadmg('温馨提示',"正在保存，请稍等..");
+  		//$.jBox.tip("正在保存，请稍等..", 'loading');
+  		$.post(
+  			"/buss/receipt/0",
+  			{
+  				"RFInvoiceId":invoiceId,
+  				"RFOrder":editRow,
+  				"RFReceiptMoney":rec.FReceiptMoney,
+  				"RFReceiptPayee":rec.FReceiptPayee,
+  				"RFReceiptTime":rec.FReceiptTime
+  			},
+  			function(data){
+  				if(data.success){
+						//$.jBox.tip(data.message, 'success');
+						$.tipmg("温馨提示",data.message,"success");
+						//receipLoad();
+						select();
+					}else{
+						$.jBox.tip(data.message, 'failure');
+						$.tipmg("温馨提示",data.message,"error");
+						//receipLoad();
+						select();
+					}
+  			});
+  	}
+  	//修改Invoice
+  	function updateIncoive(){
+  		var chae=$('#tableinvoice').datagrid('getSelected').FInvoiceMoney;
+  		if(isEdit){
+  			if(grid!=2){
+  				isSave();
+  			}
+  		}else{
+  			//$.jBox.info("您还没有进行数据修改","系统提示");
+  			$.messager.alert('温馨提示','您还没有进行数据修改','info');
+  			return false;
+  		}
+  		//alert(collectionId);
+  		$.post(
+  		"/buss/invoice/5",
+  		{
+  			"collectionId":collectionId
+  		},
+  		function(data){
+  			money=data.root.chaE;
+  			iEndedit();
+  			reci=$('#tableinvoice').datagrid('getSelected');
+	  		var rec= $('#tableinvoice').datagrid('getSelected');
+	  		var recC=$('#tablecollection').datagrid('getSelected');
+	  		if((rec.FInvoiceMoney-chae)>money){
+	  			isEdit=true;
+	  			$('#tableinvoice').datagrid('beginEdit', editRow);
+	  			//$.jBox.info("发票总金额超过项目收费","系统提示")
+	  			$.messager.alert('温馨提示','发票总金额超过项目收费','info');
+	  			return false;
+	  		}
+	  		$.loadmg("温馨提示","正在保存...");
+	  		//$.jBox.tip("正在保存，请稍等..", 'loading');
+	  		$.post(
+	  			"/buss/invoice/1",
+	  			{
+	  				"IFId":rec.FId,
+	  				"IFInvoiceMoney":rec.FInvoiceMoney,
+	  				"IFInvoiceNumber":rec.FInvoiceNumber,
+	  				"IFInvoiceTime":rec.FInvoiceTime,
+	  				"FCollectionId":collectionId,
+	  				"IFInvoiceMoney":rec.FInvoiceMoney,
+	  				"IFInvoiceTime":rec.FInvoiceTime
+	  			},
+	  			function(data){
+	  				if(data.success){
+							//$.jBox.tip(data.message, 'success');
+							$.tipmg("温馨提示",data.message,"success");
+							select();
+						}else{
+							//$.jBox.tip(data.message, 'failure');
+							$.tipmg("温馨提示",data.message,"error");
+							select(); 
+						}
+	  			}
+	  		);
+  		}
+  		);
+  		
+  	}
+  	//添加发票信息
+  	function addInvoice(){
+  		if(collectionId==""){
+  			//$.jBox.info("请先选择项目收费","系统提示")
+  			$.messager.alert('温馨提示','请先选择项目收费','info');
+  			return false;
+  		}
+  		if(isEdit){
+  				isSave();
+  			return isEdit;
+  		}
+  		if(!islock()){
+  			return false;
+  		}
+  		grid=2;
+  		isEdit=true;
+  		addorupdate=true;
+  		ilastIndex = $('#tableinvoice').datagrid('getRows').length;
+  		selectIRow=ilastIndex;
+  		var nowTime=myDate.toLocaleDateString();
+  		$('#tableinvoice').datagrid('appendRow',{
+  							F_Id:'',
+  							FCollectionId:collectionId,
+							FInvoiceMoney:0.0,
+							FInvoiceTime:nowTime,
+							FReceived:'',
+							FDifference:'',
+							FRecordUser:'',
+							F_Record_Time:''
+						});
+  		$('#tableinvoice').datagrid('selectRow', ilastIndex);
+		$('#tableinvoice').datagrid('beginEdit', ilastIndex);
+		editRow=ilastIndex;
+  	}
+  	//添加收费信息
+  	function addReceipt(){
+  		selectCRow=$('#tablecollection').datagrid('getRowIndex',$('#tablecollection').datagrid('getSelected'));
+  		selectIRow= $('#tableinvoice').datagrid('getRowIndex',$('#tableinvoice').datagrid('getSelected'));
+  		
+  		if(!islock()){
+  			return false;
+  		}
+  		if(invoiceId==""){
+  			//$.jBox.info("请先选择发票","系统提示")
+  			$.messager.alert('温馨提示','请先选择发票','info');
+  			return false;
+  		}
+  		if(isEdit){
+  				isSave();
+  			return isEdit;
+  		}
+  		grid=3;
+  		isEdit=true;
+  		addorupdate=true;
+  		var rlastIndex = $('#tablereceipt').datagrid('getRows').length;
+  		var nowTime=myDate.toLocaleDateString();
+  		$('#tablereceipt').datagrid('appendRow',{
+  							FId:'',
+  							FInvoiceId:invoiceId,
+  							FOrder:rlastIndex,
+							FReceiptMoney:0.0,
+							FReceiptTime:nowTime,
+							FReceiptPayee:'',
+							FRecordUser:'',
+							FRecordTime:''
+						});
+  		$('#tablereceipt').datagrid('selectRow', rlastIndex);
+		$('#tablereceipt').datagrid('beginEdit', rlastIndex);
+		editRow=rlastIndex;
+  	}
+  	//删除发票信息
+  	function deleteIncoive(){
+  		if(grid!=2){
+  			isSave();
+  		}
+  		if(!islock()){
+  			return false;
+  		}
+  		var rec= $('#tableinvoice').datagrid('getSelected');
+  		if(rec){
+  			//$.jBox.confirm("确定要删除数据吗？", "提示", function(v, h, f){
+  			$.messager.confirm('温馨提示','确认要删除吗？',function(r){
+  				if (r) {
+  					selectIRow=0;
+	  				$.post(
+			  			"/buss/invoice/2",
+			  			{
+			  				"IFId":rec.FId,
+			  				"IFInvoiceMoney":rec.FInvoiceMoney,
+			  				"IFInvoiceNumber":rec.FInvoiceNumber,
+			  				"IFInvoiceTime":rec.FInvoiceTime,
+			  				"FCollectionId":collectionId,
+			  				"IFInvoiceMoney":rec.FInvoiceMoney,
+			  				"IFInvoiceTime":rec.FInvoiceTime,
+			  				"IFDifference":rec.FDifference,
+			  				"IFRecordUser":rec.FRecordUser,
+			  				"IFRecordTime":rec.FRecordTime
+			  			},
+			  			function(data){
+			  				if(data.success){
+									//$.jBox.tip(data.message, 'success');
+									$.tipmg("温馨提示",data.message,"success");
+									isEdit=false;
+								}else{
+									//$.jBox.tip(data.message, 'failure');
+									$.tipmg("温馨提示",data.message,"error");
+								}
+								select();
+			  			});
+  				}
+  			});
+  		}else{
+  			//$.jBox.info("您还没有选择数据","系统提示");
+  			$.messager.alert('温馨提示','您还没有选择数据','info');
+  			return false;
+  		}
+  	}
+  	function Receipt(){
+  		if(addorupdate){
+  			postreceipt();
+  		}else{
+  			updateReceipt();
+  		}
+  	}
+  	//修改发票信息
+  	function Incoive(){
+  		if(addorupdate){
+  			postInvoice();
+  		}else{
+  			updateIncoive();
+  		}
+  	}
+  	//删除发票收费信息
+  	function deleteReceipt(){
+  		selectCRow=$('#tablecollection').datagrid('getRowIndex',$('#tablecollection').datagrid('getSelected'));
+  		selectIRow= $('#tableinvoice').datagrid('getRowIndex',$('#tableinvoice').datagrid('getSelected'));
+  		
+  		if(grid!=3){
+  			isSave();
+  		}
+  		if(!islock()){
+  			return false;
+  		}
+  		var rec= $('#tablereceipt').datagrid('getSelected');
+  		if(rec){
+  			//$.jBox.confirm("确定要删除数据吗？", "提示", function(v, h, f){
+  			$.messager.confirm('温馨提示','确认要删除吗？',function(r){
+  				if (r) {
+	  				$.post(
+			  			"/buss/receipt/1",
+			  			{
+			  				"RFId":rec.FId,
+			  				"RFInvoiceId":rec.FInvoiceId,
+			  				"RFOrder":rec.FOrder,
+			  				"RFReceiptMoney":rec.FReceiptMoney,
+			  				"RFReceiptPayee":rec.FReceiptPayee,
+			  				"RFReceiptTime":rec.FReceiptTime,
+			  				"RFRecordUserName":rec.FRecordUserName,
+			  				"RFRecordUserTime":rec.FRecordUserTime
+			  			},
+			  			function(data){
+			  				if(data.success){
+									//$.jBox.tip(data.message, 'success');
+									$.tipmg("温馨提示",data.message,"success");
+									receipLoad();
+									isEdit=false;
+								}else{
+									//$.jBox.tip(data.message, 'failure');
+									$.tipmg("温馨提示",data.message,"success");
+									receipLoad();
+								}
+			  			});
+  				}
+  			});
+  		}else{
+  			//$.jBox.info("您还没有选择数据","系统提示");
+  			$.messager.alert('温馨提示','您还没有选择数据','info');
+  			return false;
+  		}
+  	}
+  	//修改发票收费信息
+  	function updateReceipt(){
+  		if(isEdit){
+  			if(grid!=3){
+  				isSave();
+  			}
+  		}else{
+  			//$.jBox.info("您还没有进行数据修改","系统提示");
+  			$.messager.alert('温馨提示','您还没有进行数据修改','info');
+  			return false;
+  		}
+  		rEndedit();
+  		var recI= $('#tableinvoice').datagrid('getSelected');
+  		var rec=$('#tablereceipt').datagrid('getSelected');
+  		if(rec.FReceiptMoney>recI.FDifference){
+  			isEdit=true;
+  			$('#tablereceipt').datagrid('beginEdit', editRow);
+  			//$.jBox.info("收款金额不能大于发票待收款","系统提示")
+  			$.messager.alert('温馨提示','收款金额不能大于发票待收款','info');
+  			return false;
+  		}
+  		//$.jBox.tip("正在保存，请稍等..", 'loading');
+  		$.loadmg("温馨提示","正在保存，请稍等..");
+  		$.post(
+  			"/buss/receipt/2",
+  			{
+  				"RFId":rec.FId,
+			  	"RFInvoiceId":rec.FInvoiceId,
+			  	"RFOrder":rec.FOrder,
+			  	"RFReceiptMoney":rec.FReceiptMoney,
+			  	"RFReceiptPayee":rec.FReceiptPayee,
+			  	"RFReceiptTime":rec.FReceiptTime,
+			  	"RFRecordUserName":rec.FRecordUserName,
+			  	"RFRecordUserTime":rec.FRecordUserTime
+  			},
+  			function(data){
+  				if(data.success){
+						//$.jBox.tip(data.message, 'success');
+						$.tipmg("温馨提示",data.message,"success");
+						receipLoad();
+					}else{
+						$.tipmg("温馨提示",data.message,"error");
+						receipLoad();
+					}
+  			}
+  		);
+  	}
+  	function islock(){
+  		var rec=$('#tablecollection').datagrid('getSelected');
+  		if(rec){
+  			if(rec.FState!=0){
+  				//$.jBox.info("该项目已经锁定","系统提示");
+  				$.messager.alert('温馨提示','该项目已经锁定','info');
+  				return false;
+  			}else{
+  				return true;
+  			}
+  		}else{
+  			//$.jBox.info("请先选择项目收费","系统提示");
+  			$.messager.alert('温馨提示','请先选择项目收费','info');
+  			return false;
+  		}
+  	}
+  	function lock(){
+  		var rec=$('#tablecollection').datagrid('getSelected');
+  		if(rec){
+  			$.post(
+  			"/buss/collection/1",
+  			{
+  				"CFId":rec.FId,
+  				"CFOutstanding":rec.FOutstanding,
+  				"CFReceivable":rec.FReceivable,
+  				"CFRecordUser":rec.FRecordUser,
+  				"CFRecordTime":rec.FRecordTime,
+  				"CFState":1,
+  				"CFSupporterReceipt":rec.FSupporterReceipt,
+  				"CFTaskId":rec.FTaskId,
+  				"CFAccounts":rec.FAccounts
+  			},
+  			function(data){
+  				if(data.success){
+						//$.jBox.tip(data.message, 'success');
+						$.tipmg("温馨提示",data.message,"success");
+						select();
+					}else{
+						//$.jBox.tip(data.message, 'failure');
+						$.tipmg("温馨提示",data.message,"error");
+						select();
+					}
+  			}
+  		);
+  		}else{
+  			$.messager.alert('温馨提示','请先选择项目收费','info');
+  			//$.jBox.info("请先选择项目收费","系统提示");
+  		}
+  	}
+  	function release(){
+  		var rec=$('#tablecollection').datagrid('getSelected');
+  		if(rec){
+  			$.post(
+  			"/buss/collection/1",
+  			{
+  				"CFId":rec.FId,
+  				"CFOutstanding":rec.FOutstanding,
+  				"CFReceivable":rec.FReceivable,
+  				"CFRecordUser":rec.FRecordUser,
+  				"CFRecordTime":rec.FRecordTime,
+  				"CFState":0,
+  				"CFSupporterReceipt":rec.FSupporterReceipt,
+  				"CFTaskId":rec.FTaskId,
+  				"CFAccounts":rec.FAccounts
+  			},
+  			function(data){
+  				if(data.success){
+						//$.jBox.tip(data.message, 'success');
+						$.tipmg("温馨提示",data.message,"success");
+						select();
+					}else{
+						//$.jBox.tip(data.message, 'failure');
+						$.tipmg("温馨提示",data.message,"error");
+						select();
+					}
+  			}
+  		);
+  		}else{
+  			$.messager.alert('温馨提示','请先选择项目收费','info');
+  			//$.jBox.info("请先选择项目收费","系统提示");
+  		}
+  	}
+  	//cgrid的工具栏
+  	var ctoolbarc = [{
+  			text:'新增',	
+  			iconCls:"insertbut-easytb",
+  			handler:addCollection
+  		},{
+  			text:'删除',
+  			iconCls:"delete-easytb",
+  			handler:deleteCollection
+  		},'-',{
+  			id:'csave',
+  			text:'保存',
+  			iconCls:"save-easytb",
+  			handler:updateCollectoin
+  		},'-',{
+  			text:'锁定',
+  			iconCls:"lock-esaytb",
+  			handler:lock
+  		},{
+  			text:'解锁',
+  			iconCls:"release-esaytb",
+  			handler:release
+  		}]
+  	//Igrid工具栏
+  		var itoolbarc = [{
+  			text:'新增',	
+  			iconCls:"insertbut-easytb",
+  			handler:addInvoice
+  		},{
+  			text:'删除',
+  			iconCls:"delete-easytb",
+  			handler:deleteIncoive
+  		},'-',{
+  			id:'csave',
+  			text:'保存',
+  			iconCls:"save-easytb",
+  			handler:Incoive
+  		}]
+  	//Rgrid工具栏
+  	var rtoolbarc = [{
+  			text:'新增',	
+  			iconCls:"insertbut-easytb",
+  			handler:addReceipt
+  		},{
+  			text:'删除',
+  			iconCls:"delete-easytb",
+  			handler:deleteReceipt
+  		},'-',{
+  			id:'csave',
+  			text:'保存',
+  			iconCls:"save-easytb",
+  			handler:Receipt
+  		}]
+  	//收费信息查询
+  	function select(){
+  		$('#tablecollection').datagrid('load',{
+			name:$('#name').val(),
+			number:$('#number').val(),
+			pm:$('#pm').val()
+		});
+		//if($.LightBoxObject){
+			//$.LightBoxObject.close();
+		//}
+  	}
+  	//invoiceDbl
+  	function invoiceDbl(rowIndex, rowData){
+  		if(!islock()){
+  			return false;
+  		}
+  		if(isEdit){
+  			if(grid!=2){
+  				isSave();
+  			}
+  			return isEdit;
+  		}
+  		grid=2;
+  		addorupdate=false;
+  		isEdit=true;
+  		editRow=rowIndex;
+		$('#tableinvoice').datagrid('beginEdit', rowIndex);
+  	}
+  	//collection表的双击修改
+  	function collectionDbl(rowIndex, rowData){
+  		if(!islock()){
+  			return false;
+  		}
+  		if(isEdit){
+  			if(grid!=2){
+  				isSave();
+  			}
+  			return isEdit;
+  		}
+  		grid=1;
+  		isEdit=true;
+  		editRow=rowIndex;
+		$('#tablecollection').datagrid('beginEdit', rowIndex);
+  	}
+  	//提示是否保存
+  	function isSave(){
+  		switch(grid){
+  			case 1:
+  			if(isEdit){
+  			//$.jBox.warning("有正在修改的数据,需要要保存吗?","系统提示",
+  			$.messager.confirm('温馨提示','有正在修改的数据,需要要保存吗?',function(r){
+  							if(r){
+  								updateCollectoin();
+  								return true;
+							}else{
+								cEndedit()
+								return true;
+							}
+				});	
+  		};
+  		break;
+  		case 2:
+  			isSaveI();
+  			break;
+  		case 3:
+  			isSaveR();
+  			break;
+  		}
+  		
+  		
+  	}
+  	function isSaveI(){
+  		if(isEdit){
+  			//$.jBox.warning("有正在修改的数据,需要要保存吗?","系统提示",function(v, h, f){
+  			$.messager.confirm('温馨提示','有正在修改的数据,需要要保存吗?',function (r){
+  							if(r){
+  								Incoive();
+  								return true;
+							}else{
+								iEndedit()
+								return true;
+							}
+				});	
+  		}
+  	}
+  	function isSaveR(){
+  		if(isEdit){
+  			//$.jBox.warning("有正在修改的数据,需要要保存吗?","系统提示",function(v, h, f){
+  			$.messager.confirm('温馨提示','有正在修改的数据,需要要保存吗?',function (r){
+  							if(r){
+  								Receipt();
+  								return true;
+							}else{
+								rEndedit()
+								return true;
+							}
+				});	
+  		}
+  	}
+  	function collectionLoad(){
+  		$('#tablecollection').datagrid('load',{});
+  	}
+  	function receipttLoad(){
+  		invoiceId="";
+  		$('#tablereceipt').datagrid('load',{});
+  	}
+  	function receiptLoad(rowIndex, rowData){
+  		if(rowData){
+  			invoiceId=rowData.FId;
+  			$('#tablereceipt').datagrid({
+  				url:"/buss/receipt/3",
+  				queryParams:{invoiceId:rowData.FId}
+  			});	
+  		}else{
+  			$('#tablereceipt').datagrid({
+  				url:"/buss/receipt/3"
+  			});	
+  		}
+  			/*$('#tablereceipt').datagrid('load',{
+  				invoiceId:rowData.FId
+  			});*/
+  			
+  		}
+  	function receipLoad(rowIndex, rowData){
+  			$('#tablereceipt').datagrid('load',{
+  				invoiceId:invoiceId
+  			});
+  			 select();
+  		}
+  	function invoicerrLoad(){
+  		alert('1');
+  			collectionId="";
+  			//$('#tableinvoice').datagrid({onLoadSuccess:loadsucc});
+  			$('#tableinvoice').datagrid('reload');
+  		}
+  	function loadsucc(data){
+  		//alert(selectIRow);
+  		if(data.rows.length>0){
+  			$('#tableinvoice').datagrid('selectRow',selectIRow);
+  		}else{
+  			receipttLoad();
+  		}
+  	}
+  	function invoiceLoad(rowIndex, rowData){
+  		if(rowData){
+  			collectionId=rowData.FId;
+  			$('#tableinvoice').datagrid({
+  				url:"/buss/invoice/3",
+  				queryParams:{collectionId:rowData.FId}
+  				});
+  			}else{
+  				$('#tableinvoice').datagrid({
+  					url:"/buss/invoice/3",
+  				});
+  			}
+  			/*$('#tableinvoice').datagrid('load',{
+  				collectionId:rowData.FId
+  			});*/
+  		}
+  function invoicerLoad(){
+  			$('#tableinvoice').datagrid('load',{
+  				collectionId:collectionId
+  			});
+  		}
+  </script>
+  <body>
+  	<div class="easyui-layout" data-options="fit:true">
+  		<div data-options="region:'north',split:true," style="height:280%;">
+  				<div class="easyui-layout" data-options="fit:true">
+  					<div data-options="region:'north',split:true" title="查询条件" style="height:60%;">
+  						<label for="name">项目名称:</label>
+		           		<input id="name" class="easyui-validatebox" type="text" name="name" style="width:20%;" />
+		           		<label for="number">项目编号:</label>
+		           		<input id="number" class="easyui-validatebox" type="text" name="number" style="width:20%;" />
+		           		<label for="pm">项目经理:</label>
+		           		<input id="pm" class="easyui-validatebox" type="text" name="pm" style="width:20%;" />
+		           		<a href="#" class="easyui-linkbutton" onclick="select()">查询</a> 
+						<a href="#" class="easyui-linkbutton" onclick="clears()">清除</a> 
+  					</div>
+  					<div data-options="region:'center'" >
+  						<div class="easyui-panel" data-options="fit:true,border:false" >
+		  					<table id="tablecollection" ></table>
+				  		</div>
+  					</div>
+  				</div>
+  		</div>
+  		<div data-options="region:'center'" >
+  			<div class="easyui-layout" data-options="fit:true">
+	  			<div data-options="region:'center',split:true" title="发票信息" >
+	  				<table id="tableinvoice"></table>
+	  			</div>
+	  			<div data-options="region:'east',split:true" style="width:450%;">
+	  				<div class="easyui-panel" title="发票收款信息" data-options="fit:true,border:false" >
+	  					<table id="tablereceipt">
+  						</table>
+	  				</div>
+	  			</div>
+  			</div>
+  		</div>
+  	</div>
+  	<script type="text/javascript">
+  		$(document).ready(function() {
+  			$('#tablecollection').datagrid({
+  				url:"/buss/collectionTask/0",
+  				singleSelect:true,
+  				rownumbers:true,
+  				pagination:true,
+  				fit:true,
+  				toolbar:ctoolbarc,
+  				columns:[[
+					{field:'FTaskNumbers',title:'项目编号',width:120,align:'left',},
+					{field:'FTaskName',title:'项目名称',width:110,align:'left'},
+					{field:'taskPm',title:'项目经理',width:110,align:'center'},
+					{field:'FContractYjCharge',title:'预计收费(元)',width:80,align:'right'},
+					{field:'FReceivable',title:'项目应收费(元)',width:80,align:'right',editor:'numberbox'},
+					{field:'FAccounts',title:'项目已收费(元)',width:80,align:'right',styler:function(value,row,index){
+							if (value < row.FReceivable){
+								return 'color:red;';
+							}else{
+								return'color:green';
+							}
+					}},
+					{field:'FOutstanding',title:'项目待收费(元)',width:80,align:'right',styler:function(value,row,index){
+							if (value >0){
+								return 'color:red;';
+							}else{
+								return'color:green';
+							}
+					}},
+					{field:'FSupporterReceipt',title:'协作单位收费(元)',width:80,align:'right',editor:'numberbox'},
+					{field:'FRecordUser',title:'登记人',width:64,align:'center'},
+					{field:'FRecordTime',title:'登记时间',width:120,align:'center'},
+					{field:'FState',title:'状态',width:80,align:'center',formatter:function(value,rec){
+							if(value==0){
+								return "<span style='color:green'><img src='../../images/key.png' alt='锁定' />未锁定</span>";
+							}else{
+								return "<span style='color:red'><img src='../../images/password.gif' alt='解锁' />锁定</span>";
+							}
+						}
+					}
+				]],
+				onDblClickRow:collectionDbl,
+				onSelect:invoiceLoad,
+				//onClickRow:invoiceLoad,
+				onLoadSuccess:selectCollRow
+  			});
+  			//发票信息
+  		$('#tableinvoice').datagrid({
+  				
+  				singleSelect:true,
+  				iconCls:"icon-save",
+  				rownumbers:true,
+  				pagination:true,
+  				fit:true,
+  				toolbar:itoolbarc,
+  				columns:[[
+  					{field:'FInvoiceMoney',title:'开票金额(元)',width:80,align:'center',editor:'numberbox'},
+  					{field:'FInvoiceTime',title:'开票日期',width:80,align:'right',editor:'datebox'},
+  					{field:'FReceived',title:'已收款金额(元)',width:80,align:'right',styler:function(value,row,index){
+							if (value < row.FInvoiceMoney){
+								return 'color:red;';
+							}else{
+								return'color:green';
+							}
+					}},
+  					{field:'FDifference',title:'待收款金额(元)',width:80,align:'right',styler:function(value,row,index){
+							if (value >0){
+								return 'color:red;';
+							}else{
+								return'color:green';
+							}
+					}},
+  					{field:'FRecordUserName',title:'登记人',width:64,align:'center',},
+  					{field:'FRecordUserTime',title:'登记时间',width:120,align:'center',}
+  				]],
+  				//onClickRow:receiptLoad,
+  				onSelect:receiptLoad,
+  				onDblClickRow:invoiceDbl,
+  				//onLoadSuccess:receiptLoad,
+  				onLoadSuccess:loadsucc
+  			});
+  			$('#tablereceipt').datagrid({
+  				
+  				singleSelect:true,
+  				iconCls:"icon-save",
+  				rownumbers:true,
+  				pagination:true,
+  				fit:true,
+  				toolbar:rtoolbarc,
+  				columns:[[
+  					{field:'FReceiptMoney',title:'收款金额(元)',width:80,align:'right',editor:'numberbox'},
+  					{field:'FReceiptTime',title:'收款时间',width:80,align:'center',editor:'datebox'},
+  					{field:'FReceiptPayee',title:'收款人',width:64,align:'center',editor:'validatebox'},
+  					{field:'FRecordUserName',title:'登记人',width:64,align:'center',},
+  					{field:'FRecordUserTime',title:'登记时间',width:120,align:'center',}
+  				]]
+  			});
+  			
+  		});
+  	</script>
+  </body>
+</html>
+

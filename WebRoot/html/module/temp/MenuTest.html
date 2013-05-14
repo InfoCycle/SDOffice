@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>菜单使用</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.menu.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<style type="text/css">
+		.icon-code01{
+			background:url('../../images/oa/file.png') no-repeat center center;
+		}
+		.icon-root{
+			background:url('../../images/oa/flord.png') no-repeat center center;
+		}
+		.icon-leaf{
+			background:url('../../images/oa/file.png') no-repeat center center;
+		}
+		.input-001{
+			background:url(../../plugin/easyui/themes/gray/images/combo_arrow.png) repeat-y;
+		}
+	</style>	
+  </head>
+  
+  <body>
+     <input type="text" id="ID" value="" width="361px"/><input type="text" id="Name"  width="361px" value=""/><input type="button" id="Select" value="选择"/>
+     <input id="txtOne" type="text" onfocus="GetPos(this);" />
+	 <div id="divProvince">
+  </body>
+  <script type="text/javascript">
+	  //根据json数据动态创建menu，并且返回menu对象
+	  function bulidMenu(menuData, opt) {
+	      if (!menuData) {
+	          throw "menuData参数不能为空";
+	      }
+	      
+	      if (typeof menuData != "object" || !menuData.sort) {
+	          throw "menuData必须为数组类型";
+	      }
+	      
+	      var menuDiv = $('<div style="width:200px;"></div>').appendTo('body');
+	      
+	      for (var i = 0; i < menuData.length; i++) {
+	          var menu = menuData[i];
+	          if (menu == '-') {
+	              var sep = $('<div class="menu-sep"></div>');
+	              menuDiv.append(sep);
+	              continue;
+	          }
+	          if (menu.children) {
+	              menuDiv.append(appendChild(menu));
+	          } else {
+	              var item = $('<div></div>').html(menu.text).data("data", menu);
+	              
+	              if (menu.href) {
+	                  item.attr({href:menu.href,target:'_blank'});
+	              }
+	              
+	              if (menu.iconCls) {
+	                  item.attr('iconCls', menu.iconCls);
+	              }
+	              if (menu.id) {
+	                  item.attr('id', menu.id);
+	              }
+	              if (menu.disabled) {
+	                  item.attr('disabled', menu.disabled);
+	              }	              
+	              if(menu.onclick){
+	            	  item.attr('onclick',menu.onclick);
+	              }
+	              menuDiv.append(item);
+	          }
+	      }
+	      
+	      return menuDiv.menu(opt || {}); //返回menu对象
+	      
+	      /**
+	       * 递归添加子菜单
+	       * @param menu
+	       */
+	      
+	      function appendChild(menu) {
+		          var itemText = menu.text,
+		          children = menu.children;
+		          var item = $('<div/>').append($('<span></span>').html(itemText)).data("data", menu);
+		          
+		          if (menu.href)
+		              item.attr({href:menu.href,target:'_blank'});
+		          if (menu.iconCls) {
+		              item.attr('iconCls', menu.iconCls);
+		          }
+		          if (menu.id) {
+		              item.attr('id', menu.id);
+		          }
+		          if (menu.disabled) {
+	                  item.attr('disabled', menu.disabled);
+	              }		          
+	              if(menu.onclick){
+	            	  item.attr('onclick',menu.onclick);
+	              }
+		          var ci = $('<div style="width:200px;"></div>');
+		          for (var i = 0; i < children.length; i++) {
+		              var cMenu = children[i];
+		              if (cMenu == '-') {
+		                  var sep = $('<div class="menu-sep"></div>');
+		                  menu.append(sep);
+		                  continue;
+		              }
+		              if (cMenu.children) {
+		                  item.append(ci.append(appendChild(cMenu)));
+		              } else {
+		                  var cItem = $('<div/>').html(cMenu.text).data("data", cMenu);
+		                  
+		                  if (cMenu.href) {
+		                      cItem.attr({href:cMenu.href,target:'_blank'});
+		                  }
+		                  if (cMenu.iconCls) {
+		                      cItem.attr('iconCls', cMenu.iconCls);
+		                  }
+		                  if (cMenu.id) {
+		                      cItem.attr('id', cMenu.id);
+		                  }
+		                  if (cMenu.disabled) {
+			                  item.attr('disabled', cMenu.disabled);
+			              }		                  
+			              if(cMenu.onclick){
+			            	  item.attr('onclick',cMenu.onclick);
+			              }
+		                  item.append(ci.append(cItem));		                  
+		              }
+		          }
+		          return item;
+		      }
+		  }
+
+		 /* var data =[{
+		      "id":"1",
+		      "text":"新浪微博",
+		      //"href":"http://weibo.com",
+		      "children":[{
+		              "id":"startMenu11",
+		              "text":"夏悸的微博ffff",
+		              //"href":"http://weibo.com/521090828",
+		          	   "iconCls":"icon-ok",
+			          	 "children":[{
+				              "id":"startMenu11dddd",
+				              "text":"夏悸的微博ddd",
+				              //"href":"http://weibo.com/521090828",
+				          	   "iconCls":"icon-ok"
+				      }]
+				      },{
+			              "id":"startMenu112",			             
+			              "text":"夏悸的微博xxx",
+			              //"href":"http://weibo.com/521090828",
+			          	   "iconCls":"icon-ok"
+			      	  },{
+			              "id":"startMenu113",
+			              "text":"夏悸的微博ccccc",
+			              //"href":"http://weibo.com/521090828",
+			          	   "iconCls":"icon-ok"
+			      	  }],
+		          "iconCls":"icon-ok"
+			  },"-",{
+			      "id":"startMenu2",
+			      "text":"Sina",
+			      //"href":"http://www.sina.com",
+			          "iconCls":"icon-ok"
+			  },"-",{
+			      "id":"startMenu3",
+			      "text":"Sina2",
+			      //"href":"http://www.sina.com",
+			          "iconCls":"icon-ok"
+			  },"-",{
+			      "id":"startMenu4",
+			      "text":"Sina3",
+			      //"href":"http://www.sina.com",
+			          "iconCls":"icon-ok"
+			  },
+			  {
+			      "id":"startMenu5",
+			      "text":"GodSon",
+			      //"href":"http://www.btboys.com",
+			          "iconCls":"icon-ok"
+		  }];*/
+		  var data2 =[{
+		      "id":"startMenu1",
+		      "text":"1",
+		      //"href":"http://weibo.com",
+		      "children":[{
+		              "id":"sdfsf1",
+		              "text":"夏悸的微博ffff",
+		              //"href":"http://weibo.com/521090828",
+		          	   "iconCls":"icon-ok",
+			          	 "children":[{
+				              "id":"1-1-1",
+				              "text":"夏悸的微博ddd",
+				              //"href":"http://weibo.com/521090828",
+				          	   "iconCls":"icon-ok"
+				      }]
+		      },{
+	              "id":"startMenu112",
+	              "text":"2",
+	              //"href":"http://weibo.com/521090828",
+	          	   "iconCls":"icon-ok"
+	      	  },{
+	              "id":"startMenu113",
+	              "text":"3",
+	              //"href":"http://weibo.com/521090828",
+	          	   "iconCls":"icon-ok"
+	      	  }],
+		          "iconCls":"icon-ok"
+			  },"-",{
+			      "id":"startMenu2",
+			      "text":"4",
+			      //"href":"http://www.sina.com",
+			          "iconCls":"icon-ok"
+			  },"-",{
+			      "id":"startMenu3",
+			      "text":"5",
+			      //"href":"http://www.sina.com",
+			          "iconCls":"icon-ok"
+			  },"-",{
+			      "id":"startMenu4",
+			      "text":"6",
+			      //"href":"http://www.sina.com",
+			          "iconCls":"icon-ok"
+			  },
+			  {
+			      "id":"startMenu5",
+			      "text":"7",
+			      //"href":"http://www.btboys.com",
+			          "iconCls":"icon-ok"
+		  }];
+		function  setValue(id,value){
+			var valuetemp;
+			var valueold=$("#"+id).val().toString();
+			if(valueold.length>1)
+			{
+				valuetemp=valueold.split(",");				
+				var i=0;				
+				for(i=0;i<valuetemp.length;i++){
+					if(valuetemp[i]==value)							
+						break;	
+				}
+				if(valuetemp.length==i)
+					$("#"+id).val($("#"+id).val().toString()+","+value);
+				else
+					$("#"+id).val($("#"+id).val().toString().replace(valuetemp[i],value));
+			}else
+				$("#"+id).val(value);
+		}
+		/*function setNameValue(id,value){
+			
+		}*/
+  		$(function(){
+  			 //创建menu  		    
+  		    var menu2 = bulidMenu(data2,{
+		        onClick:function(item){
+		        	//alert(item.text);
+		        	 $("#ID").val(item.text);
+		            return false;
+		        }
+		    });
+		    
+		    //绑定事件
+		    $("#ID").bind('click',function(e){
+		        e.preventDefault();
+		        menu2.menu('show', {
+		            left: e.pageX,
+		            top: e.pageY
+		        });
+		    });
+		    var menu;
+		    $.post("/GetCode/Query/", {
+					 "action":"getAppTreeCodeToMenu",//"getAppCodeToMenu",
+					 "id":3,
+					 "isMulti":0,
+					 //"CodeTypeId":314,
+					 //"State":1
+				}, function(data) {
+					menu = bulidMenu(data,{
+		  		        onClick:function(item){	  		        	
+		  		        	if(item.iconCls=="icon-leaf")
+		  		        	 	{
+		  		        			//$("#Name").val(item.text);
+		  		        			//$("#ID").val(item.id);
+		  		        			setValue("ID",item.id);
+		  		        			setValue("Name",item.text);	
+		  		        		}
+		  		        	else
+		  		        		alert("大类不能选择！");
+		  		            return false;
+		  		        }
+		  		    });
+		  		    
+		  		    //绑定事件
+		  		    $("#Name").bind('click',function(e){
+		  		        e.preventDefault();
+		  		        menu.menu('show', {
+		  		            left: e.pageX,
+		  		            top: e.pageY
+		  		        });
+		  		    });
+					 
+			}, "json");
+  		});
+  </script>
+</html>

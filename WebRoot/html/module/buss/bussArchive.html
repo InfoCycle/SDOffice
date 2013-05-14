@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>bussArchive.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" type="text/css" href="../../css/wfMain.css" />
+      <link rel="stylesheet" href="../../plugin/chosen/chosen.css" type="text/css" />
+    
+    <link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+  
+  	<link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+	 
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+ 	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+ 	
+	
+	<style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 98%;
+			width: 98%;
+		}	
+	</style>
+ 	
+ 	 <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+    <script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>		
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+    
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+  <body>
+  	<div class="easyui-layout" data-options="fit:true">
+  		<div data-options="region:'west',split:true,"  style="width:300px;">
+  			<div class="easyui-panel" data-options="fit:true,border:false" title="项目列表" >
+  				<table id="tabletask"></table>
+  			</div>
+  		</div>
+  		<div data-options="region:'center'" >
+  			<div id="check0">
+  				<table style="width:100%;height:300px;">
+		  			<tr>
+		  				<td  align="center"><fint size='4'>请先选择项目...</font></td>
+		  			</tr>
+		  		</table>
+  			</div>
+	  		<div id="check1" class="easyui-panel" data-options="fit:true,border:false" >
+				<table style="width:100%;height:100%;">
+					<tr>
+						<td style="width:70%;height:100%;" rowspan="10">
+							<div id="processType_container" style="width:80%;height:70%;">
+								<ul id="processtype_list">
+									<div id="lines" class="lines" >
+									</div>
+								</ul>
+							</div>
+						</td>
+						<td style="width:30%;align:bottom;">
+							<ul id="css3menu">
+					  			<li><a rel="#" id="aT_CHECK"><img src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />重新检查</a>
+								</li>  
+							</ul>
+						</td>
+					</tr>
+					<tr>
+						<td style="width:30%;align:top;">
+							<ul id="css3menu">
+					  		<!--	<li><a rel="#" id="aT_FILING"><img src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />项目归档</a>
+								</li> -->  
+							</ul>
+						</td>
+					</tr>
+					<tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>
+					<tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>
+				</table>
+	  		</div>
+  		</div>
+  	</div> 
+  	<div id="tb">
+  		<input class="easyui-validatebox" style="width:190px" id="name"/>
+  		<a href="#" class="easyui-linkbutton" iconCls="query-esaytb" onClick="selectClick();">查询</a>
+  	</div>
+  </body>
+  <script type="text/javascript" language="javascript">
+  	var taskId="";
+  	var processId;
+  	var checkData;
+  	var ids="";
+  	var flag={
+  			"frev":false,
+  			"fche":false,
+  			"feff":false,
+  			"fmajor":false,
+  			"fpro":false,
+  			"fsco":false,
+  			"fimp":false,
+  			"fcus":false,
+  		}		
+  
+  	function checktable(da){
+  		ids=processId+",";
+  		$('#processtype_list li').remove();
+  		$('#processtype_list').append(
+  			"<li> <b>名称 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 状态</b></li>"
+  		);
+  		check();
+  		impli(da.imp,da.imp.data);
+  		window.setTimeout(function(){
+  			proli(da.pro,da.pro.data);
+  			window.setTimeout(function(){
+  				cheli(da.che,da.che.data);
+  				window.setTimeout(function(){
+		  			majorli(da.major,da.major.data);
+		  			window.setTimeout(function(){
+			  			revli(da.rev,da.rev.data);
+			  			window.setTimeout(function(){
+				  			cusli(da.cus,da.cus.data);
+				  			window.setTimeout(function(){
+					  			scoli(da.soc,da.soc.data);
+					  			window.setTimeout(function(){
+									effli(da.eff,da.eff.data);
+									$.jBox.tip('检查完成', 'success');
+									window.setTimeout(function(){
+										$.jBox.closeTip();
+									},100);
+								},200);
+					  		},500);
+				  		},500);
+			  		},500);
+		  		},500);
+  			},500);
+  		},500); 
+		
+  	}
+  	function effli(eff,effd){
+  		if(effd){
+  			if(!effd[0]){
+  				$('#processtype_list').append(
+	  			"<li id='eff'  onClick='liClick(8);'>"+eff.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='efff' color='red'>没有效益工资提取</font></li>");
+	  				flag.feff=false;
+	  				return false;
+  			}
+	  		$('#processtype_list').append(
+	  			"<li id='eff'  onClick='liClick(8);'>"+eff.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='efff' color='green'>"+effd[0].FStateText+"</font></li>");
+	  		if(effd[0].FState!=4){
+		  			$('#efff').attr('color','red');
+		  			flag.feff=false;
+		  		}else{
+		  			$('#efff').attr('color','green');
+		  			flag.feff=true;
+		  		}
+		  		ids+=effd[0].FId+"";
+  		}else{
+  			$('#processtype_list').append(
+  			"<li id='eff'  onClick='liClick(8);'>"+eff.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='efff' color='red'>没有效益工资提取</font></li>");
+  				flag.feff=false;
+  		}
+  		
+  	}
+  	function scoli(sco,scod){
+  		if(scod){
+  			if(!scod[0]){
+  				$('#processtype_list').append(
+	  			"<li id='sco'  onClick='liClick(7);'>"+sco.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='scof' color='red'>没有考评打分</font></li>");
+	  				flag.fsco=false;
+	  				return false;
+  			}
+	  		$('#processtype_list').append(
+	  			"<li id='sco'  onClick='liClick(7);'>"+sco.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='scof' color='green'>"+scod[0].FStateText+"</font></li>");
+	  		if(scod[0].FState!=4){
+		  			$('#scof').attr('color','red');
+		  			flag.fsco=false;
+		  		}else{
+		  			$('#scof').attr('color','green');
+		  			flag.fsco=true;
+		  		}
+		  		ids+=scod[0].FId+",";
+  		}else{
+  			$('#processtype_list').append(
+  			"<li id='sco'  onClick='liClick(7);'>"+sco.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='scof' color='red'>没有考评打分</font></li>");
+  				flag.fsco=false;
+  		}
+  	}
+  	function cusli(cus,cusd){
+  		if(cusd){
+  			if(!cusd[0]){
+  				$('#processtype_list').append(
+	  			"<li id='cus'  onClick='liClick(6);'>"+cus.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='cusf' color='red'>没有顾客评价</font></li>");
+	  				flag.fcus=false;
+	  				return false;
+  			}
+	  		$('#processtype_list').append(
+	  			"<li id='cus'  onClick='liClick(6);'>"+cus.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='cusf' color='green'>"+cusd[0].FStateText+"</font></li>");
+	  		if(cusd[0].FState!=4){
+		  			$('#cusf').attr('color','red');
+		  			flag.fcus=false;
+		  		}else{
+		  			$('#cusf').attr('color','green');
+		  			flag.fcus=true;
+		  		}
+		  		ids+=cusd[0].FId+",";
+  		}else{
+  			$('#processtype_list').append(
+  			"<li id='cus'  onClick='liClick(6);'>"+cus.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='cusf' color='red'>没有顾客评价</font></li>");
+  				flag.fcus=false;
+  		}
+  	}
+  	function majorli(maj,majd){
+  		if(majd){
+  			
+  			var majdx="";
+  			for(var i=0;i<majd.length;i++){
+  				if(majd[i].FState!=4){
+  					majdx+=majd[i].FStateText;
+  				}
+  				ids+=majd[i].FId+",";
+  			}
+  			if(majdx==""){
+  				majdx="办理完成"
+  			}
+	  		$('#processtype_list').append(
+	  			"<li id='maj'  onClick='liClick(5);'>"+maj.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='majf' color='green'>"+majdx+"</font></li>");
+	  		if(majdx!="办理完成"){
+		  			$('#majf').attr('color','red');
+		  			flag.fmajor=false;
+		  		}else{
+		  			$('#majf').attr('color','green');
+		  			flag.fmajor=true;
+		  		}
+  		}else{
+  			$('#processtype_list').append(
+  			"<li id='maj'  onClick='liClick(5);'>"+maj.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='majf' color='grey'>没有重大事项报告</font></li>");
+  			flag.fmajor=true;
+  		}
+  	}
+  	function cheli(che,ched){
+  		if(ched){
+  			var chedx="";
+  			for(var i=0;i<ched.length;i++){
+  				if(ched[i].FState!=4){
+  					chedx+=ched[i].FStateText;
+  				}
+  				ids+=ched[i].FId+",";
+  			}
+  			if(chedx==""){
+  				chedx="办理完成";
+  			}
+	  		$('#processtype_list').append(
+	  			"<li id='che'  onClick='liClick(4);'>"+che.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='chef' color='green'>"+chedx+"</font></li>");
+	  		if(chedx!="办理完成"){
+		  			$('#chef').attr('color','red');
+		  			flag.fche=false;
+		  		}else{
+		  			$('#chef').attr('color','green');
+		  			flag.fche=true;
+		  		}
+  		}else{
+  			$('#processtype_list').append(
+  			"<li id='che'  onClick='liClick(4);'>"+che.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='prof' color='grey'>没有检查记录</font></li>");
+  				flag.fche=true;
+  		}
+  	}
+  	function proli(pro,prod){
+  		if(prod){
+  			var prodx="";
+  			for(var i=0;i<prod.length;i++){
+  				if(prod[i].FState!=4){
+  					prodx+=prod[i].FStateText;
+  				}
+  				ids+=prod[i].FId+","
+  			}
+  			if(prodx==""){
+  				prodx="办理完成";
+  			}
+	  		$('#processtype_list').append(
+	  			"<li id='pro'  onClick='liClick(3);'>"+pro.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='prof' color='green'>"+prodx+"</font></li>");
+	  		if(prodx!="办理完成"){
+		  			$('#prof').attr('color','red');
+		  			flag.fpro=false;
+		  		}else{
+		  			$('#prof').attr('color','green');
+		  			flag.fpro=true;
+		  		}
+  		}else{
+  			$('#processtype_list').append(
+  			"<li id='pro'  onClick='liClick(3);'>"+pro.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='prof' color='grey'>没有过程记录</font></li>");
+  				flag.fpro=true;
+  		}
+  	}
+  	function impli(imp,impd){
+  	if(impd){
+  		if(!impd[0]){
+  			$('#processtype_list').append(
+  			"<li id='imp'  onClick='liClick(2);'>"+imp.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='impf' color='red'>没有实施计划</font></li>");
+  				flag.fimp=false;
+  				return false;
+  		}
+  			$('#processtype_list').append(
+  			"<li id='imp'  onClick='liClick(2);'>"+imp.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='impf' color='green'>"+impd[0].FStateText+"</font></li>");
+  			if(impd[0].FState!=4){
+	  			$('#impf').attr('color','red');
+	  			flag.fimp=false;
+	  		}else{
+	  			$('#impf').attr('color','green');
+	  			flag.fimp=true;
+	  		}
+	  		ids+=impd[0].FId+",";
+  		}else{
+  			$('#processtype_list').append(
+  			"<li id='imp'  onClick='liClick(2);'>"+imp.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='impf' color='red'>没有实施计划</font></li>");
+  				flag.fimp=false;
+  		}
+  	}
+  	function revli(rev,revd){
+  		if(revd){
+  			if(!revd[0]){
+  				$('#processtype_list').append(
+	  			"<li id='rev'  onClick='liClick(1);'>"+rev.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+	  				+"<font id='revf' color='red'>没有符合申报</font></li>");
+	  				flag.frev=false;
+	  				return false;
+  			}
+  			$('#processtype_list').append(
+  			"<li id='rev'  onClick='liClick(1);'>"+rev.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='revf' color='green'>"+revd[0].FStateText+"</font></li>");
+  			if(revd[0].FState!=4){
+	  			$('#revf').attr('color','red');
+	  			flag.frev=false;
+	  		}else{
+	  			$('#revf').attr('color','green');
+	  			flag.frev=true;
+	  		}
+	  		ids+=revd[0].FId+",";
+  		}else{
+  			$('#processtype_list').append(
+  			"<li id='rev'  onClick='liClick(1);'>"+rev.name+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+  				+"<font id='revf' color='red'>没有符合申报</font></li>");
+  				flag.frev=false;
+  		}
+  	}
+  	function liClick(lid){
+  		var lidd;
+  		var states = {};
+  		var titlew='';
+  		var reportId;
+  		switch(lid){
+  			case 1:
+  				lidd=checkData.rev;
+  				reportId=437;
+  				titlew='项目复核申报表打印';
+  				break;
+  			case 2:
+  				lidd=checkData.imp;
+  				reportId=439;
+  				titlew='项目实施计划表打印';
+  				break;
+  			case 3:
+  				lidd=checkData.pro;
+  				reportId=443;
+  				titlew='项目过程情况记录表打印';
+  				break;
+  			case 4:
+  				lidd=checkData.che;
+  				titlew='项目检查记录表打印';
+  				reportId=442;
+  				break;
+  			case 5:
+  				lidd=checkData.major;
+  				titlew='项目重大事项报告表打印';
+  				reportId=440;
+  				break;
+  			case 6:
+  				lidd=checkData.cus;
+  				reportId=0;
+  				break;
+  			case 7:
+  				lidd=checkData.soc;
+  				titlew='项目考评打分表打印';
+  				reportId=441;
+  				break;
+  			case 8:
+  				lidd=checkData.eff;
+  				titlew='项目效益工资提取表打印';
+  				reportId=438;
+  				break;
+  		}
+  		if(lidd.data){
+  			var myids='';
+  			var htmll="<div class='msg-div'><table id='infotable'><tr><td style='width:350px;height:30px;' align='center'><b>名称</b></td><td style='width:100px;height:30px;' align='center'><b>状态</b></td></tr>"
+  			$.each(lidd.data,function(i,n){
+  				htmll+="<tr><td align='center'><font color='blue'>"+n.FTitle+"</font></td><td align='center' >"+n.FStateText+"</td></tr>"
+  				myids+=n.FFormPkid+',';
+  			});
+  			myids=myids.substring(0,myids.length-1);
+  			htmll+="</table></div>";
+  			states.state1 = {
+	    		content: htmll,
+	    		buttons: {'打印':1,'关闭': 0 },
+	    		submit:function (v, h, f) {
+		        	if(v==0){
+							return true;
+					}else if(v==1){
+							if(reportId!=0 ){
+								
+								var href="../system/AppReport.html?reportId="+reportId+"&ids="+myids;
+						    	var tabid = "report_"+myids;
+						    	parent.NavigateUrl(tabid, titlew, href);
+						    	return false;
+						}
+					}
+				}
+			};
+  			var infoJson={"rows":"","total":""};
+  			infoJson.rows=lidd.data;
+  			$.jBox.open(states,lidd.name, 450, 'auto');
+  			
+  		}else{
+  			$.jBox.info('没有想关信息', '系统提示');
+  		}
+  	}
+  	function selectClick(){
+  		$('#tabletask').datagrid('load',{
+  			name:$("#name").val()
+  		});
+  	}
+  	function check(){
+	  		$("#check1").show();
+	  		$("#check0").hide();
+  		}
+  	function filing(){
+  			$("#check1").hide();
+	  		$("#check0").hide();
+  		}
+  		
+  	$("#aT_CHECK").click(function(){
+  		$.post(
+  		"/buss/archive/1",
+  		{
+  			"taskId":taskId
+  		},
+  		function (data){
+  			$.jBox.tip("正在准备,请稍等..", 'loading');
+  			if(data.success){
+  				checkData=data.root;
+  				$.jBox.tip(data.message, 'loading');
+  				checktable(data.root);
+  				
+  				
+  			}else{
+  				$.jBox.tip("数据加载失败！", 'failure');
+  			}
+  		});
+  		
+  	});
+  	$("#aT_FILING").click(function(){
+  		var tis=true;
+  			$.each(flag,function(i,n){
+  				tis=tis&&n;
+  			});
+  			if(tis){
+  				$.jBox.tip("正在归档,请稍等..", 'loading');
+  				$.post(
+  					"/buss/archive/2",
+  					{
+  						"ids":ids
+  					},
+  					function(data){
+  						if(data.success){
+  							$.jBox.tip(data.message, 'success');
+  						}else{
+  							$.jBox.tip(data,message, 'failure');
+  						}
+  					}
+  				);
+  			}else{
+  				$.jBox.info('该项目有未完成业务', '系统提示');
+  			}
+  	});
+  	function taskClick(rowIndex, rowData){
+  		processId=rowData.FId;
+  		taskId=rowData.FFormPkid
+  		$.jBox.tip("正在检查,请稍等..", 'loading');
+  		$.post(
+  		"/buss/archive/1",
+  		{
+  			"taskId":taskId
+  		},
+  		function (data){
+  			
+  			if(data.success){
+  				checkData=data.root;
+  				$.jBox.tip(data.message, 'loading');
+  				checktable(data.root);
+  			}else{
+  				$.jBox.tip("数据加载失败！", 'failure');
+  			}
+  		});
+  	}
+  	
+  	$(document).ready(function() {
+  		$("#check0").show();
+  		$("#check1").hide();
+  		
+  		$('#tabletask').datagrid({
+  			url:"/buss/archive/0",
+  			singleSelect:true,
+  			iconCls:"icon-save",
+  			fit:true,
+  			toolbar:'#tb',
+  			columns:[[
+  				{field:'FTitle',title:'项目名称',width:"300",align:'left',}
+  			]],
+  			onClickRow:taskClick
+  		});
+  	});
+  </script>
+</html>

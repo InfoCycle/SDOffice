@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> New Document </TITLE>
+  <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+  <script type="text/javascript" src="../../plugin/js/jquery.autotab.js"></script>
+  <script type="text/javascript" src="jquery.mask.js"></script>
+  <script type="text/javascript" src="ui.core.js"></script>
+  <script type="text/javascript" src="ui.mask.js"></script>
+ </HEAD>
+
+ <BODY>
+ <form>
+	<div><strong>Phone Number:</strong></div>
+	<input type="text" name="area_code" id="area_code" maxlength="4" size="4" /> -
+	<input type="text" name="number1" id="number1" maxlength="4" size="4" /> -
+	<input type="text" name="number2" id="number2" maxlength="50" size="50" /> -
+	<input type="text" name="number3" id="number3" maxlength="4" size="4" /> -
+	<input type="text" name="number4" id="number4" maxlength="4" size="4" />
+
+	<input type="text" name="phoneExt" id="phoneExt" />
+</form>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#area_code, #number1, #number2,#number3,#number4').autotab_magic().autotab_filter('all');
+
+		$("#phoneExt").mask({mask: "(###) ###-#### x#####"});
+	});
+</script>
+ </BODY>
+</HTML>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>个人信息维护</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+  </head>  
+  <body>    
+  </body>
+</html>
+<script type="text/javascript">
+var obj=null;
+var dataStore=new Ext.data.Store({
+		proxy:new Ext.data.HttpProxy({url:"/SystemUserService/5"}),
+		reader:new Ext.data.JsonReader({
+			totalProperty:'totalProperty',
+			root:'root',
+			successProperty:'success'
+		},
+		[{name: 'FId'},
+        {name: 'FName'},
+        {name: 'FUserCode'},
+        {name: 'FPassword'},
+        {name: 'FCardid'},
+        {name: 'FPhone'},
+        {name: 'FCreateTime'},
+        {name: 'FSort'},
+        {name: 'FState'}])
+	});
+
+Ext.onReady(function(){
+	Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+    obj =checkUserLogin();    
+    if(!obj) return;
+    function QueryUserInfo(action,id) {
+         if (action == "query") {
+         	Ext.Msg.wait("正在查询数据，请稍候......", "请稍后");
+            Ext.apply(dataStore, {            	 
+                baseParams: {
+                   	FId: id                  
+                }, params: {
+                	FId: id
+                }
+            });
+                dataStore.load({
+                	callback:function(records,options,success){                	
+                		if(success){                			         	
+                			setTimeout(function(){
+                				//设置个人信息                				
+                				if(records.length==1){                				
+                					var record = records[0];
+                					Ext.getCmp("userForm").getForm().loadRecord(record);
+    					            Ext.getCmp("FState").checked=record.data.FState==1?true:false;    					            
+                				}else
+                					showMessage("温馨提示 :个人信息获取异常，请重新刷新此页面。", false);                				
+                			},200);
+                		}else 
+                			showMessage("温馨提示 :个人信息获取异常，请重新刷新此页面。", false);
+                	} 
+                });
+                Ext.MessageBox.hide();
+            }
+    }
+    initForm();    
+    QueryUserInfo("query",obj.root.userID); 
+});
+
+function initForm(){
+	var mainViewPort=new Ext.Viewport({
+		id:'mainViewport',
+	    layout: 'fit',
+	    border: false,
+        items: [
+            {
+                xtype: 'panel',
+                id: 'contentPanel',
+                layout: 'border',
+                border: false,
+                tbar: {
+                    xtype: 'toolbar',
+                    region: 'center',
+                    items: [{
+                            xtype: 'tbspacer',
+                            width: 30
+                        },                       
+                        {
+                            xtype: 'button',
+                            text: '&nbsp;保&nbsp;&nbsp;存&nbsp;',
+                            iconCls:'save',
+                            handler:function(){
+                            	var form = Ext.getCmp("userForm");		                        	
+	                        	if(form.getForm().isValid()){
+	                        		Ext.Ajax.request({
+                            			url:'/SystemUserService/2',
+                            			method : 'post',
+                            			params : {
+                            				FId:Ext.getCmp('FId').getValue(),
+                            				FOrgId:Ext.getCmp('FOrgId').getValue(),                            				
+                            		        FName:Ext.getCmp('FName').getValue(),
+                            		        FUserCode:Ext.getCmp('FUserCode').getValue(),
+                            		        FPassword:Ext.getCmp('FPassword').getValue(),  
+                            		        FCardid:Ext.getCmp('FCardid').getValue(),
+                            		        FPhone:Ext.getCmp('FPhone').getValue(), 
+                            				FSort:Ext.getCmp('FSort').getValue(),
+                            				FState:getChecked(Ext.getCmp('FState').checked)
+                            			},
+                            			success : function(response){
+                            				var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+                            				if(responseArray.success){
+                            					Ext.getCmp('FId').setValue(responseArray.root.FId);
+                            					dataStore.reload({callback:function(){
+                            						showMessage("温馨提示 :个人信息更新成功。",  false); 
+                            					}});
+                            				}else{
+                            					Ext.MessageBox.show({
+                            						title:'系统提示',
+                            						msg:'数据保存失败！',
+                            						width:300,
+                            						buttons: Ext.Msg.OK,
+                            						icon: Ext.MessageBox.INFO
+                            					});
+                            				}
+                            					
+                            			},
+                            			failure : function(response) {
+                            				showMessage('网络错误，保存失败！',true);
+                            			}
+                            		});
+	                        	}
+                            }
+                        }
+                    ]
+                },
+                items: [                     
+                    {
+                        xtype: 'panel',
+                        width: 100,
+                        layout: 'border',
+                        frame: true,
+                        border: false,
+                        region: 'center',
+                        items: [                            
+                            {
+                                xtype: 'form',
+                                id: 'userForm',
+                                height: 186,
+                                padding: 10,
+                                title: '',
+                                margins: 0,
+                                region: 'center',
+                                split: true,
+                                labelAlign: 'right',
+                                items: [
+                                    {
+                                        xtype: 'hidden',
+                                        id: 'FId'
+                                    },
+                                    {
+                                        xtype: 'hidden',
+                                        id: 'FOrgId'
+                                    },
+                                    {
+                                        xtype: 'textfield',
+                                        id: 'FUserCode',
+                                        anchor: '60%',
+                                        allowBlank:false,
+                                        blankText:"不能为空",
+                                        fieldLabel: '用户编码'
+                                    },
+                                    {
+                                        xtype: 'textfield',
+                                        id: 'FName',
+                                        anchor: '60%',                                        
+                                        allowBlank:false,
+                                        blankText:"姓名不能为空",
+                                        fieldLabel: '用户姓名'
+                                    },{
+                                        xtype: 'textfield',
+                                        id: 'FCardid',
+                                        anchor: '60%',
+                                        regex : /^(\d{15})$|^(\d{17}[\dXx]{1})$/,
+                                        regexText:"身份证号不合法!",
+                                        fieldLabel: '身份证号'
+                                    },{
+                                        xtype: 'textfield',
+                                        id: 'FPhone',
+                                        anchor: '60%',
+                                        regex : /^1(3|5|8)[0-9]{9}$/,
+                                        regexText:"无效的手机号码!",
+                                        fieldLabel: '手机号码'
+                                    },
+                                    {
+                                        xtype: 'textfield',
+                                        id: 'FPassword',
+                                        inputType: 'password',
+                                        anchor: '60%',
+                                        fieldLabel: '登录密码'
+                                    },
+                                    {
+                                        xtype: 'numberfield',
+                                        id:'FSort',
+                                        disabled:true,
+                                        anchor: '60%',
+                                        fieldLabel: '排序'
+                                    },
+                                    {
+                                        xtype: 'checkbox',
+                                        id: 'FState',
+                                        boxLabel: '启用',
+                                        checked: true,
+                                        disabled:true,                                       
+                                        anchor: '100%',
+                                        fieldLabel: '状态'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+	});
+}
+</script>
+

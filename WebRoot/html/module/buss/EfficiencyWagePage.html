@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>昆明松岛综合业务办公平台-效益工资</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../css/table.css" />
+<link rel="stylesheet" href="../../css/inputtext.css" type="text/css"></link>
+<link rel="stylesheet" type="text/css" href="../../css/menu.css" />
+<link rel="stylesheet" href="../../css/button.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/tooltip/tip-yellowsimple/tip-yellowsimple.css"  />
+<link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+<script type="text/javascript" src="WagePage.js"></script>
+<script type="text/javascript" src="ReplyDetails.js"></script>
+<style type="text/css">
+body {background: #f5f5f5;height: 100%;width: 98%;}
+#formtask img { vertical-align:middle; cursor:pointer; }
+.imageInputWrapper{border:solid 1px #000;  }
+#formtask input.inputWithImge {border:none; margin-right:5px;}
+input[type="text"]{font-family:微软雅黑;height:100%;}
+label{color:blue;}
+/*
+background-color:#DD4B4E; background-color:#F56F72 #F5ACAE;
+*/
+.emptyRed{background-color:#F9CFD0;}
+.patternStyle{background-color:#FACF91;}
+
+</style>
+<script type="text/javascript" language="javascript">
+if ($.browser.mozilla) {
+	LoadStyle('papersother.css');
+} else {
+	LoadStyle('papers.css');
+}
+function LoadStyle(filename) {
+	var str='<link href="../../css/{0}" type="text/css" rel="stylesheet">'.format(filename);
+	document.write(str);
+}
+</script>
+</head>
+<body>
+<input id="FId" type="hidden">
+<input id="fkTaskId" type="hidden">
+<input id="fkContractId" type="hidden">
+<input id="FKTaskName" type="hidden">
+<input id="userID" name="userID" type="hidden"/>
+<input id="userName" name="userName" type="hidden"/>
+<input id="userOrgID" name="userOrgID" type="hidden"/>
+<input id="userStation" name="userStation" type="hidden"/>
+	<div id="formtask">
+		<div style="text-align:center">
+			<table border="0" cellpadding="3" cellspacing="0"
+				style="width:920px;margin:auto;padding:0px">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aT_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aT_File"><img
+									src="../../images/oa/file_3.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />附件上传</a>
+							</li>
+							<li><a rel="#" id="aT_Post"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />上报</a>
+							</li>
+							<li><a rel="#" id="aT_Cancel"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel="#" id="aT_Return"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+							</li>
+							<li><a rel="#" id="aT_CuiBan"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aT_Excel"><img src="../../images/oa/printer.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打印</a>
+							</li>
+							<li><a rel='#' id="aT_Flow"><img src="../../images/oa/q.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>
+							
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul>
+						</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="content" id="content"
+							style="height:100%;width:920px;display:table;text-align:left;margin-top:35px;">
+							<div class="divimageclass"></div>
+								<table class="content_table1" border="1"
+									cellpadding="0" style="margin-top:20px;width:900px; text-align:center;font-family:微软雅黑">
+									<caption style="height:30px;font-size:18px;">
+										<strong>昆明松岛工程造价咨询有限公司<label id="TitleYear"></label>效益工资<br>
+										</strong>
+									</caption>
+									<tr>
+									<td style="width:80px">编号</td>
+									<td colspan="10" style="text-align:left">KMSD-效益-<input type="text" id="FNumbers" name="FNumbers" style="width:150px;" empty="编号：该项必填！" />-<label id="NumbersYear"></label></td>
+									</tr>
+									<tr>
+									<td style="width:80px;">项目名称</td>
+									<td colspan="5" style="width:460px;text-align:left">
+									 <input type="text" id="FTaskName" name="FTaskName" style="width:85%;color:blue;" readonly="readonly" empty="项目名称：该项必填！"/>
+									 <input id="btnSelectPlan" type="button" class="btnSelect"/>	
+									</td>
+									<td style="width:80px">委托单位</td>
+									<td colspan="5" style="width:430px;text-align:left">
+									<label id="FEntrustUnitName"></label>
+									</td>
+									</tr>
+									<tr>
+									<td style="width:80px">合同编号</td>
+									<td style="width:100px;text-align:left">
+									<label id="TContractNumbers"></label>
+									</td>
+									<td style="width:80px">服务类型</td>
+									<td style="width:100px;text-align:left">
+									<label id="FServiceMode"></label>
+									</td>
+									<td style="width:80px">应收款</td>
+									<td style="width:100px;text-align:left">
+									<input type="text" id="FReceivables" name="FReceivables" style="width:90%;" expression="number" empty="应收款：该项必填！"/>
+									</td>
+									<td style="width:80px">已收款</td>
+									<td style="width:80px;text-align:left">
+									<input type="text" id="FAlreadyCollection" name="FAlreadyCollection" style="width:90%;" expression="number" empty="已收款：该项必填！"/>
+									</td>
+									<td style="width:80px">提起基数</td>
+									<td colspan="2" style="width:100px;text-align:left">
+									<input type="text" id="FExtractionBase" name="FExtractionBase" style="width:90%;" expression="number" empty="提起基数：该项必填！"/>
+									</td>
+									</tr>
+									<tr>
+									<td style="width:80px">基础比例</td>
+									<td style="width:100px;text-align:left">
+									<input type="text" id="FBasicProportion" name="FBasicProportion" style="width:90%;" expression="percentage" empty="基础比例：该项必填！" />
+									</td>
+									<td style="width:80px">应提比例</td>
+									<td style="width:100px;text-align:left">
+									<input type="text" id="FShouldProportion" name="FShouldProportion" style="width:90%;" expression="percentage" empty="应提比例：该项必填！" />
+									</td>
+									<td style="width:80px">实提比例</td>
+									<td style="width:100px;text-align:left">
+									<input type="text" id="FRealProportion" name="FRealProportion" style="width:90%;" expression="percentage" empty="实提比例：该项必填！"/>
+									</td>
+									<td style="width:80px">留存比例</td>
+									<td style="width:80px;text-align:left">
+									<input type="text" id="FRetainedProportion" name="FRetainedProportion" style="width:90%;" expression="percentage" empty="留存比例：该项必填！"/>
+									</td>
+									<td style="width:80px" rowspan="2">外协考评后<br/>应提比例</td>
+									<td style="width:70px">土建</td>
+									<td style="width:70px;text-align:left">
+									<input type="text" id="FAtoasbapCivil" name="FAtoasbapCivil" style="width:90%;" expression="percentage" />
+									</td>
+									</tr>
+									<tr>
+									<td style="width:80px">考评得分</td>
+									<td style="text-align:left">
+									<input type="text" id="FAppraisalScore" name="FAppraisalScore" style="width:90%;" expression="number" empty="考评得分：该项必填！"/>
+									</td>
+									<td style="width:80px">应提总额</td>
+									<td style="text-align:left">
+									<input type="text" id="FCarryTotal" name="FCarryTotal" style="width:90%;" expression="number" empty="应提总额：该项必填！"/>
+									</td>
+									<td style="width:80px">实提总额</td>
+									<td style="text-align:left">
+									<input type="text" id="FRealCarryTotal" name="FRealCarryTotal" style="width:90%;" expression="number" empty="实提总额：该项必填！"/>
+									</td>
+									<td style="width:80px">留存总额</td>
+									<td style="text-align:left">
+									<input type="text" id="FRetainedTotal" name="FRetainedTotal" style="width:90%;" expression="number" empty="留存总额：该项必填！"/>
+									</td>
+									<td style="width:70px">安装</td>
+									<td style="width:70px;text-align:left">
+									<input type="text" id="FAtoasbapInstallation" name="FAtoasbapInstallation" style="width:90%;" expression="percentage"/>
+									</td>
+									</tr>
+									<tr>
+									<td colspan="11">
+									<span style="font-weight: bold;">提取明细（元）</span>
+									</td>
+									</tr>
+									<tr>
+									<td>项目经理</td>
+									<td>工作比例</td>
+									<td>项目经理<br/>管理工资</td>
+									<td>调整后<br/>管理工资</td>
+									<td>实提工资</td>
+									<td>留存工资</td>
+									<td colspan="5">扣除管理工资后项目成员提取基数 <br/>（提取基数-项目经理调整后工资/实提比例）</td>
+									</tr>
+									<tbody id="Personnel">
+									<tr>
+									<td></td>
+									<td style="text-align:left">
+									</td>
+									<td style="text-align:left">
+									</td>
+									<td style="text-align:left">
+									</td>
+									<td style="text-align:left">
+									</td>
+									<td style="text-align:left">
+									</td>
+									<td colspan="5"></td>
+									</tr>
+									</tbody>
+									<tr>
+									<td>小计</td>
+									<td style="text-align:left"><label id="PMWorkRatioTotal" style="font-weight:bold;"></label></td>
+									<td style="text-align:left"><label id="PMManageWageTotal" style="font-weight:bold;"></label></td>
+									<td style="text-align:left"><label id="PMAdjustedMgtWageTotal" style="font-weight:bold;"></label></td>
+									<td style="text-align:left"><label id="PMRealWageTotal" style="font-weight:bold;"></label></td>
+									<td style="text-align:left"><label id="PMRetainedWageTotal" style="font-weight:bold;"></label></td>
+									<td colspan="5"></td>
+									</tr>
+									<tr>
+									<td colspan="7">内部员工</td>
+									<td colspan="4">外协人员</td>
+									</tr>
+									<tr>
+									<td>姓名</td>
+									<td>工作比例</td>
+									<td>应提总额</td>
+									<td>调整后总额</td>
+									<td>实提工资</td>
+									<td colspan="2">留存工资</td>
+									<td>姓名</td>
+									<td>工作比例<br/>（造价）</td>
+									<td colspan="2">提取工资</td>
+									</tr>
+									<tbody id="employee">
+									<tr>
+									<td>
+									</td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									</tr>
+									</tbody>
+									<tr>
+									<td>小计</td>
+									<td style="text-align:left"><label id="ISWorkRatioTotal" style="font-weight:bold;"></label></td>
+									<td style="text-align:left"><label id="ISShouldTotal" style="font-weight:bold;"></label></td>
+									<td style="text-align:left"><label id="ISAdjustedTotal" style="font-weight:bold;"></label></td>
+									<td style="text-align:left"><label id="ISRealWage" style="font-weight:bold;"></label></td>
+									<td style="text-align:left"><label id="ISRetainedWage" style="font-weight:bold;"></label></td>
+									<td></td>
+									<td>小计</td>
+									<td style="text-align:left"><label id="OutsourcingWorkRatioTotal" style="font-weight:bold;"></label></td>
+									<td style="text-align:left"><label id="OutsourcingExtractionWageTotal" style="font-weight:bold;"></label></td>
+									<td></td>
+									</tr>
+									<tr>
+									<td>项目经理</td>
+									<td colspan="2" style="text-align:left">
+									<input type="text" id="FProjMgr" name="FProjMgr" style="width:95%;" empty="true"/>
+									</td>
+									<td colspan="2">财务部</td>
+									<td colspan="2" style="text-align:left">
+									<input type="text" id="FFinanceDept" class='{"title":"财务部","isSeal":false,"editId":1010,"buttons":"确  定"}' style="width:95%;" readonly="readonly"/>
+									</td>
+									<td colspan="2">综合部（归档）</td>
+									<td colspan="2" style="text-align:left">
+									<input type="text" id="FIntegratedDept" class='{"title":"综合部","isSeal":false,"editId":1004,"buttons":"确  定"}'  style="width:95%;"/>
+									</td>
+									</tr>
+									<tr>
+									<td>部门经理</td>
+									<td colspan="2" style="text-align:left">
+									<input type="text" id="FDeptMgr"  class='{"title":"部门经理","isSeal":false,"editId":0,"buttons":"确  定"}' style="width:95%;"/>
+									</td>
+									<td colspan="2">生产副总</td>
+									<td colspan="2" style="text-align:left">
+									<input type="text" id="FProductionChief" class='{"title":"生产副总","isSeal":false,"editId":1002,"buttons":"确  定"}'  style="width:95%;"/>
+									</td>
+									<td colspan="2">总经理</td>
+									<td colspan="2" style="text-align:left">
+									<input type="text" id="FGeneralMgr" class='{"title":"总经理","isSeal":true,"editId":1000,"buttons":"归  档"}' style="width:95%;"/>
+									</td>
+									</tr>
+									<tr>
+									<td colspan="11">
+									<div id="img_container" class="img_container"></div>
+									</tr>												
+								</table>
+								<br/>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+</div>
+<div id="loader"
+style="display:none;z-index: 99999;position:absolute; border:3px #f6f6f6 solid;width:170px;top:50%;left:50%;background-color: #cccccc; ">
+<img src="/html/images/loading.gif" alt="请稍等..." align="absmiddle"><span style="padding-left:3px;color:#15428B;">数据请求中,请稍等...</span>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+var IFrame='<iframe src="{0}" style="width:100%;height:100%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';
+$(document).ready(function(){
+	$.fn.LoginUser();
+	$('label[id=TitleYear]').currentYear();
+	$('label[id=NumbersYear]').currentYear();
+	$.fn.getQuery();
+	settingPageMenu();
+	$('input[id=btnSelectPlan]').click(function(){
+		var win=IFrame.format('../report/SelectTask.html');
+		$.lightbox($(win), {
+			width   : 550,
+		    height  : 300,
+		    modal  : true
+		}); 
+		return false;
+	});
+	
+	$('#aT_OK').wageSave();
+	$('#aT_Post').getResponsible();
+	$('#aT_File').wageFiles();
+	$('#aT_Cancel').deleteAll();
+	$('#aT_Return').isPass();
+	$('#aT_CuiBan').press();
+	$('#aT_Excel').exportExcel();
+	$('#aT_Flow').processDetail();
+	$('#FFinanceDept').bellwether();
+	$('#FIntegratedDept').bellwether();
+	$('#FProductionChief').bellwether();
+	$('#FGeneralMgr').bellwether();
+	getstationID();
+});
+function getTaskInfo(taskid,taskname,taskservertype){
+	
+}
+function closeJBox(){
+	var param=$('input[id=FKTaskName]').val();
+	if($.trim(param)){
+		$('input[id=FTaskName]').val(param);
+		$.fn.queryWages({FId:$('input[id=fkTaskId]').val()});
+		$('input[type=text][expression=number]').expression('number');
+		$('input[type=text][expression=percentage]').expression('percentage');
+		$('input[type=text][group=PM]').pmTotal();
+		$('input[type=text][group=inside]').insideTotal();
+		$('input[type=text][group=outside]').outsideTotal();
+	}
+	
+	$.jBox.close(true);
+}
+
+$.fn.extend({
+	currentYear:function(){
+		var date=new Date();
+		$(this).empty().text(date.getFullYear());
+	},emptyUI:function(){
+	   var err=true;
+	   $.each(this,function(i,entity){
+		   if(!$.trim($(entity).attr('value'))){
+			  $(entity).parent().addClass('emptyRed');
+			  $(entity).addClass('emptyRed');
+			  err=false;
+		   }
+	   });
+	return err;
+   },PatternUI:function(){
+	   $(this).live({change:function() {
+			if($.trim($(this).attr('value'))){
+				$(this).removeClass('emptyRed');
+				$(this).parent().removeClass('emptyRed');
+				var agrs= $(this).attr('expression');
+				var patternID=$(this);
+				$(this).PatternRegex(agrs,
+				function(){
+					$(patternID).parent().addClass('patternStyle');
+					$(patternID).addClass('patternStyle');
+				},function(){
+					$(patternID).removeClass('patternStyle');
+					$(patternID).parent().removeClass('patternStyle');
+				});
+			}else{
+				 $(this).parent().addClass('emptyRed');
+				 $(this).addClass('emptyRed');
+			}
+		 }
+	});
+   },PatternRegex:function(args,accuracyFn,errFn){
+	   var err=true;
+	   switch(args){
+		case 'number':
+			if (!$.fn.defaults.number.test($(this).val())) {
+				accuracyFn();
+				err=false;
+			 }else{
+				errFn();
+				err=true;
+			 }			
+			break;
+		case 'percentage':
+			if (!$.fn.defaults.percentage.test($(this).val())) {
+				accuracyFn();
+				err=false;
+		 	}else{
+		 		errFn();
+		 		err=true;
+		 	}
+			break;
+		}
+	   return err;
+   },PatternRegex:function(){
+	   var err=true;
+	   $(this).each(function(i,entity){
+		   if($.trim($(this).attr('value'))){ 
+		   var args=$(this).attr('expression');
+		   switch(args){
+			case 'number':
+				if (!$.fn.defaults.number.test($(this).val())) {
+					$(this).parent().addClass('patternStyle');
+					$(this).addClass('patternStyle');
+					err&=false;
+				 }else{
+					$(this).removeClass('patternStyle');
+					$(this).parent().removeClass('patternStyle');
+				 }			
+				break;
+			case 'percentage':
+				if (!$.fn.defaults.percentage.test($(this).val())) {
+					$(this).parent().addClass('patternStyle');
+					$(this).addClass('patternStyle');
+					err&=false;
+			 	}else{
+			 		$(this).removeClass('patternStyle');
+					$(this).parent().removeClass('patternStyle');
+			 	}
+				break;
+			}
+		   }
+	     });
+	   return err;
+   },wageSave:function(){
+	   $(this).click(function(){
+			var entitys= $('input[empty]').emptyUI();
+			var Patterns=$('input[empty]').PatternUI();
+			entitys &=$('input[type=text][expression]').PatternRegex(); 
+			if(entitys==true){
+				var wage=$.fn.wageData();
+				var pm= $('input[type=text][group=PM]').pmData();
+				var inside= $('input[type=text][group=inside]').insideData();
+				var outside=$('input[type=text][group=outside]').outsideData();
+				var entitysWage= $.toJSON(wage);
+				var entitysPm=$.toJSON(pm);
+				var entitysInside=$.toJSON(inside);
+				var entityOutside=$.toJSON(outside);
+				$.ajax({
+				url:'/Buss/Wage/2',
+				type: 'POST',
+				data:{
+					ProcessID:Request.QueryString('processId'),
+					ProcessTitle:$('input[id=FKTaskName]').val(),
+					entitys:entitysWage,
+					entitysPm:entitysPm,
+					entitysInside:entitysInside,
+					entityOutside:entityOutside
+				}, 
+				dataType: 'json',
+				async :  false,
+				success:function(data) {
+					if(data.success){
+						$('input[id=FId]').val(data.root);
+						$.jBox.info('信息保存成功，可进行效益工资人员签到表附件上传！');
+					}else{
+						$.jBox.info('信息保存失败！');
+					}
+					
+				}
+			});
+			}else{
+				$.jBox.info('表单信息没有填写完毕，请完善表单上内容!<br/>淡红色：代表该项信息必须填写！<br/>淡黄色：代表填写内容不符合！');
+			}
+		});
+   },getResponsible:function(){
+	   $(this).click(function(){
+	   $.post('/Buss/Wage/13', {
+			 taskId:$('input[id=fkTaskId]').val(),
+			 userId:$('input[id=userID]').val(),
+		  }, function(data) {
+			  if(data.success){
+				$.fn.wageSend();  
+			  }else{
+				  $.jBox.info(data.message,'提示');  
+			  }
+	  }, 'json');	
+	 });
+   },wageSend:function(){
+		var FId=$('input[id=FId]').val();
+		 if(FId){
+			   var setting={
+			   title:'<span style="color:green">'+$('input[id=FKTaskName]').val()+'</span>-上报',
+			   cols:65,rows:10,message:'请填写上报意见！',
+			   Fn:function(){
+				 $.post('/Buss/Wage/8', {
+					 action:Request.QueryString('action'),
+					 processId : Request.QueryString('processId'),
+					 activeId :Request.QueryString('activeId'),
+					 remark : $('#w-remark').val(),
+					 primaryId: Request.QueryString('formPKID'),
+					 Ids:'1010,1004,1002',
+					 taskId:$('input[id=fkTaskId]').val(),
+					 userId:$('input[id=userID]').val(),
+					 stationId:$('#userStation').val(),
+					 orgId:$('#userOrgID').val()
+				  }, function(data) {
+					  $.jBox.info(data.message,'提示');
+					}, 'json');			
+				   }};
+				 var win= ReplyDetail.show(setting);
+				 $.lightbox($(win), {
+					width   : 550,
+				    height  : 300,
+				    modal  : true
+				});  
+			  return false;   
+		   }else{
+			   $.jBox.info('请先填写效益工资！');   
+		}
+   },wageFiles:function(){
+	   $(this).click(function(){
+		   var FId=$('input[id=FId]').val();
+		   if(FId){
+			   var entitys={
+					   url:'/Buss/File/1',
+					   params:{TypeId:FId,url:'/userfiles/images/',Type:'wage'},
+					   size:'5 MB',
+					   type:'*.jpg;*.png;*.gif',
+					   description:Base64.encode('图像文件'),
+					   Fn:true
+			   };
+			   var entityJSON= Base64.encode($.toJSON(entitys));
+			   var win = $(IFrame.format('/html/module/controls/flashFiles.html?entitys='+entityJSON));
+			   $.lightbox(win, {
+				    width   : 550,
+					height  : 350,
+					modal  : true
+			   });  
+			   return false;
+		   }else{
+			   $.jBox.info('请先填写效益工资，在进行附件上传！');
+		   }	   
+		   
+	   });
+   },deleteAll:function(){
+	   $(this).click(function(){
+		   var FId=$('input[id=FId]').val();
+		   if(FId){
+		   $.jBox.confirm('确定要撤销吗？', '提示', function(e,content,entity){
+			   if(e==true){
+				$.ajax({
+				  url:'/Buss/Wage/6',
+				  type: 'POST',
+				  data:{
+					wId:FId,
+					ProcessID:Request.QueryString('processId')
+				  }, 
+				  dataType: 'json',
+				  async :  false,
+				  success:function(data) {
+					 $.jBox.info(data.message);
+					}
+				}); 
+			   }
+		   },{ buttons: { '是': true, '否': false} });
+		 }else{
+			 $.jBox.info('请先填写效益工资！');    
+		 }
+	  });
+   },isPass:function(){
+	   $(this).click(function(){
+	   var FId=$('input[id=FId]').val();
+	   if(FId){
+		   var setting={
+		   title:'<span style="color:green">'+$('input[id=FKTaskName]').val()+'</span>-打回意见',
+		   cols:65,rows:10,message:'请填写打回意见！',
+		   Fn:function(){
+			 $.post('/Buss/Wage/7', {
+			   activeId :Request.QueryString('activeId'),
+			   detail :  $('#w-remark').val()
+			  }, function(data) {
+				 $.jBox.info(data.message,'提示');
+				}, 'json');			
+			 }};
+			 var win= ReplyDetail.show(setting);
+			 $.lightbox($(win), {
+				width   : 550,
+			    height  : 300,
+			    modal  : true
+			});  
+		  return false;   
+	   }else{
+		   $.jBox.info('请先填写效益工资！');   
+	   }
+	  });
+   },press:function(){
+	   $(this).click(function(){
+		   var FId=$('input[id=FId]').val();
+		   if(FId){
+			   var setting={
+			   title:'<span style="color:green">'+$('input[id=FKTaskName]').val()+'</span>-催办意见',
+			   cols:65,rows:10,message:'请填写催办意见！',
+			   Fn:function(){
+				 $.post('/Buss/Wage/9', {
+				   activeId :Request.QueryString('activeId'),
+				   detail :  $('#w-remark').val()
+				  }, function(data) {
+					  $.jBox.info(data.message,'提示');
+					}, 'json');			
+				 }};
+				 var win= ReplyDetail.show(setting);
+				 $.lightbox($(win), {
+					width   : 550,
+				    height  : 300,
+				    modal  : true
+				});  
+			  return false;   
+		   }else{
+			   $.jBox.info('请先填写效益工资！');   
+		   }
+	});
+   },LoginUser:function(){
+	   $.ajax({
+			url:'/system/SvrService/AppIndex/4/',
+			type: 'POST',
+			dataType: 'json',
+			async :  false,
+		    success:function(data) {
+		    	if (data.success) {			
+					$('#userID').attr('value',data.root.userID);
+					$('#userName').attr('value',data.root.userName);
+					$('#userOrgID').attr('value',data.root.userOrgID);
+					$('#userStation').attr('value',data.root.unitStation);
+				}else
+				{					
+					$.jBox.error('用户未登录，请检查网络或联系系统管理员！', '温馨提示');
+					return false;
+				}
+			}
+	});
+   },exportExcel:function(){
+	   $(this).click(function(){
+	   var FId=$('input[id=FId]').val();
+	   if(FId){
+	   $.ajax({
+		url:'/Buss/Wage/10',
+		type: 'POST',
+		data:{
+		   wId:Request.QueryString('formPKID'),
+		   title:$('input[id=FKTaskName]').val()
+	    }, 
+	    beforeSend:function(){
+	    	$('div[id=loader]').show();
+	    },
+		dataType: 'json',
+		async :  false,
+	    success:function(data) {
+	    	$('div[id=loader]').hide();
+	    	if(data.success){
+	    		window.open(data.root);
+	    	}else{
+	    	   $.jBox.info('导出异常！');
+	    	}
+		}
+	 });
+	}else{
+	  $.jBox.info('请先填写效益工资！');   	   
+	}
+   });
+   },bellwether:function(){
+	   $(this).focus(function(){
+		   var currentUser=$('#userStation').val();
+		   var entitys=$.parseJSON($(this).attr('class'));
+		   if(currentUser!=entitys.editId ){
+			   $.jBox.info('您好，只有'+entitys.title+'才能签字！','提示'); 
+			   return false;
+		   }
+		   var columnId=$(this).attr('id');
+		   var FId=$('input[id=FId]').val();
+		   if(FId){
+			   var setting={
+			   title:'项目名称：'+$('input[id=FKTaskName]').val(),
+			   name:entitys.title,message:'请领导签字！',
+			   buttons:entitys.buttons,
+			   Fn:function(){
+				   $.post('/Buss/Wage/11', {
+					   wId :Request.QueryString('formPKID'),
+					   processId : Request.QueryString('processId'),
+					   activeId :Request.QueryString('activeId'),
+					   userId:$('input[id=userID]').val(),
+					   key : columnId,
+					   acceptUserId:45,
+					   value:$('#txtsiger').attr('value'),
+					   isSeal:entitys.isSeal
+				   }, function(data) {
+					   	$('#'+columnId).val(data.root);
+						$.jBox.info(data.message,'提示');
+						if(data.totalProperty==5){
+							$('#aT_OK,#aT_Post,#aT_File,#aT_Cancel,#aT_Return,#aT_CuiBan,#aT_Excel').hide();
+						}
+				  }, 'json');	  
+			   }};
+			   var win= ReplyDetail.siger(setting);
+			   $.lightbox($(win), {
+				    width   : 350,
+				    height  : 160,
+				    modal  : true
+			  });  
+			  return false;   
+		   }else{
+			   $.jBox.info('请先填写效益工资！');   
+		 }
+	}); 
+   },processDetail:function(){
+	   $(this).click(function(){
+		   var FId=$('input[id=FId]').val();
+		   if(FId){
+		   var win = $(IFrame.format('/html/module/wf/HandleStatus.html?processId='+Request.QueryString("processId")));
+		   $.lightbox(win, {
+			    width   : 710,
+				height  : 350,
+				modal  : true
+		   });  
+		   return false;
+		   }else{
+			   $.jBox.info('请先填写效益工资！');      
+		  }
+	   });
+   }
+});
+
+function FlashFiles(data){
+	 var FId=$('input[id=FId]').val();
+	$.fn.getFiles(FId);
+}
+
+function getstationID(){
+	$.post('/Buss/Wage/12', {
+		stationId:$('#userStation').val(),
+		orgId:$('#userOrgID').val(),
+		taskId:$('input[id=fkTaskId]').val()
+	}, function(data) {
+		pmtSiger(data.root);
+  }, 'json');
+}
+
+function ToPart(entitys){
+	$.post('/Buss/Wage/8', {
+		action:Request.QueryString('action'),
+		processId : Request.QueryString('processId'),
+		acceptUserId : entitys.acceptUserId,
+		activeId :Request.QueryString('activeId'),
+		remark : entitys.remark,
+		primaryId: Request.QueryString('formPKID'),
+		departId: entitys.partId,
+		departName: entitys.partName
+	}, function(data) {
+		if(data.success){
+			$.LightBoxObject.close();
+			$.jBox.info('提交成功！', '温馨提示');
+		}else{
+			$.jBox.info('提交失败！', '温馨提示');
+		}
+		
+	}, 'json');
+}
+
+function pmtSiger(stationID){
+	 $('#FDeptMgr').focus(function(){
+		   var currentUser=$('#userStation').val();
+		   var entitys=stationID;
+		   if(currentUser!=entitys){
+			   $.jBox.info('您好，只有部门经理才能签字！','提示'); 
+			   return false;
+		   }
+		   var columnId=$(this).attr('id');
+		   var FId=$('input[id=FId]').val();
+		   if(FId){
+			   var setting={
+			   title:'项目名称：'+$('input[id=FKTaskName]').val(),
+			   name:'部门经理',message:'请领导签字！',
+			   buttons:'确  定',
+			   Fn:function(){
+				   $.post('/Buss/Wage/11', {
+					   wId :Request.QueryString('formPKID'),
+					   processId : Request.QueryString('processId'),
+					   activeId :Request.QueryString('activeId'),
+					   userId:$('input[id=userID]').val(),
+					   acceptUserId:45,
+					   key : columnId,
+					   value:$('#txtsiger').attr('value'),
+					   isSeal:false
+				   }, function(data) {
+					   	$('#'+columnId).val(data.root);
+						$.jBox.info(data.message,'提示');
+				  }, 'json');	  
+			   }};
+			   var win= ReplyDetail.siger(setting);
+			   $.lightbox($(win), {
+				    width   : 350,
+				    height  : 160,
+				    modal  : true
+			  });  
+			  return false;   
+		   }else{
+			   $.jBox.info('请先填写效益工资！');   
+		 }
+	}); 
+}
+
+function settingPageMenu(){
+	var FId=$('input[id=FId]').val();
+	   if(FId){
+		var bussState=Request.QueryString('state');
+		if(bussState==5){
+			$('#aT_OK,#aT_Post,#aT_File,#aT_Cancel,#aT_Return,#aT_CuiBan,#aT_Excel').hide();
+		}else{
+			$.ajax({
+				url:'/Buss/Wage/13',
+				type: 'POST',
+				data:{
+					 taskId:$('input[id=fkTaskId]').val()==''?Request.QueryString('fkTaskId'):$('input[id=fkTaskId]').val(),
+					 userId:$('input[id=userID]').val()
+			    }, 
+				dataType: 'json',
+				async :  false,
+			    success:function(data) {
+			    	if(data.success){
+			    		$('#aT_Return').hide();
+						$('#aT_OK,#aT_Post,#aT_File,#aT_Cancel,#aT_CuiBan,#aT_Excel,#aT_Flow').show();	
+					}else{
+						$('#aT_OK,#aT_Post,#aT_File,#aT_Cancel,#aT_Return,#aT_CuiBan,#aT_Excel,#aT_Flow').hide();
+						$('#aT_Return').show();
+					}
+			  }
+			});
+		}
+	 }else{
+		$('#aT_Return').hide();
+		$('#aT_Post,#aT_File,#aT_Cancel,#aT_CuiBan,#aT_Excel,#aT_Flow').show();	  
+	}
+}
+
+</script>

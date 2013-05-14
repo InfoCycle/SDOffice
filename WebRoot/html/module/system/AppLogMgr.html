@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>日志模板维护</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+</head>
+<body>
+</body>
+</html>
+<script type="text/javascript">
+var logTemplateDS = new Ext.data.JsonStore({
+	url: '/system/SvrService/LogTemplateService/1',
+    idProperty: 'FId',
+    root: 'root',
+    totalProperty: 'totalProperty',
+    autoLoad:true,
+    fields: [
+        {name: 'FId'},
+        {name: 'FTable'},
+        {name: 'FTableName'},
+        {name: 'FState'}
+    ]
+});
+
+var logTemplateDetailDS = new Ext.data.JsonStore({
+	url: '/system/SvrService/LogTemplateService/2/',
+    idProperty: 'FId',
+    root: 'root',
+    totalProperty: 'totalProperty',
+    fields: [
+       {name: 'FId'},
+       {name: 'FColumn'},
+       {name: 'FColumnName'},
+       {name: 'fkTemplateId'},
+       {name: 'FSort'}
+    ]
+});
+
+	Ext.onReady(function(){	
+		var obj=checkUserLogin();	
+	    if(!obj) return;
+		Ext.QuickTips.init();
+	    Ext.form.Field.prototype.msgTarget = 'side';
+		var mainViewport= new Ext.Viewport({
+			id: 'MainViewport',
+		    layout: 'fit',
+		    items: [
+		        {
+		            xtype: 'panel',
+		            id: 'mainPanel',
+		            layout: 'border',
+		            tbar: {
+	                    xtype: 'toolbar',
+	                    items: [
+	                        {
+	                            xtype: 'button',
+	                            iconCls:'new',
+	                            text: '增加日志模板',
+	                            handler:function(){
+	                            	Ext.getCmp("logTemplateForm").getForm().reset();
+	                            }
+	                        },{
+	                            xtype: 'button',
+	                            iconCls:'save',
+	                            text: '保存模板',
+	                            handler:function(){
+	                            	var form = Ext.getCmp("logTemplateForm").getForm();
+	                            	if (form.isValid()){
+	                            		Ext.Ajax.request({
+	                            			url:'/system/SvrService/LogTemplateService/3',
+	                            			method : 'post',
+	                            			params : {
+	                            				FId:Ext.getCmp('FId').getValue(),
+	                            				FTable:Ext.getCmp('FTable').getValue(),
+	                            				FTableName:Ext.getCmp('FTableName').getValue(),	                            				
+	                            				FState:getChecked(Ext.getCmp('FState').checked)
+	                            			},
+	                            			success : function(response){
+	                            				var responseArray = Ext.util.JSON.decode(response.responseText);
+	                            				if(responseArray.success){
+	                            					logTemplateDS.reload();
+	                            				}else{
+	                            					Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'数据保存失败！',
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.WARNING
+	                            					});
+	                            				}
+	                            					
+	                            			},
+	                            			failure : function(response) {
+	                            			}
+	                            		});
+	                            	}	                            	
+	                            }
+	                        }
+	                    ]
+	                },
+		            items: [
+		                {
+		                    xtype: 'grid',
+		                    width: 370,
+		                    id:'logTemplateGrid',
+		                    store: logTemplateDS,
+		                    region: 'west',
+		                    columns: [
+								new Ext.grid.RowNumberer(),
+								{xtype: 'gridcolumn',dataIndex: 'FId',hidden:true},
+		                        {
+		                            xtype: 'gridcolumn',
+		                            dataIndex: 'FTable',
+		                            header: '数据表',
+		                            sortable: true,
+		                            width: 120
+		                        },{
+		                        	xtype: 'gridcolumn',
+		                            dataIndex: 'FTableName',
+		                            header: '中文名称',
+		                            sortable: true,
+		                            width: 160
+		                        },{
+		                        	xtype: 'gridcolumn',
+		                            dataIndex: 'FState',
+		                            header: '状态',
+		                            width: 60,
+		                            renderer: function (value) {
+		                                return value == 1 ? "启用" : "停用";
+		                            }
+		                        }
+		                    ],
+		                    sm:new Ext.grid.RowSelectionModel({  
+		                        singleSelect: true,  
+		                        listeners: {  
+					                rowselect: function(sm, row, rec) {  
+					                    Ext.getCmp("logTemplateForm").getForm().loadRecord(rec);
+					                    Ext.getCmp("FState").checked=rec.data.FState==1?true:false;
+					                    logTemplateDetailDS.baseParams.templateId=rec.data.FId;
+					                    logTemplateDetailDS.load();
+					                }  
+					            }  
+		                    })   
+		                },
+		                {
+		                    xtype: 'panel',
+		                    id: 'contentPanel',
+		                    layout: 'border',
+		                    margins: '0 0 0 2',
+		                    region: 'center',
+		                    items: [
+		                        {
+		                            xtype: 'form',
+		                            id:'logTemplateForm',
+		                            height: 130,
+		                            frame:true,
+		                            region: 'north',
+		                            labelAlign: 'right',
+		                            items: [
+		                                {
+		                                    xtype: 'hidden',
+		                                    id: 'FId'
+		                                },
+		                                {
+		                                    xtype: 'textfield',
+		                                    id: 'FTable',
+		                                    anchor: '40%',
+		                                    allowBlank: false,
+		                                    blankText: '数据表名不能为空',
+		                                    emptyText: '请输入数据表名称',
+		                                    fieldLabel: '数据表名'
+		                                },
+		                                {
+		                                    xtype: 'textfield',
+		                                    id: 'FTableName',
+		                                    anchor: '60%',
+		                                    allowBlank: false,
+		                                    blankText: '中文名称不能为空',
+		                                    emptyText: '请输入数据表中文名称',
+		                                    fieldLabel: '中文名称'
+		                                },
+		                                {
+		                                    xtype: 'checkbox',
+		                                    id: 'FState',
+		                                    checked: true,
+		                                    boxLabel: '启用',
+		                                    anchor: '60%',		                                    
+		                                    fieldLabel: '状态'
+		                                }
+		                            ]
+		                        },
+		                        {
+		                            xtype: 'grid',
+		                            id: 'logTemplateDetailGrid',	                            
+		                            store: logTemplateDetailDS,
+		                            region: 'center',
+		                            sm:new Ext.grid.RowSelectionModel({  
+				                        singleSelect: true
+		                            }),
+		                            listeners: {
+			                        	dblclick:function(grid, rowIndex, e){
+			                        		editLogTemplateDetail();
+	                            		}
+	                            	},
+		                            columns: [
+		                                {
+		                                    xtype: 'gridcolumn',
+		                                    dataIndex: 'FId',
+		                                    header: '编号',
+		                                    sortable: true,
+		                                    width: 100
+		                                },{
+		                                    xtype: 'gridcolumn',
+		                                    dataIndex: 'FColumn',
+		                                    header: '字段',
+		                                    sortable: true,
+		                                    width: 140
+		                                },{
+		                                    xtype: 'gridcolumn',
+		                                    dataIndex: 'FColumnName',
+		                                    header: '字段名称',
+		                                    sortable: true,
+		                                    width: 140
+		                                },{
+		                                    xtype: 'gridcolumn',
+		                                    dataIndex: 'FSort',
+		                                    header: '排序',
+		                                    sortable: true,
+		                                    width: 100
+		                                }
+		                            ],
+		                            tbar:[
+		                                {
+		                            	   text:'增加字段',
+		                            	   iconCls:'newItem',
+		                            	   handler:function(){
+		                            		   if(Ext.getCmp('FId').getValue())
+		                            			{
+		                            			   Ext.getCmp("logTemplateDetailForm").getForm().reset();
+		                            			   Ext.getCmp("CfkTemplateId").setValue(Ext.getCmp('FId').getValue());
+		                            			   window.show();
+		                            			}else{
+		                            				Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'未选择日志模板。无法新增字段！',
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.WARNING
+	                            					});
+		                            		   }		                            			   
+		                            	   }
+		                            	},
+		                                {
+		                            		text:'修改字段',
+		                            		iconCls:'edit',
+		                            		handler:function(){
+		                            			editLogTemplateDetail();
+		                            		}
+		                            	}
+		                            ]
+		                        }
+		                    ]
+		                }
+		            ]
+		        }
+		    ]
+		});
+		
+		var window = new Ext.Window({
+		    height: 194,
+		    width: 452,
+		    modal: true,
+		    closeAction: 'hide',
+		    layout: 'border',
+		    title: '字段',
+		    items: [
+		        {
+		            xtype: 'form',
+		            frame: true,
+		            id: 'logTemplateDetailForm',
+		            region: 'center',
+		            labelAlign: 'right',
+		            tbar: {
+		                xtype: 'toolbar',
+		                items: [
+		                    {
+		                        xtype: 'button',
+		                        iconCls:'save',
+	                            text: '保存字段',
+	                            handler:function(){
+	                            	var form = Ext.getCmp("logTemplateDetailForm").getForm();
+	                            	if (form.isValid()){
+	                            		Ext.Ajax.request({
+	                            			url:'/system/SvrService/LogTemplateService/4',
+	                            			method : 'post',
+	                            			params : {
+	                            				FId:Ext.getCmp('CFId').getValue(),
+	                            				fkTemplateId:Ext.getCmp('CfkTemplateId').getValue(),
+	                            				FColumn:Ext.getCmp('CFColumn').getValue(),
+	                            				FColumnName:Ext.getCmp('CFColumnName').getValue(),	                            				
+	                            				FSort:Ext.getCmp('CFSort').getValue()
+	                            			},
+	                            			success : function(response){
+	                            				var responseArray = Ext.util.JSON.decode(response.responseText);
+	                            				if(responseArray.success){
+	                            					logTemplateDetailDS.reload();
+	                            					window.hide();
+	                            				}else{
+	                            					Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'数据保存失败！',
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.WARNING
+	                            					});
+	                            				}
+	                            					
+	                            			},
+	                            			failure : function(response) {
+	                            			}
+	                            		});
+	                            	}	                            	
+	                            }
+		                    }
+		                ]
+		            },
+		            items: [
+		                {
+		                    xtype: 'hidden',
+		                    id: 'CFId',
+		                    anchor: '100%',
+		                    fieldLabel: 'Label'
+		                },
+		                {
+		                    xtype: 'hidden',
+		                    id: 'CfkTemplateId',
+		                    anchor: '100%',
+		                    fieldLabel: 'Label'
+		                },
+		                {
+		                    xtype: 'textfield',
+		                    id: 'CFColumn',
+		                    allowBlank: false,
+		                    blankText: '字段不能为空',
+		                    anchor: '100%',
+		                    fieldLabel: '字段'
+		                },
+		                {
+		                    xtype: 'textfield',
+		                    id: 'CFColumnName',
+		                    allowBlank: false,
+		                    blankText: '字段名称不能为空',
+		                    anchor: '100%',
+		                    fieldLabel: '字段名称'
+		                },
+		                {
+		                    xtype: 'numberfield',
+		                    id: 'CFSort',
+		                    allowBlank: false,
+		                    blankText: '排序不能为空',
+		                    anchor: '100%',
+		                    fieldLabel: '排序'
+		                }
+		            ]
+		        }
+		    ]
+		});
+		function editLogTemplateDetail(){
+			var grid =Ext.getCmp("logTemplateDetailGrid");
+			var rec =grid.getSelectionModel().getSelected();
+			if(rec){
+				Ext.getCmp('CFId').setValue(rec.data.FId);
+				Ext.getCmp('CfkTemplateId').setValue(rec.data.fkTemplateId);
+				Ext.getCmp('CFColumn').setValue(rec.data.FColumn);
+				Ext.getCmp('CFColumnName').setValue(rec.data.FColumnName);	                            				
+				Ext.getCmp('CFSort').setValue(rec.data.FSort);
+				window.show();
+			}else{
+				Ext.MessageBox.show({
+					title:'系统提示',
+					msg:'未选择字段列表数据。无法修改字段！',
+					width:300,
+					buttons: Ext.Msg.OK,
+					icon: Ext.MessageBox.WARNING
+				});
+			}
+		}		
+	});
+</script>

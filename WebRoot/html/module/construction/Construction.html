@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>造价资料管理</title>
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../plugin/from/emptyPattern.css" type="text/css"></link>
+    <link rel="stylesheet" href="../../plugin/tooltip/tip-yellowsimple/tip-yellowsimple.css" type="text/css"></link>
+    <link rel="stylesheet" href="../../plugin/easyui/themes/default/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	<link rel="stylesheet" type="text/css" href="../../css/layout.css" />
+	
+    <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	<script type="text/javascript" src="../../plugin/from/emptyPattern.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+
+	  <script type="text/javascript">
+    	//等待加载提示框
+  		var _m1;
+		$.loadmg=function (titled,message){
+			if(_m1){
+				_m1.dialog("close");
+				$("#divload").remove();
+			}
+			//this.attr("align","centrt");
+			$("body").append("<div id='divload' align='centert'><table id='123' valign='Center'><tr><td><img id='imgLoad' height='30px' width='30px' src='../../images/large-loading.gif'/>"
+					+"</td><td>"+message+"</td></tr></table></div>");
+			var wid=60;
+			//如果信息长度超过10则固定框体大小为200
+			if(message.length<10){
+				wid+=11*message.length;
+			}else{
+				wid=200;
+			}
+			$("#divload").dialog({
+				width:wid,
+				title:titled,
+				iconCls:'checkfile-esaytb',
+				modal:true,
+				closed:true,
+				closable:false,
+				shadow:false
+			});
+			_m1=$("#divload");
+			_m1.dialog("open");
+		}
+		//消息提示框
+		$.tipmg=function(titled,message,type,_speed){
+			if(_m1){
+				_m1.dialog("close");
+				$("#divmessage").remove();
+			}
+			var _wid=60;
+			if(message.length<10){
+				_wid+=11*message.length;
+			}else{
+				_wid=200;
+			}
+			if(!_speed){
+				_speed=1000;
+			}
+			if(type=="success"){
+				$("body").append("<div id='divmessage' align='centert'><table id='123' valign='Center'><tr><td><img id='imgLoad' height='30px' width='30px' src='../../images/submitsuccess.png'/>"
+						+"</td><td><font>"+message+"</font></td></tr></table></div>");
+			}else if(type=="error"){
+				$("body").append("<div id='divmessage' align='centert'><table id='123' valign='Center'><tr><td><img id='imgLoad' height='30px' width='30px' src='../../images/wrong.gif'/>"
+						+"</td><td><font>"+message+"</font></td></tr></table></div>");
+			}else if(type=="warning"){
+				$("body").append("<div id='divmessage' align='centert'><table id='123' valign='Center'><tr><td><img id='imgLoad' height='30px' width='30px' src='../../images/error_128.png'/>"
+						+"</td><td><font>"+message+"</font></td></tr></table></div>");
+			}
+			$("#divmessage").dialog({
+				width:_wid,
+				title:titled,
+				modal:true,
+				closed:true,
+				closable:false,
+				shadow:false
+			});
+			//this.dialog("open");
+			$("#divmessage").dialog("open");
+			var diap=$("#divmessage").parent();
+			setTimeout(function(){
+				//diap.fadeOut(speed,function(){
+					$("#divmessage").dialog("close");
+				//});
+			},_speed);
+		}
+		$.loadmg.close=function(){
+			$("#divload").dialog("close");
+		}
+		</script>
+
+	<style type="text/css">
+		.txta{width:99%; height:100px; color:#0000FF; font-size:1em; overflow:auto;}
+		.txta_focus{color:#333; border:2px solid #C93;}
+	</style>
+	<script type="text/javascript"> 
+	if($.browser.msie){
+		if($.browser.version<=8){
+			setActiveStyleSheet("papers.css");
+		}else				
+			setActiveStyleSheet("papersother.css");
+	} else if($.browser.mozilla){
+		setActiveStyleSheet("papersother.css");
+	} else{
+		setActiveStyleSheet("papersother.css");
+	}
+	
+	function setActiveStyleSheet(filename) {
+		document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+	}
+	var IFrame='<iframe id="Uploadfile" src="{0}" style="width:100%;height:98%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';		
+	
+	var user = checkUserLogin();
+	var today = new Date();
+	var nodeid = null;
+	var nodetext = null;
+	var fid = null;
+	var flag = false;
+	$(document).ready(function() {
+		if(!checkUserLogin){
+			return false;
+		}
+		
+		$('#tabs').tabs('disableTab', 1);
+		if(getUserUnitStation()){
+			flag = true;
+			$("#btnPublic").linkbutton('enable');
+			$("#btnHide").linkbutton('enable');
+		}else{
+			flag = false;
+			$("#btnPublic").linkbutton('disable');
+			$("#btnHide").linkbutton('disable');
+		}
+		$("#FPersonName").attr({readonly : 'true'});
+		$("#FDate").attr({readonly : 'true'});
+ 		//$("#FTitle").attr({readonly : 'true'});
+		//$("#FContent").attr({readonly : 'true'}); 	 
+		$("#FTitle").attr("readonly",true);
+		$("#FContent").attr("readonly",true);
+		$("#FTypeName").attr({readonly : 'true'});	
+		$("#FPublicType").combobox('disable');
+		$("#btnAdd").linkbutton('disable');
+		$("#btnEdit").linkbutton('disable');
+		$("#btnRemove").linkbutton('disable');
+		$("#btnSave").linkbutton('disable');
+		$("#btnAddFile").linkbutton('disable');
+		clearValues();
+		$('#tt').tree({
+			onClick:function(node){
+				$('#tabs').tabs('select', '列表');
+				if(node.attributes == 1){
+					nodeid = node.id;
+					nodetext = node.text;
+					$('#btnAdd').linkbutton('enable');
+					//$('#btnEdit').linkbutton('enable');
+					//$('#btnRemove').linkbutton('enable');
+					getData(node.id,user.userID,0,10);
+				}else{
+					nodeid = null;
+					nodetext = null;
+					$('#btnAdd').linkbutton('disable');
+					$('#btnEdit').linkbutton('disable');
+					$('#btnRemove').linkbutton('disable');
+					getData(0,0,0,10);
+					clearValues();
+				}
+			}
+		});
+		
+		$("#ConstructionGrid").datagrid({
+			title:'',
+			width: '100%',
+			height: '100%',
+			columns:[
+				[{title:'编号',field:'FId',width:10,hidden:true},
+				 {title:'标题',field:'FTitle',width:150,align:'left',halign:'center'},
+				 {title:'发布日期',field:'FDate',width:50,align:'center'},
+				 {title:'发布人编号',field:'FPersonId',hidden:true,width:10,align:'center'},
+				 {title:'发布人',field:'FPersonName',width:50,align:'center'},
+				 {title:'类别编号',field:'FType',hidden:true,width:10,align:'center'},
+				 {title:'类别',field:'FTypeName',width:50,align:'center'},
+				 {title:'公开类型',field:'FPublicType',width:50,align:'center',
+					 formatter : function(value,row,index){
+							return value==0?'私有 ':'公开';
+						}	 
+				 },
+				 {title:'摘要',field:'FContent',width:250,align:'left',halign:'center'}
+				]],
+			url: '',
+			rownumbers:true,fit:true,singleSelect:true,
+			pagination:false,
+			onDblClickRow:function(rowIndex, rowData){
+				   if(rowData){
+					    $('#tabs').tabs('select', '详细信息');
+					    FUN_GetFiles(fid,1,10);
+						$("#FTitle").attr("readonly",true);
+						$("#FContent").attr("readonly",true);
+				   }
+			    },
+			onSelect:function(rowIndex, rowData){
+					if(rowData){
+						setValues(rowData);
+						if(rowData.FPublicType==0){
+							//$("#btnAdd").linkbutton('enable');
+							$("#btnEdit").linkbutton('enable');
+							$("#btnRemove").linkbutton('enable');
+							$("#btnSave").linkbutton('disable');
+							$("#btnAddFile").linkbutton('enable');
+							$("#btnDeleteFile").linkbutton('enable');
+							if(flag){
+								$("#btnPublic").linkbutton('enable');
+								$("#btnHide").linkbutton('disable');
+							}
+						}else{
+							$("#btnEdit").linkbutton('disable');
+							$("#btnRemove").linkbutton('disable');
+							$("#btnSave").linkbutton('disable');
+							$("#btnAddFile").linkbutton('disable');
+							$("#btnDeleteFile").linkbutton('disable');
+							if(flag){
+								$("#btnPublic").linkbutton('disable');
+								$("#btnHide").linkbutton('enable');
+							}
+						}
+						//FUN_GetFiles(fid,1,10);
+					}
+					$("#ResultsFileGrid").datagrid({
+			title:'',
+			width: '70%',
+			height: '98%',
+			columns:[
+				[{title:'编号',field:'FId',width:60,hidden:true},
+				 {title:'fkId',field:'fkId',hidden:true,width:60},
+				 {title:'文件名称',field:'FFileName',width:250,align:'left',halign:'center'},
+				 {title:'文件类型',field:'FFileType',width:100,align:'center'},
+				 {title:'文件大小',field:'FFileSize',width:100,align:'center',
+					formatter : function(value,row,index){
+						return formatFileSize(value);
+					}
+				 },
+				 {title:'上传日期',field:'FLoadDate',width:120,align:'center'},
+				 {
+						field : 'action',
+						title : '下载',
+						align:'center',
+						width : 60,
+						formatter : function(value, row, index) {
+							if(nodeid!=106){
+								return '<a href="/Buss/ConstructionFileService/LoadFile/'+row.FId+'" id="aDownload" name="aDownload" >下载</a>'; 
+							}else{
+								return '<a href="'+row.FFilePath+'" id="aDownload" name="aDownload" >下载</a>'; 
+							}
+						}
+				}
+				]],
+			url: '',
+			rownumbers:true,fit:true,singleSelect:true,
+			toolbar:'#tb',
+			pagination:false,
+			onSelect: function(index,row){
+				
+			}
+		});	
+				}
+		});	
+		
+		
+		
+		function ForDight(Dight,How){  
+			Dight = Math.round(Dight*Math.pow(10,How))/Math.pow(10,How);  
+			return Dight;  
+		}
+		function formatFileSize(_v) {
+			var fileSize;
+			var strfileSize="";
+			if(_v<=1024*1024){
+				fileSize=ForDight(_v/1024,3);
+				strfileSize=fileSize+"KB";
+			}
+			else{
+				fileSize=ForDight(_v/1024/1024,3);				
+				strfileSize=fileSize+"MB";
+			}
+			return strfileSize;
+		}
+		
+				
+	});
+	
+	function setValues(rowData){
+		 if(rowData){
+			 	fid = rowData.FId;
+				$("#FId").val(rowData.FId);
+				$("#FTitle").val(rowData.FTitle);
+				$("#FContent").val(rowData.FContent);
+				$("#FPersonId").val(rowData.FPersonId);
+				$("#FPersonName").val(rowData.FPersonName); 
+				$("#FDate").val(rowData.FDate);
+				$("#FType").val(rowData.FType);
+				$("#FTypeName").val(rowData.FTypeName);
+				$("#FPublicType").combobox("setValue",rowData.FPublicType);
+		   }
+	}
+	function clearValues(){
+		fid = null;
+		$("#FId").val(null);
+		$("#FTitle").val(null);
+		$("#FContent").val(null);
+		$("#FPersonId").val(null);
+		$("#FPersonName").val(null); 
+		$("#FDate").val(null);
+		$("#FType").val(null);
+		$("#FTypeName").val(null);
+		$("#FPublicType").combobox("setValue",null);		
+	}
+	function getData(type,personid,startIndex,pageSize){
+		$("#ConstructionGrid").datagrid({ 
+			   url:'/Buss/ConstructionService/4', 
+			   queryParams:{ 
+			   		type:type,
+			 	  	personid:personid,
+			 		startIndex:startIndex,
+			 		pageSize:pageSize
+			   } 
+		}); 
+	}
+	
+	function checkField(){
+		var err=$('[empty=true]').emptyAll({parentID:true});
+		return err;
+	}
+	
+	function FUN_Add(){
+		if(nodeid || nodetext){
+			$("#btnEdit").linkbutton('disable');
+			$("#btnRemove").linkbutton('disable');
+			$("#btnSave").linkbutton('enable');
+			$("#btnAddFile").linkbutton('enable');
+			$("#FTitle").attr("readonly",false);
+			$("#FContent").attr("readonly",false);
+			$('#tabs').tabs('select', '详细信息');
+			fid = null;
+			$("#FId").val(0);
+			$("#FTitle").val('');
+			$("#FContent").val('');
+			$("#FPersonId").val(user.userID);
+			$("#FPersonName").val(user.userName); 
+			$("#FDate").val(today.format('yyyy-MM-dd'));
+			$("#FType").val(nodeid);
+			$("#FTypeName").val(nodetext);
+			$("#FPublicType").combobox("setValue",'0');
+			FUN_GetFiles(0,1,10);
+		}else{
+			$.messager.alert('系统提示!','请选择一个造价资料类别!','info');
+		}
+	}
+
+	function FUN_Edit(){
+		$("#btnAdd").linkbutton('disable');
+		$("#btnEdit").linkbutton('enable');
+		$("#btnRemove").linkbutton('enable');
+		$("#btnSave").linkbutton('enable');
+		$("#btnAddFile").linkbutton('enable');
+		$("#FTitle").attr("readonly",false);
+		$("#FContent").attr("readonly",false);
+		$('#tabs').tabs('select', '详细信息');
+		FUN_GetFiles(fid,1,10);
+	}
+
+	function FUN_Remove(){
+		var row = $("#ConstructionGrid").datagrid("getSelected");
+		if(row){
+			var rows = $("#ResultsFileGrid").datagrid("getRows");
+			if(rows.length <= 0){
+				$.messager.confirm('系统提示!', '确定删除该条造价资料信息吗?', function(r){
+					if(r){
+						$.post("/Buss/ConstructionService/3", {
+							"FId" : row.FId
+						}, function(data) {
+							if (data.success) {
+								$.messager.alert('系统提示!', '删除成功。', 'info');
+								getData(nodeid,user.userID,0,10);
+								clearValues();
+							} else {
+								$.messager.alert('系统提示!', '删除失败，请检查网络或联系系统管理员！','error');
+							}
+						}, "json");
+					}
+				});
+			}else{
+				$.messager.alert('系统提示!', '当前记录含有'+rows.length+'个附件,请先删除附件再执行此操作!', 'info');
+			}
+		}else{
+			$.messager.alert('系统提示!', '请选择一条造价资料信息!', 'info');
+		}
+	}
+	
+	function FUN_Save(){
+		if(checkField()){
+			var FId = $("#FId").val();
+			var FTitle =  $("#FTitle").val();
+			var FContent = $("#FContent").val();
+			var FDate = $("#FDate").val();
+			var FPersonId = $("#FPersonId").val();
+			var FPersonName = $("#FPersonName").val();
+			var FType = $("#FType").val();
+			var FTypeName = $("#FTypeName").val();
+			var FPublicType = $("#FPublicType").combobox("getValue");
+			$.post("/Buss/ConstructionService/1", {
+					"FId" : FId,
+					"FTitle" : FTitle,
+					"FContent" : FContent,
+					"FDate" : FDate,
+					"FPersonId" : FPersonId,
+					"FPersonName" : FPersonName,
+					"FType" : FType,
+					"FTypeName" : FTypeName,
+					"FPublicType" : FPublicType
+				}, function(data) {
+					if (data.success) {
+						$("#FId").val(data.root.FId);
+						fid = data.root.FId;
+						getData(nodeid,user.userID,0,10);
+						$.messager.alert('系统提示!', '保存成功。', 'info');
+						$("#btnAdd").linkbutton('enable');
+						$("#btnEdit").linkbutton('enable');
+						$("#btnRemove").linkbutton('enable');
+						$("#btnSave").linkbutton('disable');
+						$("#btnAddFile").linkbutton('enable');
+						$("#FTitle").attr("readonly",true);
+						$("#FContent").attr("readonly",true);
+					} else {
+						$.messager.alert('系统提示!', '保存失败，请检查网络或联系系统管理员！','error');
+					}
+				}, "json");
+			} else {
+				$.messager.alert('系统提示!', '请填写必填项!', 'info');
+			}
+		}
+
+		function FUN_Search() {
+			$('#tabs').tabs('select', '详细信息');
+			$("#FTitle").attr('readonly',true);
+			$("#FContent").attr('readonly',true);
+		}
+		
+		function FUN_setPublicOrHide(row,type){
+			$.post("/Buss/ConstructionService/6", {
+       			"FId" : row.FId,
+       			"FPublicType":type
+       			}, function(data) {
+       				if(data.success){
+       					getData(nodeid,user.userID,0,10)
+       					$.messager.alert('系统提示!','操作成功!','info');
+       				}else{
+       					$.messager.alert('系统提示!','操作失败,请检查网络是否正常!','error');
+       				}
+       		}, "json");
+		}
+		
+		function FUN_Public() {
+			var row = $("#ConstructionGrid").datagrid("getSelected");
+			if(row){
+				$.messager.confirm('系统提示!', '确定公开该条造价资料信息吗?公开之后如有修改将只能由管理员来修改。', function(r){
+					if(r){
+						FUN_setPublicOrHide(row,1);
+						$("#btnEdit").linkbutton('disable');
+						$("#btnRemove").linkbutton('disable');
+						$("#btnSave").linkbutton('disable');
+						$("#btnAddFile").linkbutton('disable');
+						$("#btnDeleteFile").linkbutton('disable');
+						$("#btnPublic").linkbutton('disable');
+						$("#btnHide").linkbutton('enable');
+					}
+				});
+			}else{
+				$.messager.alert('系统提示!', '请选择一条造价资料信息!', 'info');
+			}
+		}
+
+		function FUN_Hide() {
+			var row = $("#ConstructionGrid").datagrid("getSelected");
+			if(row){
+				$.messager.confirm('系统提示!', '确定隐藏该条造价资料信息吗?', function(r){
+					if(r){
+						FUN_setPublicOrHide(row,0);
+						$("#btnEdit").linkbutton('enable');
+						$("#btnRemove").linkbutton('enable');
+						$("#btnSave").linkbutton('enable');
+						$("#btnAddFile").linkbutton('enable');
+						$("#btnDeleteFile").linkbutton('enable');
+						$("#btnPublic").linkbutton('enable');
+						$("#btnHide").linkbutton('disable');
+					}
+				});
+			}else{
+				$.messager.alert('系统提示!', '请选择一条造价资料信息!', 'info');
+			}
+		}
+
+		function FUN_Back() {
+			$('#tabs').tabs('select', '列表');
+			$("#FTitle").attr("readonly",true);
+			$("#FContent").attr("readonly",true);
+		}
+		function FUN_AddFile(){
+			if(fid){
+				var win = $(IFrame.format('/html/module/construction/ConstructionFile.html?FKID='+fid));
+				if(nodeid==106){
+					win=$(IFrame.format('/html/module/construction/FilesTree.html?FKID='+fid));
+				}
+				$.lightbox(win, {
+				    modal  : true,
+					width   : 720,
+				    height  : 420,
+				    onClose:function(){
+				    	$("#Uploadfile").attr('src','');
+				    	FUN_GetFiles(fid,1,10);
+				    	$("#btnAddFile").linkbutton('disable');
+				    }
+			   }); 		
+			}else{
+				$.messager.alert('系统提示!', '请先保存或者选择一条造价资料信息!', 'info');
+				return false;
+			}
+		
+		}
+		function FUN_DeleteFile(){
+			var row = $("#ResultsFileGrid").datagrid('getSelected');
+			if(row){
+				$.messager.confirm('系统提示!', '确定要删除该附件吗?', function(r){
+					if(r){
+						$.post("/Buss/ConstructionFileService/4", {
+							"FId" : row.FId
+						}, function(data) {
+							if (data.success) {
+								$.messager.alert('系统提示!', '删除成功。', 'info');
+								FUN_GetFiles(fid,1,10);
+							} else {
+								$.messager.alert('系统提示!', '删除失败，请检查网络或联系系统管理员！','error');
+							}
+						}, "json");
+					}
+				});
+			}else{
+				$.messager.alert('系统提示!', '请选择附件!', 'info');
+			}
+		}
+		function FUN_GetFiles(fkId,page,rows){
+			$("#ResultsFileGrid").datagrid({ 
+				   url:'/Buss/ConstructionFileService/3', 
+				   queryParams:{ 
+					    fkId:fkId,
+				 	  	page:page,
+				 	  	rows:rows
+				   } 
+			}); 
+		}
+		function getUserUnitStation(){
+			var flag;
+			$.ajax({
+			    url: "/Buss/ConstructionService/5",       
+			    method: 'GET',
+			    async :  false,//同步请求
+			    success: function (data) {
+			    	if(data.success){
+			    		flag = true;
+			        }else{
+			        	flag = false;
+			        }
+			    }
+			}); 
+			return flag;
+		}
+		
+		function checkUserLogin(){	
+			var CurrentUser;
+			$.ajax({
+			    url: "/system/SvrService/AppIndex/4/",       
+			    method: 'GET',
+			    async :  false,//同步请求
+			    success: function (data) {
+			    	if(data.success){
+			    		CurrentUser=data.root;
+			        }else{
+			        	window.location.href='/html/module/system/loginApp.html';
+			        }
+			    }
+			}); 
+			return CurrentUser;
+		}
+		
+		function closewin(filetext,filesize,filepath,filetype){
+			$.LightBoxObject.close();
+			$.loadmg('温馨提示','正在保存...');
+			$('#btnAddFile').linkbutton('enable');
+			sizetype=trim(filesize.substring(filesize.length-2,filesize.length));
+			size=trim(filesize.substring(0,filesize.length-2));
+			//alert(size);
+			if(sizetype=='B'){
+				size=size/1024;
+			}else if(sizetype=='MB'){
+				size*=1024;
+			}else if(sizetype=='GB'){
+				size*=1048576;
+			}
+			$.post(
+				"/Buss/ConstructionFileService/5",
+				{
+					'fkId':fid,
+					'FFileType':filetype,
+					'FFileSize':size,
+					'FFileName':filetext,
+					'FFilePath':filepath
+				},
+				function (data){
+					if(data){
+						if(data.success){
+							$.tipmg('温馨提示',data.message,'success');
+							
+						}else{
+							$.tipmg('温馨提示',data.message,'warning');	
+						}
+					}else{
+						$.tipmg('温馨提示','请检查网络或与管理员联系','warning');
+					}
+				}
+			);
+		}
+
+		Date.prototype.format = function(fmt)   
+		{ //author: meizz   
+		  var o = {   
+		    "M+" : this.getMonth()+1,                 //月份   
+		    "d+" : this.getDate(),                    //日   
+		    "h+" : this.getHours(),                   //小时   
+		    "m+" : this.getMinutes(),                 //分   
+		    "s+" : this.getSeconds(),                 //秒   
+		    "q+" : Math.floor((this.getMonth()+3)/3), //季度   
+		    "S"  : this.getMilliseconds()             //毫秒   
+		  };   
+		  if(/(y+)/.test(fmt))   
+		    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));   
+		  for(var k in o)   
+		    if(new RegExp("("+ k +")").test(fmt))   
+		  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
+		  return fmt;   
+		}
+		
+	</script>
+  </head>
+  <body>
+  	<div class="easyui-layout" data-options="fit:true" style="width:'100%';height:530px;">  
+  		<!-- 造价资料类别左边区域 -->
+ 		<div data-options="region:'west',split:true" title="造价资料类别" style="width:150px;">
+        	<ul id="tt"  data-options="url:'/GetTree/ConstructionTree/93',animate:true,fit:true"></ul>
+        </div>
+        <!-- 造价资料列表区域 -->
+      	<div data-options="region:'center',split:true,fit:true" >
+        	<div id="tool" style="margin:10px 5px;">  
+        		<a href="javascript:void(0)" class="easyui-linkbutton" id="btnAdd" iconCls="icon-add" onclick="FUN_Add()">新增</a>  
+        		<a href="javascript:void(0)" class="easyui-linkbutton" id="btnEdit" iconCls="icon-edit" onclick="FUN_Edit()">修改</a> 
+        		<a href="javascript:void(0)" class="easyui-linkbutton" id="btnRemove" iconCls="icon-remove" onclick="FUN_Remove()">删除</a> 
+        		<a href="javascript:void(0)" class="easyui-linkbutton" id="btnSave" iconCls="icon-save" onclick="FUN_Save()">保存</a>
+        		<!-- <a href="javascript:void(0)" class="easyui-linkbutton" id="btnSearch" iconCls="icon-search" onclick="FUN_Search()">查看</a> -->
+        		<a href="javascript:void(0)" class="easyui-linkbutton" id="btnPublic" iconCls="icon-public" onclick="FUN_Public()">公开</a>
+        		<a href="javascript:void(0)" class="easyui-linkbutton" id="btnHide" iconCls="icon-hide" onclick="FUN_Hide()">隐藏</a>
+    		</div>  
+    		<!-- 造价资料列表标签区域 -->
+        	<div class="easyui-tabs" id="tabs" data-options="fit:true,border:false,plain:true,toolbar:tool"> 
+	          	<div title="列表" id="tab1" style="padding:10px">
+	          		<table id="ConstructionGrid" data-options="singleSelect:true,fit:true,fitColumns:true">  
+	<!--                 	<thead>  
+	                    	<tr>  
+	                        	<th data-options="field:'FId',align:'center',hidden:true" width="20">编号</th>  
+	                            <th data-options="field:'FTitle',align:'left'" width="150">标题</th>  
+	                            <th data-options="field:'FDate',align:'center'" width="50">发布日期</th>  
+	                            <th data-options="field:'FPersonId',align:'center',hidden:true" width="20">发布人编号</th>  
+	                            <th data-options="field:'FPersonName',align:'center'" width="50">发布人</th>  
+	                            <th data-options="field:'FType',align:'center',hidden:true" width="20">类型编号</th> 
+	                            <th data-options="field:'FTypeName',align:'center'" width="50">类型</th>   
+	                            <th data-options="field:'FPublicType',align:'center'" width="50" formatter:function(value,row,index){
+									return value=1?'公开':'个人';
+								}
+						>公开类型</th>  
+	                            <th data-options="field:'FContent',align:'left'" width="250">内容</th>   
+	                        </tr>  
+	                   </thead>   -->
+	               </table>  
+	          	</div>  
+	          	<div title="详细信息"  id="tab2" style="padding:10px">
+	          		<div class="easyui-layout" data-options="fit:true" style="width:'70%';height:530px;">  
+	          			<div data-options="region:'north',split:true" title="造价资料详细信息" style="height:285px;">
+	          			<div style="margin:5px 5px;">  
+	        				<a href="javascript:void(0)" class="easyui-linkbutton" id="btnBack" iconCls="icon-back" onclick="FUN_Back()">返回列表</a> 
+	        				<a href="javascript:void(0)" class="easyui-linkbutton" id="btnAddFile" iconCls="icon-add" onclick="FUN_AddFile()">添加附件</a> 
+	    				</div> 
+		    			<div style="margin:5px 5px;">  
+		 					<table class="content_table1" width="70%" border="1" cellpadding="0" style="position:absolute;">
+								<tr>
+									<td width="120px" nowrap>标题：*</td>
+									<td colspan="3"> <input type="hidden" style="width:25px;" id="FId" name="FId" />
+														<input type="text" style="width:610px;" id="FTitle"
+														name="FTitle" empty="true" />
+									</td>
+								</tr>
+								<tr>
+									<td >摘要：*</td>
+									<td colspan="3">
+										<div class="test_x" style="width:734px;">		
+											<textarea id="FContent" name="FContent" class="txta mt5" style="resize:none;" type="textarea" empty="true"></textarea>	
+										</div>	
+									</td>
+								</tr>
+								<tr>
+									<td width="120px" nowrap>发布人：</td>
+									<td><label> 
+										<input type="hidden" style="width:25px;" id="FPersonId" name="FPersonId" />
+										<input type="text" style="width:200px;" id="FPersonName"
+										name="FPersonName" empty="true"></label>
+									</td>
+									<td nowrap>发布日期：</td>
+									<td><label> 
+										<input type="text" style="width:200px;" id="FDate"
+										name="FDate" empty="true"></label>
+									</td>
+								</tr>
+									<tr>
+									<td >类别：</td>
+									<td><label> 
+										<input type="hidden" style="width:25px;" id="FType" name="FType" />
+										<input type="text" style="width:200px;" id="FTypeName"
+										name="FTypeName" empty="true"></label>
+									</td>
+									<td nowrap>公开类型：</td>
+									<td><label>
+										<input style="width:203px;" id="FPublicType" name="FPublicType" 
+													class="easyui-combobox" data-options="url:'/GetCode/Query/?action=getAppCode&CodeTypeId=409&State=1',valueField:'FCode',
+													textField:'FCodeText',multiple:false,panelHeight:'auto'"> 
+										</label>
+									</td>
+								</tr>	
+							</table>
+		    			</div>  
+	          		</div>
+	          		<div data-options="region:'center',split:true" title="附件信息">
+	        			<div id="tb" style="height:auto;margin:0px 0px;">					
+							<a href="javascript:void(0)" class="easyui-linkbutton" id="btnDeleteFile" data-options="iconCls:'icon-remove',plain:true" onclick="FUN_DeleteFile()">删除附件</a>
+						</div>	
+	          			<table id="ResultsFileGrid" style="width:800px;">  
+	               		</table>  	
+								
+	          		</div>
+	          	</div>
+	         	</div>
+          		</div>             
+	    	</div>  
+          </div>
+        </div>
+    </div>   
+  </body>
+  
+</html>

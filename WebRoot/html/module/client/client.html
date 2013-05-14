@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>委托公司管理</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">   
+	<link rel="stylesheet" href="../../css/treenodeicon.css" type="text/css"></link>
+     <link rel="stylesheet" href="../../plugin/styles/kendo.common.css" type="text/css" />
+     <link rel="stylesheet" href="../../plugin/styles/kendo.default.css" type="text/css" />
+	 <link rel="stylesheet" type="text/css" href="../../css/menu.css" /> 
+	 <link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	 <link rel="stylesheet" type="text/css" href="../../ext/resources/css/ext-all.css" />		
+	 <link rel="stylesheet" href="../../ext/resources/css/xtheme-gray.css" type="text/css"></link>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	
+	<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+	<script type="text/javascript" src="../../ext/ext-all.js"></script>
+	<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript" src="../../ext/ux/PanelResizer.js"></script>
+	<script type="text/javascript" src="../../ext/ux/ProgressBarPager.js"></script>
+	<script type="text/javascript">
+		
+	
+	
+	Ext.onReady(function(){
+		Ext.QuickTips.init();
+		Ext.form.Field.prototype.msgTarget='qtip';
+		var root = new Ext.tree.AsyncTreeNode({
+			id:"-100",
+			draggable:false,
+			expanded:true,
+			text:'分类别委托单位'
+			});
+		var treeloader =new Ext.tree.TreeLoader({
+			dataUrl:'/industry/0',
+			//baseAttrs: { uiProvider: Ext.ux.TreeCheckNodeUI } //添加 uiProvider 属性
+			});
+		var eutree = new Ext.tree.TreePanel({
+				height:200,
+				border : true,			
+				autoScroll : true,
+				containerScroll: true, 
+				region:'west',
+				root :root,
+				loader: treeloader,
+				listeners : {
+					/*expandnode: function(node,e){
+						if (!node.isLeaf()) {						
+						this.on('beforeload',
+								function(node){
+									this.loader.dataUrl='/industry/'+node.id;				
+						});
+						this.render();
+						node.expand();
+						node.select();
+						}
+					},*/
+					click:function(node,e){
+					e.stopEvent();
+					var comboWithTooltip=Ext.getCmp('fFIndustryName');
+					Ext.getCmp('fFIndustry').setValue(node.id);
+					comboWithTooltip.setValue(node.text);
+                	comboWithTooltip.collapse(); 
+				}
+			}
+		});
+	var dataStore = new Ext.data.JsonStore({
+			url: '/client/getall',
+		    idProperty: 'FId',
+		    root: 'root',
+		    totalProperty: 'totalProperty',
+		    autoLoad:true,
+		    params:{start:0, limit:10},
+		    fields: [
+		       			{name:'FId'},
+						{name:'FIndustry'},
+						{name:'FIndustryName'},
+						{name:'FCord'},
+						{name:'FName'},
+						{name:'FLegalPerson'},
+						{name:'FPrincipar'},
+						{name:'FAddress'},
+						{name:'FBank'},
+						{name:'FAccount'},
+						{name:'FZipCord'},
+						{name:'FTel'},
+						{name:'FFax'},
+						{name:'FEmail'},
+						{name:'FEntryPeople'},
+						{name:'FEntryTime'},
+						{name:'FPossition'}
+		    			]
+				});
+	var sm=new Ext.grid.CheckboxSelectionModel();
+	var grid=new Ext.grid.GridPanel({
+		 	title:'委托公司管理',
+			id:'grid',
+			//renderTo:Ext.getBody(),
+			store:dataStore,
+			autoScroll : true,
+			region: 'center',
+			sm:sm,
+			frame:true,
+			columns:[
+			         sm,
+			         {
+						dataIndex: 'FCord',
+						header: '<font size=2>编号</font>',
+						sortable: true,
+						renderer: dataren,
+						width: 60
+				     },{
+						dataIndex: 'FName',
+						header: '<font size=2>公司名称</font>',
+						renderer:function(vals){
+							return "<font size=2 color='blue'>"+vals+"</font>"
+						},
+						sortable: true,
+						width:200
+				     },{
+						dataIndex: 'FLegalPerson',
+						header: '<font size=2>法定代理人</font>',
+						renderer: dataren,
+						sortable: true,
+						width: 100
+				     },{
+						dataIndex: 'FPrincipar',
+						header: '<font size=2>委托代理人</font>',
+						renderer: dataren,
+						sortable: true,
+						width: 100
+				     },{
+						dataIndex: 'FIndustryName',
+						renderer: dataren,
+						header: '<font size=2>行业类型</font>',
+						sortable: true,
+						width: 100
+				     },{
+						dataIndex: 'FAddress',
+						header: '<font size=2>地址</font>',
+						renderer: dataren,
+						sortable: true,
+						width: 200
+				     },{
+						dataIndex: 'FEntryPeople',
+						header: '<font size=2>录入人</font>',
+						renderer: dataren,
+						sortable: true,
+						width: 60
+				     },{
+						dataIndex: 'FEntryTime',
+						header: '<font size=2>录入时间</font>',
+						renderer: function(val){
+							return "<font size=2>"+val.substring(0,10)+"</font>"
+						},
+						sortable: true,
+						width: 120
+				    },{
+						dataIndex: 'FPossition',
+						header: '<font size=2>状态</font>',
+						renderer: dataren,
+						sortable: true,
+						width: 60
+				   }],
+			     tbar:{
+					xtype:"container",
+					layout:'table',
+					items:[{
+						id:'form1',
+							layout:'form',
+							frame:true,
+							items:[{
+								id:'cselect',
+								xtype:"combo",
+								fieldLabel:"查询方式",
+								store:new Ext.data.SimpleStore({
+									fields:["name","value"],
+									data:[
+										["按名称查询",0],
+										["按行业类型查询",1],
+										["按录入时间",2]
+									]
+								}),
+								displayField:'name',
+								valueField  :'value',
+								mode : "local",
+								triggerAction : "all",
+								editable:false,
+								emptyText:'请选择查询方式',
+								listeners : {
+									select:function(index){
+									var et={"0":"请输入名称关键字",
+												"1":"请输入行业类型关键字(如:电、电力)",
+												"2":"请输入时间(如：2012、2012-7)"};
+									Ext.getCmp("form1").findById("select").emptyText=et[index.value];
+									Ext.getCmp("select").reset();
+									}
+								},
+								width:200
+						},{
+							id:'select',
+							xtype:"textfield",
+							fieldLabel:"查询条件",
+							emptyText:'请先选择查询方式',
+							width:200
+						}]
+							
+					},{
+						xtype:"container",
+						width:10,
+						items:[{
+							xtype:'button',
+							hidden:true,
+							
+						}]
+					},{
+						xtype:"button",
+						height:40,
+						text:'<font size=2>查询</font>',
+						iconCls:'query-extb',
+						handler:selectc
+					},{
+						xtype:"button",
+						height:40,
+						iconCls:'query1-extb',
+						text:'<font size=2>清空查询</font>',
+						handler:function(){
+							Ext.getCmp("form1").findById("select").emptyText="请选择查询方式";
+							dataStore.lastOptions=null;
+							params={start:0, limit:10};
+							dataStore.baseParams={
+							};
+							dataStore.reload({params:{start:0, limit:10}});
+							Ext.getCmp("cselect").setValue();
+							Ext.getCmp("select").setValue();
+						}
+					},{
+						xtype:"container",
+						width:40,
+						items:[{
+							xtype:'button',
+							hidden:true,
+						}]
+					},{
+						xtype:'button',
+						height:40,
+						iconCls:'insertbut-extb',
+						text:'<font size=2>新建委托公司</font>',
+						handler:function(){
+							Ext.getCmp("fFIndustry").setValue();
+							Ext.getCmp("fFCord").setValue();
+							Ext.getCmp("fFId").setValue();
+							Ext.getCmp("fFName").setValue();
+							Ext.getCmp("fFLegalPerson").setValue();
+							Ext.getCmp("fFPrincipar").setValue();
+							Ext.getCmp("fFAddress").setValue();
+							Ext.getCmp("fFZipCord").setValue();
+							Ext.getCmp("fFTel").setValue();
+							Ext.getCmp("fFFax").setValue();
+							Ext.getCmp("fFEmail").setValue();
+							Ext.getCmp("fFIndustryName").setValue();
+							Ext.getCmp("fFBank").setValue();
+							Ext.getCmp("fFAccount").setValue();
+							Ext.getCmp("fFPossition").setValue();
+							Ext.getCmp("fFEntryPeople").setValue();
+							Ext.getCmp("fFEntryTime").setValue();
+							var dd=new Date();
+							Ext.getCmp("fFEntryTime").setValue(dd.getFullYear()+"-"+dd.getMonth()+"-"+dd.getDay());
+							addClient(this);
+						}
+					},{
+						xtype:'button',
+						height:40,
+						iconCls:'checkfile-extb',
+						text:'<font size=2>修改委托公司</font>',
+						handler:addClient
+					},{
+						id:'qiy',
+						xtype:'button',
+						height:40,
+						iconCls:'ok-extb',
+						text:'<font size=2>启用委托公司</font>',
+						handler:possitionEdit
+					},{
+						id:'tiny',
+						xtype:'button',
+						height:40,
+						iconCls:'delete-extb',
+						text:'<font size=2>停用委托公司</font>',
+						handler:possitionEdit
+					}]
+			},
+			plugins: new Ext.ux.PanelResizer({
+            minHeight: 100
+        	}),
+			bbar: new Ext.PagingToolbar({
+            		pageSize: 10,
+            		store: dataStore,
+            		displayInfo: true,
+            		plugins: new Ext.ux.ProgressBarPager()
+			})
+	});
+	var addPanel=new Ext.form.FormPanel({
+		 		title:'委托公司信息',
+	        	xtype:"form",
+	        	id:'add',
+				labelWidth:70,
+				labelAlign:'right',
+				autoScroll : true,
+				layout:"table",
+				width:500,
+				//bodyStyle:"padding:10px 10px 10px 10px;background-color:gray; border-width: 1px 1px 1px 1px;",
+				frame:true,
+				border : true,
+				layoutConfig:{columns: 4},
+				tbar:{
+					xtype:"container",
+					layout:'form',
+					labelAlign:'right',
+					labelWidth:40,
+					border:false,
+					frame:true,
+					items:[{
+							layout:"column",
+							colspan:4,
+							items:[{
+								xtype:"container",
+										height:50,
+										width:100,
+										items:[{
+											xtype:'button',
+											hidden:true,
+											
+										}]
+								},{
+								iconCls: 'save-extb',
+								xtype:'button',
+						        text:'<font size=2>保存</font>',
+						        height:40,
+								handler:save
+							},{
+							iconCls: 'quite-extb',
+						    xtype:'button',
+						    text:'<font size=2>返回</font>',
+						     height:40,
+						     handler:addClient
+							}]
+						}]
+				},
+				items:[{
+						layout:"form",
+						colspan:4,
+						items:[{
+							xtype:'hidden',
+							id:'fFIndustry'
+						},
+						{
+							xtype:'hidden',
+							id:'fFCord'
+						},
+						 {
+							xtype:'hidden',
+							id:'fFId'
+						 },{
+							id:'fFName',
+							xtype:"textfield",
+							fieldLabel:"公司名称",
+							allowBlank:false,
+							blankText:'<font size=2>委托公司名称不能为空</font>',
+							width:400
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:2,
+						items:[
+						 {
+						 	id:'fFLegalPerson',
+						 	xtype:"textfield",
+							fieldLabel:"法定代理人",
+							allowBlank:false,
+							blankText:'<font size=2>委托公司法定代理人不能为空</font>',
+							width:162
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:2,
+						items:[
+						 {
+						 	id:'fFPrincipar',
+							xtype:"textfield",
+							fieldLabel:"委托代理人",
+							allowBlank:false,
+							blankText:'<font size=2>委托公司委托代理人不能为空</font>',
+							width:162
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:4,
+						items:[
+						 {
+						 	id:'fFAddress',
+							xtype:"textfield",
+							fieldLabel:"公司地址",
+							allowBlank:false,
+							blankText:'<font size=2>委托公司地址不能为空</font>',
+							width:400
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:2,
+						items:[
+						 {
+						 	id:'fFZipCord',
+							xtype:"textfield",
+							fieldLabel:"邮编",
+							editable:false,
+							width:162
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:2,
+						items:[
+						 {
+						 	id:'fFTel',
+							xtype:"textfield",
+							fieldLabel:"公司电话",
+							editable:false,
+							width:162
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:2,
+						items:[
+						 {
+						 	id:'fFFax',
+							xtype:"textfield",
+							fieldLabel:"公司传真",
+							editable:false,
+							width:162
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:2,
+						items:[
+						 {
+						 	id:'fFEmail',
+							xtype:"textfield",
+							fieldLabel:"公司E-Mail",
+							editable:false,
+							width:162
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:2,
+						items:[
+						 {
+						 	id:'fFIndustryName',
+							xtype:"combo",
+							fieldLabel:"行业类型",
+							editable:false,
+							width:162,
+							allowBlank:false,
+							blankText:'<font size=2>委托公司行业类型不能为空</font>',
+							store:new Ext.data.SimpleStore({fields:[],data:[[]]}), 
+            				mode: 'local', 
+            				triggerAction:'all', 
+            				maxHeight: 200, 
+            				tpl: '<div ><div id="tree"></div></div>', 
+            				selectedClass:'', 
+            				onSelect:Ext.emptyFn,
+            				emptyText:'请选择...',
+            				listeners : {
+            					expand:function(){
+            						eutree.render('tree');
+            						eutree.expandAll(); 
+            					}
+            				}
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:2
+					},{
+						layout:"form",
+						colspan:4,
+						items:[
+						 {
+						 	id:'fFBank',
+							xtype:"textfield",
+							fieldLabel:"开户银行",
+							editable:false,
+							width:400
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:4,
+						items:[
+						 {
+						 	id:'fFAccount',
+							xtype:"textfield",
+							fieldLabel:"账户",
+							editable:false,
+							width:400
+						 },{
+						layout:"form",
+						colspan:2,
+						}
+						]
+					},{
+						layout:"form",
+						colspan:2,
+						items:[
+						 {
+						 	id:'fFEntryPeople',
+						 	xtype:"textfield",
+							fieldLabel:"录入人",
+							editable:false,
+							width:162
+						 }
+						]
+					},{
+						layout:"form",
+						colspan:2,
+						items:[{
+						 	id:'fFEntryTime',
+							xtype:"textfield",
+							fieldLabel:"录入时间",
+							disabled:true,
+							width:162
+							}]
+					},{
+						layout:"form",
+						colspan:2,
+						buttonAlign:'reight',
+						items:[{
+						 	id:'fFPossition',
+						 	xtype:"combo",
+							fieldLabel:"状态",
+							editable:false,
+							store:new Ext.data.SimpleStore({
+									fields:["name","value"],
+									data:[
+										["启用","启用"],["停用","停用"]
+									]
+								}),
+							displayField:'name',
+				            valueField  :'value',
+				            mode : "local",
+					        triggerAction : "all",
+							allowBlank:false,
+							blankText:'<font size=2>委托公司状态不能为空</font>',
+							emptyText:'请选择',
+							width:162
+						 }]
+					},{
+					layout:"column",
+					colspan:2,
+					width:100
+				}]
+	});
+	
+	var myPanel=new Ext.Panel({
+			layout:'card',   
+	        activeItem:0,//设置默认显示第一个子面
+	        region:'center',
+	        border : false,
+	        items:[grid,addPanel]
+		});
+	function addClient(btn){
+		var index="";
+		if(btn.text=="<font size=2>新建委托公司</font>"){
+			Ext.getCmp("add").getForm().title=btn.text;
+			index="add";
+		}else if(btn.text=="<font size=2>保存</font>"){
+			index="grid";
+		}else if(btn.text=="<font size=2>修改委托公司</font>"){
+			if(edit()){
+			index="add"
+			}else{
+				return false;
+			}
+		}else{
+			dataStore.reload({params:{start:0, limit:10}});
+			index="grid";
+		}
+		myPanel.layout.setActiveItem(index);
+		
+	}
+	function edit(){
+		var records=Ext.getCmp('grid').selModel.getSelections();
+		var recordsLen=records.length;
+		if(recordsLen<1){
+			showMessage("请选择所要修改的数据");
+			return false;
+		}
+		if(recordsLen>1){
+			showMessage("最多能选一条数据修改");
+			return false;
+		}
+		var rec=records[0];
+		Ext.getCmp("fFIndustry").setValue(rec.get("FIndustry"));
+		Ext.getCmp("fFCord").setValue(rec.get('FCord'));
+		Ext.getCmp("fFId").setValue(rec.get('FId'));
+		Ext.getCmp("fFName").setValue(rec.get('FName'));
+		Ext.getCmp("fFLegalPerson").setValue(rec.get('FLegalPerson'));
+		Ext.getCmp("fFPrincipar").setValue(rec.get('FPrincipar'));
+		Ext.getCmp("fFAddress").setValue(rec.get('FAddress'));
+		Ext.getCmp("fFZipCord").setValue(rec.get('FZipCord'));
+		Ext.getCmp("fFTel").setValue(rec.get('FTel'));
+		Ext.getCmp("fFFax").setValue(rec.get('FFax'));
+		Ext.getCmp("fFEmail").setValue(rec.get('FEmail'));
+		Ext.getCmp("fFIndustryName").setValue(rec.get('FIndustryName'));
+		Ext.getCmp("fFBank").setValue(rec.get('FBank'));
+		Ext.getCmp("fFAccount").setValue(rec.get('FAccount'));
+		Ext.getCmp("fFPossition").setValue(rec.get('FPossition'));
+		Ext.getCmp("fFEntryPeople").setValue(rec.get('FEntryPeople'));
+		Ext.getCmp("fFEntryTime").setValue(rec.get('FEntryTime').substring(0,10));
+		return true;
+	}
+	function save(){
+		var ac="";
+		var ff=Ext.getCmp("fFId").getValue();
+		if(ff==""){
+			item="add";
+		}else{
+			item="updata";
+		}
+		if(Ext.getCmp('add').getForm().isValid()){
+			$.post(
+			"/client/"+item,
+			{
+				"FIndustry":Ext.getCmp("fFIndustry").getValue(),
+				"FCord":Ext.getCmp("fFCord").getValue(),
+				"FId":Ext.getCmp("fFId").getValue(),
+				"FName":Ext.getCmp("fFName").getValue(),
+				"FLegalPerson":Ext.getCmp("fFLegalPerson").getValue(),
+				"FPrincipar":Ext.getCmp("fFPrincipar").getValue(),
+				"FAddress":Ext.getCmp("fFAddress").getValue(),
+				"FZipCord":Ext.getCmp("fFZipCord").getValue(),
+				"FTel":Ext.getCmp("fFTel").getValue(),
+				"FFax":Ext.getCmp("fFFax").getValue(),
+				"FEmail":Ext.getCmp("fFEmail").getValue(),
+				"FIndustryName":Ext.getCmp("fFIndustryName").getValue(),
+				"FBank":Ext.getCmp("fFBank").getValue(),
+				"FAccount":Ext.getCmp("fFAccount").getValue(),
+				"FPossition":Ext.getCmp("fFPossition").getValue(),
+				"FPossition":Ext.getCmp("fFPossition").getValue(),
+				"FEntryPeople":Ext.getCmp("fFEntryPeople").getValue(),
+				"FEntryTime":Ext.getCmp("fFEntryTime").getValue()
+			},
+			function(data){
+				if(data){
+					if(data.success){
+						showMessage(data.message);
+						dataStore.reload({params:{start:0, limit:10}});
+						myPanel.layout.setActiveItem(grid);
+					}else{
+						showMessage(data.message);
+					}
+				}else{
+					showMessage("网络错误！请稍后再试");
+				}
+			},
+			"JSON"
+			);	
+		}else{
+			showMessage("请检查是否有必填项未录入!");
+		}
+	}
+	function selectc(){
+		var way=$.trim(Ext.getCmp("cselect").value);
+		var iterm=$.trim(Ext.getCmp("select").getValue());
+		if(iterm==""){
+			showMessage("请选择查询方式!");
+		}else{
+			if(way==""){
+				showMessage("请输入查询条件!");
+			}else{
+				dataStore.lastOptions=null;
+			    dataStore.baseParams={
+			    	Way:way,
+			    	Iterm:iterm
+			    }
+			    dataStore.reload({params:{start:0, limit:10}});
+			}
+		}
+	}
+	function possitionEdit(btn){
+		var tway=btn.text.substring(13,15);
+		var records=Ext.getCmp('grid').selModel.getSelections();
+		if(records.length<1){
+			showMessage("请选择需要"+tway+"的公司!");
+			return false;
+		}
+		var p=[];
+		for(var i=0;i<records.length;i++){
+			if(records[i].get("FPossition")==tway){
+				p.push("<font color='blue'>"+records[i].get("FName")+"</font>");
+			}
+		}
+		p.join("]</br>[");
+		if(p.length>0){
+			showMessage("["+p+"] </br>"+p.length+"家公司已处于"+tway+"状态，请重新选择");
+			return false;
+		}
+		var ids=[];
+		var names=[];
+		for(var i=0;i<records.length;i++){
+			ids.push(records[i].get('FId'));
+			names.push(records[i].get('FName'));
+		}
+		if(ids.length>0){
+				Ext.Msg.confirm('系统提示','确认要'+tway+"<font color='blue'>["+names.join(']</br>[')+"]  "+"</font>吗？",function(infobtn){
+				if(infobtn=="yes"){
+					$.post(
+						"/client/enOrDis",
+						{
+							"Ids":ids.join(','),
+							"FWay":tway
+						},
+						function(data){
+							if(data){
+								if(data.success){
+									showMessage("["+names.join('],[')+"]  "+data.message);
+									dataStore.reload();
+								}else{
+									showMessage(names.join(',  ')+data.message);
+								}
+							}else{
+								showMessage("网络错误！");
+							}
+						}
+					);
+				}
+			});
+		}
+	}
+	function dataren(val){
+		return "<font size=2>"+val+"</font>";
+	}
+	var mainViewport = new Ext.Viewport({
+			id : 'mainViewport',
+			layout : 'fit',
+			border : false,
+			items : [myPanel]
+		});	
+		//dataStore.load();
+	});
+	</script>
+
+  </head>
+  
+  <body>
+
+  </body>
+</html>

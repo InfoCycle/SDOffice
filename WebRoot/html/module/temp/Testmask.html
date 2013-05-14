@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> New Document </TITLE>
+  <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+  <script type="text/javascript" src="ui.core.js"></script>
+  <script type="text/javascript" src="ui.mask.js"></script>
+ </HEAD>
+
+ <BODY>
+ <form>
+	<input type="text" name="phoneExt" id="phoneExt" /></br>
+	<input type="text" name="Number" id="Number" style="width:380px;"/>
+</form>
+</form>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#phoneExt").mask({mask: "(###) ###-#### x#####"});
+		$('#Number').mask({mask: '[\\u4e00-\\u9fa5]####-##-#################################################-####-##-####', enableInlineDefs: true});
+	});
+</script>
+ </BODY>
+</HTML>

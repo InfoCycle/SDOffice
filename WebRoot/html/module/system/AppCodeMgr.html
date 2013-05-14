@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>系统代码维护</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+
+</head>
+
+<body>
+
+</body>
+</html>
+<script type="text/javascript">
+
+var codeTypeDS = new Ext.data.JsonStore({
+	url: '/system/SvrService/CodeService/1',
+    idProperty: 'FId',
+    root: 'root',
+    totalProperty: 'totalProperty',
+    autoLoad:true,
+    fields: [
+        {name: 'FId'},
+        {name: 'FName'},
+        {name: 'FContent'},
+        {name: 'FSort'},
+        {name: 'FState'}
+    ]
+});
+
+var codeDS = new Ext.data.JsonStore({
+	url: '/system/SvrService/CodeService/2/',
+    idProperty: 'FId',
+    root: 'root',
+    totalProperty: 'totalProperty',
+    fields: [
+       {name: 'FId'},
+       {name: 'FCode'},
+       {name: 'FCodeText'},
+       {name: 'fkCodeTypeId'},
+       {name: 'FState'},
+       {name: 'FSort'},
+       {name: 'FCreateTime'}
+    ]
+});
+
+	Ext.onReady(function(){	
+		var obj=checkUserLogin();	
+	    if(!obj) return;
+		Ext.QuickTips.init();
+	    Ext.form.Field.prototype.msgTarget = 'side';
+		var mainViewport= new Ext.Viewport({
+			id: 'MainViewport',
+		    layout: 'fit',
+		    items: [
+		        {
+		            xtype: 'panel',
+		            id: 'mainPanel',
+		            layout: 'border',
+		            tbar: {
+	                    xtype: 'toolbar',
+	                    items: [
+	                        {
+	                            xtype: 'button',
+	                            iconCls:'new',
+	                            text: '增加类型',
+	                            handler:function(){
+	                            	Ext.getCmp("codeTypeForm").getForm().reset();
+	                            }
+	                        },{
+	                            xtype: 'button',
+	                            iconCls:'save',
+	                            text: '保存类型',
+	                            handler:function(){
+	                            	var form = Ext.getCmp("codeTypeForm").getForm();
+	                            	if (form.isValid()){
+	                            		Ext.Ajax.request({
+	                            			url:'/system/SvrService/CodeService/3',
+	                            			method : 'post',
+	                            			params : {
+	                            				FId:Ext.getCmp('FId').getValue(),
+	                            				FName:Ext.getCmp('FName').getValue(),
+	                            				FContent:Ext.getCmp('FContent').getValue(),
+	                            				FSort:Ext.getCmp('FSort').getValue(),
+	                            				FState:getChecked(Ext.getCmp('FState').checked)
+	                            			},
+	                            			success : function(response){
+	                            				var responseArray = Ext.util.JSON.decode(response.responseText);
+	                            				if(responseArray.success){
+	                            					codeTypeDS.reload();
+	                            				}else{
+	                            					Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'数据保存失败！',
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.WARNING
+	                            					});
+	                            				}
+	                            					
+	                            			},
+	                            			failure : function(response) {
+	                            			}
+	                            		});
+	                            	}	                            	
+	                            }
+	                        }
+	                    ]
+	                },
+		            items: [
+		                {
+		                    xtype: 'grid',
+		                    width: 280,
+		                    id:'codeTypeGrid',
+		                    store: codeTypeDS,
+		                    region: 'west',
+		                    columns: [
+								new Ext.grid.RowNumberer(),
+		                        {
+		                            xtype: 'gridcolumn',
+		                            dataIndex: 'FId',
+		                            header: '编号',
+		                            sortable: true,
+		                            width: 80
+		                        },{
+		                        	xtype: 'gridcolumn',
+		                            dataIndex: 'FName',
+		                            header: '名称',
+		                            sortable: true,
+		                            width: 100
+		                        },{
+		                        	xtype: 'gridcolumn',
+		                            dataIndex: 'FState',
+		                            header: '状态',
+		                            width: 60,
+		                            renderer: function (value) {
+		                                return value == 1 ? "启用" : "停用";
+		                            }
+		                        }
+		                    ],
+		                    sm:new Ext.grid.RowSelectionModel({  
+		                        singleSelect: true,  
+		                        listeners: {  
+					                rowselect: function(sm, row, rec) {  
+					                    Ext.getCmp("codeTypeForm").getForm().loadRecord(rec);
+					                    Ext.getCmp("FState").checked=rec.data.FState==1?true:false;
+					                    codeDS.baseParams.typeId=rec.data.FId;
+					        			codeDS.load();
+					                }  
+					            }  
+		                    })  
+		                },
+		                {
+		                    xtype: 'panel',
+		                    id: 'contentPanel',
+		                    layout: 'border',
+		                    margins: '0 0 0 2',
+		                    region: 'center',
+		                    items: [
+		                        {
+		                            xtype: 'form',
+		                            id:'codeTypeForm',
+		                            height: 180,
+		                            frame:true,
+		                            region: 'north',
+		                            labelAlign: 'right',
+		                            items: [
+		                                {
+		                                    xtype: 'hidden',
+		                                    id: 'FId'
+		                                },
+		                                {
+		                                    xtype: 'textfield',
+		                                    id: 'FName',
+		                                    anchor: '40%',
+		                                    allowBlank: false,
+		                                    blankText: '名称不能为空',
+		                                    emptyText: '请输入类型名称',
+		                                    fieldLabel: '名称'
+		                                },
+		                                {
+		                                    xtype: 'textarea',
+		                                    id: 'FContent',
+		                                    anchor: '60%',
+		                                    fieldLabel: '备注'
+		                                },
+		                                {
+		                                    xtype: 'numberfield',
+		                                    id: 'FSort',
+		                                    anchor: '40%',
+		                                    allowBlank: false,
+		                                    blankText: '排序不能为空',
+		                                    emptyText: '请输入类型排序',
+		                                    fieldLabel: '排序'
+		                                },
+		                                {
+		                                    xtype: 'checkbox',
+		                                    id: 'FState',
+		                                    checked: true,
+		                                    boxLabel: '启用',
+		                                    anchor: '60%',		                                    
+		                                    fieldLabel: '状态'
+		                                }
+		                            ]
+		                        },
+		                        {
+		                            xtype: 'grid',
+		                            id: 'codeGrid',	                            
+		                            store: codeDS,
+		                            region: 'center',
+		                            sm:new Ext.grid.RowSelectionModel({  
+				                        singleSelect: true
+		                            }),
+		                            listeners: {
+			                        	dblclick:function(grid, rowIndex, e){
+			                        		editCode();
+	                            		}
+	                            	},
+		                            columns: [
+		                                {
+		                                    xtype: 'gridcolumn',
+		                                    dataIndex: 'FId',
+		                                    header: '编号',
+		                                    sortable: true,
+		                                    width: 100
+		                                },{
+		                                    xtype: 'gridcolumn',
+		                                    dataIndex: 'FCode',
+		                                    header: '编码',
+		                                    sortable: true,
+		                                    width: 100
+		                                },{
+		                                    xtype: 'gridcolumn',
+		                                    dataIndex: 'FCodeText',
+		                                    header: '编码名称',
+		                                    sortable: true,
+		                                    width: 100
+		                                },{
+		    	                        	xtype: 'gridcolumn',
+		    	                            dataIndex: 'FState',
+		    	                            header: '状态',
+		    	                            width: 100,
+		    	                            renderer: function (value) {
+		    	                                return value == 1 ? "启用" : "停用";
+		    	                            }
+		    	                        },{
+		                                    xtype: 'gridcolumn',
+		                                    dataIndex: 'FSort',
+		                                    header: '排序',
+		                                    sortable: true,
+		                                    width: 100
+		                                },{
+		                                    xtype: 'gridcolumn',
+		                                    dataIndex: 'FCreateTime',
+		                                    header: '时间',
+		                                    width: 130
+		                                }
+		                            ],
+		                            tbar:[
+		                                {
+		                            	   text:'增加代码',
+		                            	   iconCls:'newItem',
+		                            	   handler:function(){
+		                            		   if(Ext.getCmp('FId').getValue())
+		                            			{
+		                            			   Ext.getCmp("codeForm").getForm().reset();
+		                            			   Ext.getCmp("CFState").setValue(true);
+		                            			   Ext.getCmp("CfkCodeTypeId").setValue(Ext.getCmp('FId').getValue());
+		                            			   window.show();
+		                            			}else{
+		                            				Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'未选择代码类型。无法新增代码！',
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.WARNING
+	                            					});
+		                            		   }		                            			   
+		                            	   }
+		                            	},
+		                                {
+		                            		text:'修改代码',
+		                            		iconCls:'edit',
+		                            		handler:function(){
+		                            			editCode();
+		                            		}
+		                            	}
+		                            ]
+		                        }
+		                    ]
+		                }
+		            ]
+		        }
+		    ]
+		});
+		
+		var window = new Ext.Window({
+		    height: 194,
+		    width: 452,
+		    modal: true,
+		    closeAction: 'hide',
+		    layout: 'border',
+		    title: '代码',
+		    items: [
+		        {
+		            xtype: 'form',
+		            frame: true,
+		            id: 'codeForm',
+		            region: 'center',
+		            labelAlign: 'right',
+		            tbar: {
+		                xtype: 'toolbar',
+		                items: [
+		                    {
+		                        xtype: 'button',
+		                        iconCls:'save',
+	                            text: '保存代码',
+	                            handler:function(){
+	                            	var form = Ext.getCmp("codeForm").getForm();
+	                            	if (form.isValid()){
+	                            		Ext.Ajax.request({
+	                            			url:'/system/SvrService/CodeService/4',
+	                            			method : 'post',
+	                            			params : {
+	                            				FId:Ext.getCmp('CFId').getValue(),
+	                            				fkCodeTypeId:Ext.getCmp('CfkCodeTypeId').getValue(),
+	                            				FCode:Ext.getCmp('CFCode').getValue(),
+	                            				FCodeText:Ext.getCmp('CFCodeText').getValue(),	                            				
+	                            				FSort:Ext.getCmp('CFSort').getValue(),
+	                            				FState:getChecked(Ext.getCmp('CFState').checked)
+	                            			},
+	                            			success : function(response){
+	                            				var responseArray = Ext.util.JSON.decode(response.responseText);
+	                            				if(responseArray.success){
+	                            					codeDS.reload();
+	                            					window.hide();
+	                            				}else{
+	                            					Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'数据保存失败！',
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.WARNING
+	                            					});
+	                            				}
+	                            					
+	                            			},
+	                            			failure : function(response) {
+	                            			}
+	                            		});
+	                            	}	                            	
+	                            }
+		                    }
+		                ]
+		            },
+		            items: [
+		                {
+		                    xtype: 'hidden',
+		                    id: 'CFId',
+		                    anchor: '80%',
+		                    fieldLabel: 'Label'
+		                },
+		                {
+		                    xtype: 'hidden',
+		                    id: 'CfkCodeTypeId',
+		                    anchor: '80%',
+		                    fieldLabel: 'Label'
+		                },
+		                {
+		                    xtype: 'textfield',
+		                    id: 'CFCode',
+		                    allowBlank: false,
+		                    blankText: '编码不能为空',
+		                    anchor: '80%',
+		                    fieldLabel: '编码'
+		                },
+		                {
+		                    xtype: 'textfield',
+		                    id: 'CFCodeText',
+		                    allowBlank: false,
+		                    blankText: '代码名称不能为空',
+		                    anchor: '80%',
+		                    fieldLabel: '代码名称'
+		                },
+		                {
+		                    xtype: 'checkbox',
+		                    id: 'CFState',
+		                    boxLabel: '启用',
+		                    checked: true,
+		                    anchor: '80%',
+		                    fieldLabel: '状态'
+		                },
+		                {
+		                    xtype: 'numberfield',
+		                    id: 'CFSort',
+		                    allowBlank: false,
+		                    blankText: '排序不能为空',
+		                    anchor: '80%',
+		                    fieldLabel: '排序'
+		                }
+		            ]
+		        }
+		    ]
+		});
+		function editCode(){
+			var grid =Ext.getCmp("codeGrid");
+			var rec =grid.getSelectionModel().getSelected();
+			if(rec){
+				Ext.getCmp('CFId').setValue(rec.data.FId);
+				Ext.getCmp('CfkCodeTypeId').setValue(rec.data.fkCodeTypeId);
+				Ext.getCmp('CFCode').setValue(rec.data.FCode);
+				Ext.getCmp('CFCodeText').setValue(rec.data.FCodeText);	                            				
+				Ext.getCmp('CFSort').setValue(rec.data.FSort);
+				Ext.getCmp('CFState').checked=rec.data.FState==1?true:false;
+				window.show();
+			}else{
+				Ext.MessageBox.show({
+					title:'系统提示',
+					msg:'未选择代码数据。无法修改代码！',
+					width:300,
+					buttons: Ext.Msg.OK,
+					icon: Ext.MessageBox.WARNING
+				});
+			}
+		}		
+	});
+</script>

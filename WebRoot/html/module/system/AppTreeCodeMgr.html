@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>树形代码维护</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+	<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+	<link rel="stylesheet" href="../../css/treenodeicon.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+	<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+	<script type="text/javascript" src="../../ext/ext-all.js"></script>
+	<script type="text/javascript" src="../../ext/ux/TreeCheckNodeUI.js"></script>
+	<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+	<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript" src="../../js/HYPY.js"></script>
+	 <script type="text/javascript">
+		Ext.BLANK_IMAGE_URL = '../../ext/resources/images/default/s.gif';
+        Ext.QuickTips.init();
+        Ext.form.Field.prototype.msgTarget = 'side';
+        var pSize = 15;
+        var mcard,mlayout;
+        var selectCodeType=null,selectCode=null;
+		var treeloader = null;
+		var root=null;
+		var CodeTree=null;
+		var SelectCodeTreeNode=null;
+		var CodeStore=null;
+		var CodeGrid=null;
+        function setCardActiveItem(id,index){
+        		mcard = Ext.getCmp(id);
+				mlayout = mcard.getLayout();					
+				mlayout.setActiveItem(index);
+        }
+		function LoadTree(id,text){
+				//CodeTree.setRootNode(root);
+				 //加载数据代码到CodeGrid中
+				/*CodeStore.on('beforeload', function() {
+					CodeStore.baseParams = {
+					start: 0, limit: pSize, fkTreeCodeTypeId:id
+					}
+				});
+				CodeStore.load({callback:function(){
+					root = new Ext.tree.AsyncTreeNode({
+						id: id,
+						parent:-1,
+						fkTreeCodeTypeId:0,
+						draggable: false,
+						expanded: true,
+						text: text
+					});
+					CodeTree.setRootNode(root);				
+					CodeTree.loader.dataUrl='/system/SvrService/TreeCodeServiceGetCode/'+id;
+					CodeTree.render();
+					CodeTree.doLayout();
+				}});*/
+				root = new Ext.tree.AsyncTreeNode({
+					id: id,
+					parent:-1,
+					fkTreeCodeTypeId:0,
+					draggable: false,
+					expanded: true,
+					text: text
+				});
+				CodeTree.setRootNode(root);				
+				CodeTree.loader.dataUrl='/system/SvrService/TreeCodeServiceGetCode/'+id;
+				CodeTree.render();
+				CodeTree.doLayout();
+			}
+		var CodeTypeSM = new Ext.grid.CheckboxSelectionModel({
+            singleSelect: true,
+			listeners: {  
+				 rowselect: function(sm, row, rec) {						
+					 Ext.getCmp("codeTypeFormPanel").getForm().loadRecord(rec);
+					 Ext.getCmp("FState").checked=rec.data.FState==1?true:false;
+					 Ext.getCmp('butAddCode').setDisabled(false);
+
+					 Ext.getCmp('CFCode').focus(true,100);
+					 Ext.getCmp('CFId').setValue(rec.get('FId'));
+						Ext.getCmp('CFParentId').setValue(-1);
+						Ext.getCmp('CfkTreeCodeTypeId').setValue(0);
+						Ext.getCmp('CFCode').setValue("");
+						Ext.getCmp('CFCodeText').setValue(rec.get("FName"));
+						Ext.getCmp('CFSort').setValue();
+						Ext.getCmp('CFState').setValue();
+
+					 LoadTree(rec.get('FId'),rec.get('FName'));
+
+					 Ext.getCmp('CFId').disable();
+					 Ext.getCmp('CFParentId').disable();
+					 Ext.getCmp('CfkTreeCodeTypeId').disable();
+					 Ext.getCmp('CFCode').disable();
+					 Ext.getCmp('CFCodeText').disable();
+					 Ext.getCmp('CFSort').disable();
+					 Ext.getCmp('CFState').disable();
+					 //加载数据代码到CodeGrid中
+					 //CodeStore.load({ params: { start: 0, limit: pSize, fkTreeCodeTypeId: rec.get('FId')} });
+					 //codeDS.baseParams.typeId=rec.data.FId;
+					 //codeDS.load();
+				 }  
+			}
+        });
+        //返回被选择的行的FID
+            function getSelectedIdArray(gridid) {
+                var objectgrid = Ext.getCmp(gridid);
+                var record = objectgrid.getSelectionModel().getSelections();
+                if (record == null || record.length == 0) return null;
+                var array = new Array(record.length);
+                for (var i = 0; i < record.length; i++) {
+                    array[i] = record[i].get('F_ID');
+                }
+                return array;
+            }
+			
+            /********************树形代码Grid控件*************************/
+            //数据源
+            var CodeTypeStore = new Ext.data.Store({  //数据源
+                        proxy: new Ext.data.HttpProxy({ url: '/system/SvrService/TreeCodeService/1' }),
+                        reader: new Ext.data.JsonReader({
+                            totalProperty: 'totalProperty',
+                            root: 'root',
+                            successProperty: 'success'
+                        }, [
+                         { name: 'FId', mapping: 'FId', type: 'string' },
+                         { name: 'FName', mapping: 'FName', type: 'string' },
+                         { name: 'FContent', mapping: 'FContent', type: 'string' },
+                         { name: 'FSort', mapping: 'FSort', type: 'string' },
+                         { name: 'FState', mapping: 'FState', type: 'string' }
+                    ])
+            });
+						var  CodeTypeGrid=new Ext.grid.GridPanel({
+									//title: "树形代码类别列表",                    
+									//applyTo: 'codeGridP',                       
+			                        id: 'codetypeGrid',
+			                        store: CodeTypeStore,   //设置数据源
+									//height: Ext.getCmp('codeGridP').getHeight(),						
+									region: 'center',
+			                        selModel: new Ext.grid.RowSelectionModel({
+			                            singleSelect: true										
+			                        }),
+			                        columns: [new Ext.grid.RowNumberer(), CodeTypeSM, {
+			                            header: "编号",dataIndex: "FId",width: 55,align: "center",hidden: false
+			                        }, {
+			                            header: "代码类别名称",dataIndex: "FName",width: 150,align: "center"
+			                        }, {
+			                            header: "内容",width: 180,dataIndex: "FContent",hidden: true
+			                        }, {
+			                            header: "序号",width: 50,dataIndex: "FSort",hidden: false
+			                        }, {
+			                            header: "状态",width: 55,dataIndex: "FState",renderer: function (value) {
+											return value == 1 ? "启用" : "停用";
+										}
+			                        }],
+			                        sm: CodeTypeSM,
+			                        loadMask: { msg: "数据加载中...." },
+			                        tbar: ["    ", 
+			                        			{xtype: 'tbbutton',text: "新增代码类型",iconCls: 'insert',handler: function(){
+			                        					CodeTypeFormPanel.getForm().reset();																				
+														Ext.getCmp('FName').focus(true,100);																				
+												},scope: this},
+			                        			//{xtype: 'tbbutton',text: "修改",iconCls: 'edit',handler: function(){},scope: this},
+			                        			{xtype: 'tbbutton',text: "查询所有代码",iconCls: 'icon-query',handler: function(){
+			                        				Ext.apply(CodeTypeGrid.store, {
+				                                    		params:{
+				                                    			start: 0, limit: pSize
+				                                    		}
+				                                    });
+			                        				CodeTypeGrid.store.load();				                            	   
+			                        			},scope: this}
+			                            ]
+									/*,bbar: new Ext.PagingToolbar({
+			                            pageSize: pSize,
+			                            store: CodeTypeStore, //设置数据源
+			                            displayInfo: true,
+			                            displayMsg: "当前 {0}-{1} 条记录 /共 {2} 条记录",
+			                            emptyMsg: "无显示数据"
+			                        })*/
+						});			
+            
+                    //this.getStore().baseParams.action = 'GetAll';
+                    //this.getStore().load({ params: { start: 0, limit: pSize} });
+                    //this.DOCheck.on("OnButtonClick", this.OnButtonClick, this); //捕获Window中的OnButtonClick事件               
+
+			//CodeTypeStore.baseParams.action = 'GetAll';
+			//Load CodeType Data			
+			///////////////////////////////////////////////////////////
+			 var CodeSM = new Ext.grid.CheckboxSelectionModel({
+                singleSelect: false
+            });
+          CodeStore = new Ext.data.Store({  //数据源
+                        proxy: new Ext.data.HttpProxy({ url: '/system/SvrService/TreeCodeService/8' }),
+                        reader: new Ext.data.JsonReader({
+                            totalProperty: 'totalProperty',
+                            root: 'root',
+                            successProperty: 'success'
+                        }, [
+                         { name: 'FId', mapping: 'FId', type: 'string' },
+                         { name: 'FParentId', mapping: 'FParentId', type: 'string' },
+                         { name: 'fkTreeCodeTypeId', mapping: 'fkTreeCodeTypeId', type: 'string' },
+						 { name: 'FCode', mapping: 'FCode', type: 'string' },
+						 { name: 'FCodeText', mapping: 'FCodeText', type: 'string' },
+                         { name: 'FSort', mapping: 'FSort', type: 'string' },
+						 { name: 'FCreateTime', mapping: 'FCreateTime', type: 'string' },
+						 { name: 'te', mapping: 'te', type: 'string' },
+                         { name: 'FState', mapping: 'FState', type: 'string'}
+                    ])
+            });			
+		  CodeGrid= new Ext.grid.GridPanel({
+				title: "树形代码列表",
+                        //renderTo: 'mp',//Ext.getBody(),
+						//applyTo: 'panelGrid',                       
+                        id: 'codeGrid',
+						region: 'center',
+						//height: Ext.getCmp('panelGrid').getHeight(),
+                        store: CodeStore,   //设置数据源
+                        selModel: new Ext.grid.RowSelectionModel({
+                            singleSelect: true
+                        }),
+                        columns: [new Ext.grid.RowNumberer(), CodeSM, {
+                            header: "系统ID",dataIndex: "FId",width: 55,align: "center",hidden:true
+                        }, {dataIndex: "FParentId",hidden:true},{dataIndex: "fkTreeCodeTypeId",hidden:true},{
+                            header: "代码编码",dataIndex: "FCode",width: 100,align: "center"
+                        }, {
+                            header: "代码名称",width: 180,dataIndex: "FCodeText"
+                        },{ header: "代码名称层次",width: 180,dataIndex: "te"}, {
+                            header: "序号",width: 80,dataIndex: "FSort"
+                        }, {
+                            header: "状态",width: 60,dataIndex: "FState",renderer: function (value) {
+											return value == 1 ? "启用" : "停用";
+										}
+                        },{header: "创建时间",width: 100,dataIndex: "FCreateTime"}],
+                        sm: CodeSM,
+                        loadMask: { msg: "数据加载中...." },
+                        tbar: ["    "],
+                        bbar: new Ext.PagingToolbar({
+                            pageSize: pSize,
+                            store: CodeStore, //设置数据源
+                            displayInfo: true,
+                            displayMsg: "当前 {0}-{1} 条记录 /共 {2} 条记录",
+                            emptyMsg: "无显示数据"
+                        })
+			});			 
+			/////////////////////////////////////////////////////////////////////////////
+			var  CodeTypeFormPanel=new Ext.form.FormPanel({
+				defaultType: "textfield",
+                        //baseCls: "x-plain", //应用容器控件背景颜色
+                        bodyStyle: "padding:5 0 0 5;background-color:#dfe8f6; border-width: 1px 1px 0px 1px;", //设置border样式
+						//applyTo: 'panelForm',
+						padding:'5px 5px 5px 5px',
+						id: 'codeTypeFormPanel',						
+						title: "代码类别详细信息",                        						
+                        labelWidth: 55,
+						region: 'center',
+                        defaults: { anchor: "90%" }, //使用锚点布局设置缺省控件宽度
+                        items: [{xtype: 'hidden',id: 'FId' },
+								{xtype: 'textfield',id: 'FName',anchor: '95%',readOnly:false,allowBlank:false,
+									blankText:"代码类别不能为空",fieldLabel: '名称',maxLength: 50,maxLengthText: '名称不能超过50个字符'
+								},{xtype:'textarea',id:'FContent',anchor:'95%',allowBlank:false,fieldLabel: '内容',maxLength: 200,maxLengthText: '内容不能超过200个字符'
+								},{xtype: 'numberfield',id: 'FSort',anchor: '95%',readOnly:false,allowBlank:false,
+									blankText:"序号不能为空",fieldLabel: '序号'
+								},{xtype: 'checkbox',id: 'FState',checked: true,boxLabel: '启用',anchor: '95%',readOnly:false,fieldLabel: '状态'
+								}],
+						tbar: ["&nbsp;&nbsp;&nbsp;&nbsp;", 
+                        			{xtype: 'tbbutton',text: "保存代码类型",iconCls: 'save',handler: function(){
+										//var form = Ext.getCmp("codeTypeFormPanel").getForm();
+	                            	    if (CodeTypeFormPanel.getForm().isValid()){
+                        					var submit = function(v, h, f) {
+												if (v == 'ok') {
+													 $.jBox.tip("正在保存，请稍等...", 'loading');
+													 $.post("/system/SvrService/TreeCodeService/3", {
+														FId:Ext.getCmp('FId').getValue(),								
+														FName:Ext.getCmp('FName').getValue(),
+														FContent:Ext.getCmp('FContent').getValue(),
+														FSort:Ext.getCmp('FSort').getValue(),
+														FState:getChecked(Ext.getCmp('FState').checked)
+													 }, function(data) {
+																 if(data.success){
+																	//Ext.getCmp("btnPost").setDisabled(true);
+																	//Ext.getCmp("btnCancle").setDisabled(true);
+																	 CodeTypeStore.load({ params: { start: 0, limit: pSize} });
+																	 $.jBox.tip('保存成功。', 'success');
+																 }
+																 else																							
+																	 $.jBox.tip('保存失败，请检查网络或联系系统管理员！', 'error');
+																 }, "json");																					
+																 } else if (v == 'cancel') {
+																	 // 取消
+																 }
+																 return true;															 
+															 };
+														 $.jBox.confirm("确定要保存吗？", "重要提示", submit);											
+										}
+                        				},scope: this},
+                        			{xtype: 'tbbutton',text: "添加代码", id: 'butAddCode',disabled:true, iconCls: 'add',handler: function(){                        					
+                        					setCardActiveItem('CardMain',1);
+                        					//CodeFormPanel.getForm().reset();																				
+											Ext.getCmp('CFCode').focus(true,100);											
+                        				},scope: this}
+                            ]
+			});
+			var CodeFormPanel = new Ext.form.FormPanel({
+				defaultType: "textfield",
+                        //baseCls: "x-plain", //应用容器控件背景颜色
+                        bodyStyle: "padding:5 5 5 5;background-color:#dfe8f6; border-width: 0px 1px 0px 1px;", //设置border样式
+						//applyTo: 'panelCodePorm',
+						padding:'5px 5px 5px 5px',
+						id: 'codeFormPanel',					
+						region: 'center',//'north',
+						//height: Ext.getCmp('panelForm').getHeight(),
+						title: "代码详细信息",                        						
+                        labelWidth: 85,
+                        defaults: { anchor: "90%" }, //使用锚点布局设置缺省控件宽度
+                        items: [{xtype: 'numberfield',id: 'CFId',readOnly: true,fieldLabel: '系统编号' },
+						{xtype: 'numberfield',anchor: '95%',id: 'CFParentId',fieldLabel: '上级ID', readOnly: true },
+						{xtype: 'numberfield',anchor: '95%',id: 'CfkTreeCodeTypeId',fieldLabel: '代码类别ID', readOnly: true },
+								{xtype: 'textfield',id: 'CFCode',anchor: '95%',readOnly:false,allowBlank:false,
+									blankText:"代码编码不能为空",fieldLabel: '代码编码',maxLength: 20,maxLengthText: '代码编码不能超过20个字符'
+								},{xtype:'textfield',id:'CFCodeText',anchor:'95%',allowBlank:false,fieldLabel: '代码名称',maxLength: 100,maxLengthText: '代码名称不能超过100个字符',
+									listeners : {
+										'blur': function(){
+											Ext.getCmp('CFCode').setValue(makePy(Ext.getCmp('CFCodeText').getValue().trim()));
+										},
+										'change': function(field,newValue,oldValue){
+											Ext.getCmp('CFCode').setValue(makePy(Ext.getCmp('CFCodeText').getValue().trim()));
+										}
+									}
+								},{xtype: 'numberfield',id: 'CFSort',anchor: '95%',readOnly:false,allowBlank:false,
+									blankText:"序号不能为空",fieldLabel: '序号'
+								},{xtype: 'checkbox',id: 'CFState',checked: true,boxLabel: '启用',anchor: '95%',readOnly:false,fieldLabel: '状态'
+								}],
+						tbar: ["    ",
+									{xtype: 'tbbutton',text: "新增同级代码",iconCls: 'insert',handler: function(){
+											if(SelectCodeTreeNode==null){
+												$.jBox.tip('请先选择节点！', 'error');
+												return false;
+											}
+											if(Ext.getCmp('CFParentId').getValue()==-1){
+												$.jBox.tip('根节点不能添加同级节点！', 'error');
+												return false;
+											}
+                        					CodeFormPanel.getForm().reset();											
+											Ext.getCmp('CFCode').focus(true,100);
+
+											//初始表单信息
+											Ext.getCmp('CFId').setValue(0);
+											Ext.getCmp('CFParentId').setValue(SelectCodeTreeNode.attributes.parent);
+											Ext.getCmp('CfkTreeCodeTypeId').setValue(CodeTree.getRootNode().id);
+											Ext.getCmp('CFCode').setValue("");
+											Ext.getCmp('CFCodeText').setValue("");
+											Ext.getCmp('CFSort').setValue(0);
+											Ext.getCmp("CFState").checked=true;
+                        				},scope: this},
+									{xtype: 'tbbutton',text: "新增下级代码",iconCls: 'insert',handler: function(){
+											if(SelectCodeTreeNode==null){
+												$.jBox.tip('请先选择节点！', 'error');
+												return false;
+											}
+                        					CodeFormPanel.getForm().reset();																				
+											Ext.getCmp('CFCode').focus(true,100);
+											//初始表单信息											
+											Ext.getCmp('CFId').setValue(0);
+											Ext.getCmp('CFParentId').setValue(SelectCodeTreeNode.id);
+											/*if(SelectCodeTreeNode.attributes.parent==-1)
+												 Ext.getCmp('CfkTreeCodeTypeId').setValue(SelectCodeTreeNode.attributes.id);
+											else Ext.getCmp('CfkTreeCodeTypeId').setValue(SelectCodeTreeNode.attributes.parent);*/											
+											Ext.getCmp('CfkTreeCodeTypeId').setValue(CodeTree.getRootNode().id);
+											Ext.getCmp('CFCode').setValue("");
+											Ext.getCmp('CFCodeText').setValue("");
+											Ext.getCmp('CFSort').setValue(0);
+											Ext.getCmp("CFState").checked=true;
+											
+											Ext.getCmp('CFId').enable();
+											Ext.getCmp('CFParentId').enable();
+											Ext.getCmp('CfkTreeCodeTypeId').enable();
+											Ext.getCmp('CFCode').enable();
+											Ext.getCmp('CFCodeText').enable();
+											Ext.getCmp('CFSort').enable();
+											Ext.getCmp('CFState').enable();
+                        				},scope: this},                        			
+                        			{xtype: 'tbbutton',text: "保存",iconCls: 'save',handler: function(){
+                        				if(Ext.getCmp('CFParentId').getValue()==-1){
+											$.jBox.tip('根节点不能修改！', 'error');
+											return false;
+										}
+										if (CodeFormPanel.getForm().isValid()){													
+		                        					var submit = function(v, h, f) {
+														if (v == 'ok') {
+															$.jBox.tip("正在保存代码，请稍等...", 'loading');
+															$.post("/system/SvrService/TreeCodeService/4", {
+																FId : Ext.getCmp('CFId').getValue(),
+																FParentId : Ext.getCmp('CFParentId').getValue(),
+																fkTreeCodeTypeId : Ext.getCmp('CfkTreeCodeTypeId').getValue(),
+																FCode : Ext.getCmp('CFCode').getValue(),
+																FCodeText : Ext.getCmp('CFCodeText').getValue(),
+																FSort : Ext.getCmp('CFSort').getValue(),
+																FState : getChecked(Ext.getCmp('CFState').checked)
+															 }, function(data) {
+																if(data.success){
+																	//Ext.getCmp("btnPost").setDisabled(true);
+																	//Ext.getCmp("btnCancle").setDisabled(true);
+																	CodeTree.root.reload();
+																	CodeTree.render();
+																	$.jBox.tip('保存成功。', 'success');
+																}
+																else
+																	//$.jBox.error('提交失败，请检查网络或联系系统管理员！', '温馨提示');
+																	$.jBox.tip('保存失败，请检查网络或联系系统管理员！', 'error');
+																}, "json");																					
+															} else if (v == 'cancel') {
+																// 取消
+														}
+														return true;
+														//window.location.reload();
+													};
+													$.jBox.confirm("确定要保存吗？", "重要提示", submit);
+											}
+                        				},scope: this},
+										//{xtype: 'tbbutton',text: "修改",iconCls: 'edit',handler: function(){},scope: this},
+                        			{xtype: 'tbbutton',text: "删除",iconCls: 'delete',handler: function(){
+                        						return ;
+												if(SelectCodeTreeNode==null){
+													$.jBox.tip('请先选择节点！', 'error');
+													return false;
+												}
+												var submit = function(v, h, f) {
+														if (v == 'ok') {
+															$.jBox.tip("正在删除代码，请稍等...", 'loading');
+															$.post("/system/SvrService/TreeCodeService/7", {
+																FId : Ext.getCmp('CFId').getValue()
+															 }, function(data) {
+																if(data.success){	
+																	CodeFormPanel.getForm().reset();
+																	Ext.getCmp('CFCode').focus(true,100);
+																	SelectCodeTreeNode = null;
+																	CodeTree.render();
+																	$.jBox.tip('删除成功。', 'success');
+																}
+																else
+																	$.jBox.tip('删除失败，请检查网络或联系系统管理员！', 'error');
+																}, "json");																					
+															} else if (v == 'cancel') {
+																// 取消
+														}
+														return true;														
+													};
+													$.jBox.confirm("确定要删除吗？", "重要提示", submit);	  
+									},scope: this},
+                        			//{xtype: 'tbbutton',text: "查询",iconCls: 'icon-query',handler: function(){},scope: this},
+									{xtype: 'tbbutton',text: "返回",iconCls: 'icon-query',handler: function(){										
+											setCardActiveItem('CardMain',0);
+										},scope: this}
+                            ]
+			});			
+			///////////////////////////////////////////////////////////////////////////////////////////			
+			/*var treeloader =new Ext.tree.TreeLoader({
+				dataUrl:'/system/SvrService/TreeCodeServiceGetCode/-1',
+				baseAttrs: { uiProvider: Ext.ux.TreeCheckNodeUI } //添加 uiProvider 属性
+			});
+			*/
+			treeloader =new Ext.tree.TreeLoader({
+					dataUrl:'/system/SvrService/TreeCodeServiceGetCode/0'
+					//baseAttrs: { uiProvider: Ext.ux.TreeCheckNodeUI } //添加 uiProvider 属性
+			});
+			root = new Ext.tree.AsyncTreeNode({
+				id:"-100",
+				draggable:false,
+				expanded:true,
+				text:'树形代码'
+			});			
+			CodeTree = new Ext.tree.TreePanel({
+				id : 'codetree',	
+				title: '代码树',
+				collapsible:true,
+				rootVisible: true,
+				region : 'west',
+				split : true,
+				width: 256,
+				root :root,
+				margins: '0 2 0 0', 
+				autoScroll:true,
+				//checkModel:'single',
+		        //onlyLeafCheckable:true,
+				loader:treeloader,
+				listeners : {
+					expandnode: function(node,e){						
+						if (!node.isLeaf()) {						
+							this.on('beforeload',
+									function(node){
+										this.loader.dataUrl='/system/SvrService/TreeCodeServiceGetCode/'+node.id;				
+							});
+							this.render();
+							node.expand();
+							node.select();
+						}
+					},
+					click : function(node, e) {
+						e.stopEvent();
+						if (!node.isLeaf()) {						
+							this.on('beforeload',
+									function(node){
+										this.loader.dataUrl='/system/SvrService/TreeCodeServiceGetCode/'+node.id;				
+							});
+							this.render();
+							node.expand();
+							node.select();											
+						}						
+						SelectCodeTreeNode= node;						
+						Ext.getCmp('CFId').setValue(node.id);
+							Ext.getCmp('CFParentId').setValue(node.attributes.parent);
+							Ext.getCmp('CfkTreeCodeTypeId').setValue(node.attributes.fkTreeCodeTypeId);
+							Ext.getCmp('CFCode').setValue(node.attributes.FCode);
+							Ext.getCmp('CFCodeText').setValue(node.text);
+							Ext.getCmp('CFSort').setValue(node.attributes.FSort);
+							Ext.getCmp('CFState').setValue(node.attributes.FState);	
+						if(Ext.getCmp('CFParentId').getValue()==-1){
+							Ext.getCmp('CFId').disable();
+							Ext.getCmp('CFParentId').disable();
+							Ext.getCmp('CfkTreeCodeTypeId').disable();
+							Ext.getCmp('CFCode').disable();
+							Ext.getCmp('CFCodeText').disable();
+							Ext.getCmp('CFSort').disable();
+							Ext.getCmp('CFState').disable();
+						}else
+						{
+							Ext.getCmp('CFId').enable();
+							Ext.getCmp('CFParentId').enable();
+							Ext.getCmp('CfkTreeCodeTypeId').enable();
+							Ext.getCmp('CFCode').enable();
+							Ext.getCmp('CFCodeText').enable();
+							Ext.getCmp('CFSort').enable();
+							Ext.getCmp('CFState').enable();
+						}
+					},dblclick:function(node,e){
+						
+					},
+					"checkchange": function(node, state) {									
+						//查询项目经理
+						/*PersonsStore.lastOptions=null;
+						PersonsStore.baseParams.FOrgId=node.attributes.id;
+						PersonsStore.reload({callback:function(){
+							selectDeptNode=node;
+		        			if(PersonsStore.getCount()>0){
+		        				Ext.getCmp("PersonGrid").getSelectionModel().selectRow(0);
+		        			}
+		        		}})*/
+	            }
+				}
+			});			
+			///////////////////////////////////////////////////////////////////////////////////////////
+			var mpWest = new Ext.Panel({				
+				//collapsible:true,
+				id:'mpWest',
+				title:'树形代码类别列表',
+				collapsible:true,
+				width: 361,
+				split: true,
+				border: false,
+				region : 'west',
+				layout: 'border',
+				items:[CodeTypeGrid]
+			});
+			var CodePanel = new Ext.Panel({					
+					id: 'codePanel',
+					layout: 'border',					
+					border: false,
+					region : 'center',
+					items:[CodeFormPanel]//,CodeGrid]
+			});			
+			var mpCenter = new Ext.Panel({		
+				//collapsible:true,				
+				id:'mpCenter',
+				bodyStyle:"padding:1px 1px 1px 1px;background-color:#dfe8f6; border-width: 0px 0px 0px 0px;",
+				region : 'center',
+				layout:'border',
+				items: [{
+							xtype: 'container',activeItem: 0,layout: 'card',id: 'CardMain',region: 'center',border:false,
+							items: [
+								{xtype: 'container',layout: 'border',border: false,items:[CodeTypeFormPanel]},
+								{xtype: 'container',layout: 'border',id:'panelCodeM',border: false,items:[CodeTree,CodePanel]}
+							]
+						}]
+			});
+        Ext.onReady(function () {                       
+            var mainViewport = new Ext.Viewport({
+							id : 'mainViewport',
+							layout : 'fit',
+							border : false,				
+							items : [ {
+								xtype : 'panel',
+								id : 'MainPanel',
+								layout : 'border',
+								border : false,
+								items : [mpWest,mpCenter]
+							} ]
+						});
+			//CodeTypeGrid.store.load({ params: { start: 0, limit: pSize} });		
+        });
+    </script>
+  </head>
+  
+  <body>
+    
+  </body>
+</html>

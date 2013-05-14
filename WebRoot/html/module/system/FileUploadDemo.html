@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>文件上传</title>
+<link rel="stylesheet" type="text/css"
+	href="../../ext/resources/css/ext-all.css" />
+<link rel="stylesheet" type="text/css"
+	href="../../ext/ux/fileuploadfield/css/fileuploadfield.css"/>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../ext/ux/fileuploadfield/FileUploadField.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+
+</head>
+
+<body>
+</body>
+</html>
+<script type="text/javascript">
+	var ds = new Ext.data.JsonStore({
+		url: '/getExcelDataService/1/',
+	    idProperty: 'FId',
+	    root: 'root',
+	    totalProperty: 'totalProperty',
+	    autoLoad:false,
+	    fields: [
+	        {name: 'FId'},
+	        {name: 'FName'},
+	        {name: 'FSex'},
+	        {name: 'FNation'},
+	        {name: 'FCardid'},
+	        {name: 'FBirthday'},
+	        {name: 'FWorkunit'},
+	        {name: 'FMorg'},
+	        {name: 'FPhone'},
+	        {name: 'FAddress'},
+	        {name: 'FEduLevel'},
+	        {name: 'FProfessionalTitle'},
+	        {name: 'FLeaveCollege'},
+	        {name: 'FOperationMajor'},
+	        {name: 'FCertCode'},
+	        {name: 'FCreateTime'}
+	    ]
+	});
+	
+	function showUploadForm(){
+		var window = new Ext.Window({
+		    height: 194,
+		    width: 552,
+		    modal: true,
+		    layout: 'border',
+		    title: '导入Excel数据',
+		    closeAction:"close",
+		    items: [{
+	            xtype: 'form',
+	            frame: true,
+	            id: 'uploadFileForm',
+	            region: 'center',
+	            fileUpload: true,
+	            labelAlign: 'right',
+	            items: [{
+	            	xtype: 'fileuploadfield',
+	            	emptyText: '选择要上传的Excel文件',
+		            name: 'file',
+		            fieldLabel: 'Excel文件',
+		            labelWidth: 50,
+		            msgTarget: 'side',
+		            allowBlank: false,
+		            anchor: '90%',
+		            buttonText: '选择Excel文件'
+		        }],
+		        buttons: [{
+		            text: '上传文件',
+		            handler: function() {		                
+		            	var form = Ext.getCmp('uploadFileForm').getForm();
+		                if(form.isValid()){
+		                	Ext.MessageBox.wait('正在上传数据, 请稍侯 ...', '提示');
+		                	form.submit({
+		                        url: '/fileupload/1/',
+		                        method  : 'POST',
+		                        success : function(form,action){		                        	
+		                        	Ext.MessageBox.hide();
+		                        	ds.lastOptions=null;
+		                        	ds.baseParams={start:0,limit:20,guid:action.result.guid}
+		                        	ds.reload();
+		                        	window.close();
+		                        },
+		                        failure : function(form,action) {
+		                        	Ext.MessageBox.hide();
+		                        	showMessage("上传文件失败！"+"<br/>"+action.result.msg,true);
+                    			}
+		                    });
+		                }
+		            }
+		        },{
+		            text: '重置',
+		            handler: function(){
+		            	Ext.getCmp('uploadFileForm').getForm().reset();
+		            }
+		        }]
+	        }]
+		});
+		
+		window.show();
+	}
+	
+	Ext.onReady(function(){	
+		Ext.QuickTips.init();
+		var viewport = new Ext.Viewport({
+	        layout: "fit",   
+	        renderTo:'MainContext',
+			items: [
+	                {
+	                    xtype: 'panel',
+	                    id: 'mainPanel',
+	                    layout: 'border',
+	                    tbar: {
+	                        xtype: 'toolbar',
+	                        region: 'center',
+	                        items: [
+	                            {
+	                                xtype: 'button',
+	                                text: 'Excel文件上传',
+	                                handler:function(){
+	                                	showUploadForm();
+	                                }
+	                            },{
+	                                xtype: 'button',
+	                                text: '并发流水号',
+	                                handler:function(){
+	                                	Ext.Ajax.request({
+	        		                        url: '/getExcelDataService/3/',
+	        		                        success : function(response){	
+	        		                        	var responseArray = Ext.util.JSON.decode(response.responseText);
+	                            				if(responseArray.success){
+	                            					showMessage("流水号：");
+	                            				}
+	        		                        },
+	        		                        failure : function(response) {	        		                        	
+	        		                        	showMessage("网络初始化失败！",true);
+	                            			}
+	        		                    });
+	                                }
+	                            },{
+	                                xtype: 'button',
+	                                text: '固定长度字符',
+	                                handler:function(){
+	                                	Ext.Ajax.request({
+	        		                        url: '/getExcelDataService/2/',
+	        		                        success : function(response){	
+	        		                        	var responseArray = Ext.util.JSON.decode(response.responseText);
+	                            				if(responseArray.success){
+	                            					showMessage("流水号："+responseArray.root);
+	                            				}else{
+	                            					showMessage("数据处理失败！",true);
+	                            				}
+	        		                        },
+	        		                        failure : function(response) {	        		                        	
+	        		                        	showMessage("网络初始化失败！",true);
+	                            			}
+	        		                    });
+	                                }
+	                            }
+	                        ]
+	                    },
+	                    items: [
+	                        {
+	                            xtype: 'grid',
+	                            id: 'ExcelFileUpload',
+	                            ds: ds,
+	                            region: 'center',
+	                            loadMask:true,
+	                            columns: [
+	                                {
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FId',
+	                                    header: '流水号',
+	                                    sortable: true,
+	                                    width: 60
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FName',
+	                                    header: '姓名',
+	                                    sortable: true,
+	                                    width: 60
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FSex',
+	                                    header: '性别',
+	                                    sortable: true,
+	                                    width: 40
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FNation',
+	                                    header: '民族',
+	                                    sortable: true,
+	                                    width: 40
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FCardid',
+	                                    header: '证件号码',
+	                                    sortable: true,
+	                                    width: 120
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FBirthday',
+	                                    header: '出生日期',
+	                                    sortable: true,
+	                                    width: 80
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FMorg',
+	                                    header: '机构',
+	                                    sortable: true,
+	                                    width: 40
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FOperationMajor',
+	                                    header: '执业专业',
+	                                    sortable: true,
+	                                    width: 60
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FCertCode',
+	                                    header: '资格证号',
+	                                    sortable: true,
+	                                    width: 90
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FProfessionalTitle',
+	                                    header: '职称',
+	                                    sortable: true,
+	                                    width: 80
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FEduLevel',
+	                                    header: '学历',
+	                                    sortable: true,
+	                                    width: 50
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FLeaveCollege',
+	                                    header: '毕业学校',
+	                                    sortable: true,
+	                                    width: 100
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FWorkunit',
+	                                    header: '工作单位',
+	                                    sortable: true,
+	                                    width: 120
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FPhone',
+	                                    header: '电话',
+	                                    sortable: true,
+	                                    width: 90
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FAddress',
+	                                    header: '地址',
+	                                    sortable: true,
+	                                    width: 120
+	                                },{
+	                                    xtype: 'gridcolumn',
+	                                    dataIndex: 'FCreateTime',
+	                                    header: '导入时间',
+	                                    sortable: true,
+	                                    width: 130
+	                                }	                                
+	                            ],
+	                            bbar:new Ext.PagingToolbar({
+		                        	displayInfo: true,
+		                            pageSize: 20,
+		                            store: ds,
+		                            displayMsg: ' 当前记录数:{0}-{1}条 &nbsp;&nbsp;总记录数: {2}条 ',
+		                            emptyMsg: " 没有符合条件的记录 ",
+		                            listeners:{
+		                            	change:function(){		                            		
+		                            	}
+		                            }
+		                        })
+	                        }
+	                    ]
+	                }
+	            ]
+		});
+	});
+</script>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>项目检查复核申报-历史</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+<link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/showLoading/css/showLoading.css" type="text/css"></link>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>			
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+	<script type="text/javascript" src="../../plugin/showLoading/js/jquery.showLoading.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/EasyUIautoMergeCells.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/EasyUiFormValidation.js"></script>
+	<script type="text/javascript" src="../../plugin/js/arrow34.js"></script>
+	<style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 100%;
+			width: 98%;
+		}		
+		a{
+			cursor: pointer;
+			color: #0000C6;
+		}
+		a:link {
+			color:#0000FF;
+			text-decoration:underline;
+		}
+		a:visited {
+			color:#0000C6;
+			text-decoration:none;
+		}
+		a:hover {
+			color:#000000;
+			text-decoration:none;
+		}
+		a:active {
+			color:#EA7500;
+			text-decoration:none;
+		} 
+		.loading-indicator-bars {
+			background-image: url('/html/plugin/showLoading/images/loading.gif');
+			width: 150px;
+		}
+		.classerror{
+			 border: 1px solid #f00;
+			 background:#fcc;
+		}
+		.div-disabled{
+			background: none repeat scroll 0 0 #FFFFF0;
+			position: fixed; 
+			top: 0px; 
+			left: 0px; 
+			opacity: 0.3; 
+			display: block; 
+			z-index: 99998; 
+			height: 100%; 
+			width: 100%;
+		}
+	</style>
+	
+  </head>
+  
+  <body>
+  <noscript><a href="#">Click to the Top</a></noscript>
+  <div  id="divDisable" name="divDisable"></div>
+	<div style="display: none;">
+  		action:<input type="text" id="action" name="action"  value=""/>
+		processid:<input type="text" id="processId" name="processId" value=""/>
+		activeid:<input type="text" id="activeId" name="activeId" value=""/>
+		formPKID:<input type="text" id="formPKID" name="formPKID" value=""/>
+		state:<input type="text" id="state" name="state" value=""/>
+		userID:<input id="userID" name="userID" type="text"/>
+		userName:<input id="userName" name="userName" type="text"/>
+		userOrgID:<input id="userOrgID" name="userOrgID" type="text"/>	
+		unitStation:<input id="unitStation" name="unitStation" type="text"/>
+		<input id="userIDList1" name="userIDList1" type="text"/>
+		<input id="userIDList2" name="userIDList2" type="text"/>
+		<input id="userIDList3" name="userIDList3" type="text"/>
+		fAcceptUser<input id="fAcceptUser" id="fAcceptUser" type="text"/>
+		fState<input id="fState" id="fState" type="text"/>
+		isAcceptance:<input id="isAcceptance" name="isAcceptance" type="text"/>
+		FCurrentStep:<input type="text" id="FCurrentStep" name="FCurrentStep" style="width:20px;" />	
+		FLastStep:<input type="text" id="FLastStep" name="FLastStep" style="width:20px;" />
+	</div>
+		<div id="submitSuccessDiv" id="submitSuccessDiv" style="display:none;width:auto;height:360; margin-left:161px; margin-top:81px;">
+		  <div style="width:128px; height:360px; background-image:url(/html/images/submitsuccess.png); background-repeat:no-repeat; float:left;"></div>  
+		  <div style="width:372px; height:360px;  float:left; padding:10px 0px 0px 10px;">
+				<hr/>
+				<label id="labelmsg" name="labelmsg"></label>				 
+		  </div>
+		</div>
+		<div style="text-align:center" id="MainDiv"  name="MainDiv">
+			<table style="width:831px;margin:auto"  class="pagetable">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aT_OK" style="display: black;"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aT_CANCLE" style="display: black;"><img
+									src="../../images/oa/delete.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel='#' id="aT_BACK" style="display: black;"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />返回列表</a>
+							</li>
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+						</ul> <br/> <br/></br></td>
+				</tr>
+				<tr>
+					<td style="padding-left:1px;">
+						<div class="content" id="content" style="height:2205px;width:861px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br />
+							<br />
+							<br />							 
+							<div style="float:left;padding-left:20px;">
+								<table class="content_table1" id="tablemain" border="1" cellpadding="0" style="padding-left:10px;position:absolute;width:810px;">
+									<caption>
+										<strong style="height:35px;font-size:22px;">昆明松岛工程造价咨询有限公司    项目检查复核申报<br><br>
+										</strong>
+									</caption>
+									<tr>
+										<th colspan="9" align="left" valign="middle" style="height:30px;font-size:14px;" scope="col">&nbsp;&nbsp;&nbsp;&nbsp;编号：<label>
+											<input type="text" id="FFHNumbers" name="FFHNumbers"  value="" style="width:601px;">											
+										</th>
+									</tr>
+									<tr>
+									    <td width="81px" nowrap><p  style="text-align:center;">项目名称</p></td>
+									    <td colspan="7">
+										<input type="hidden"  style="width:35px;"  id="FId" name="FId">
+										<input type="hidden"  style="width:35px;"  id="ftaskid" name="ftaskid">
+										<input type="hidden"  style="width:35px;"  id="fdeptmgid" name="fdeptmgid">
+										<input type="hidden"  style="width:35px;"  id="fdeptid" name="fdeptid">
+										<input type="text"  style="width:609px;float:left;"  id="ftaskname" name="ftaskname">
+										<!-- <a id="aSelectTask" name="aSelectTask" class="s-select" onclick="javascript:SelectTask();" href="javascript:;" alt="请选择项目"></a> -->
+										<input type="button" class="btnSelect" id="aSelectTask" name="aSelectTask" onclick="javascript:SelectTask();" title="请选择任务"></input>
+										</td>
+									  </tr>
+									  <tr>
+									    <td  width="81px" style="text-align:center;"><p >服务类别</p></td>
+									    <td colspan="4"><label style="color:blue;"  id="fwlb" name="fwlb"></label></td>
+									    <td width="65" style="text-align:center;">委托单位</td>
+									    <td colspan="2"><label style="color:blue;"  id="wtdw" name="wtdw"></label></td>
+									  </tr>
+									  <tr>
+									    <td  width="81px" style="text-align:center;" ><p >施工单位</p></td>
+									    <td colspan="7"><input type="text"  style="width:421px;"  id="F_ConstructionUnit"  name="F_ConstructionUnit"/></td>
+									  </tr>
+									  <tr>
+									    <td  width="81px" style="text-align:center;"><p >成果类型</p></td>
+									    <td colspan="7"><select style="width:531px;" id="F_ResultsType"  name="F_ResultsType"></select>
+									    <input type="hidden" id="F_ResultsType_Name" name="F_ResultsType_Name" />
+									    </td>
+									  </tr>
+									  <tr>
+									    <td  width="81px" style="text-align:center;"><p >提交材料</p></td>
+									    <td colspan="7"><select style="width:531px;"   id="F_SubmitMaterials"  name="F_SubmitMaterials"></select>
+									    <input type="hidden" id="F_SubmitMaterials_Name" name="F_SubmitMaterials_Name" />
+									    <a rel="#" id="aT_LOADRESULT"><img
+											src="../../images/LoadFiles.png"
+											style="margin-right: 5px; margin-bottom: -7px;" />上传成果文件</a>
+									    </td>
+									  </tr>
+									  <tr>
+									  	 <td colspan="8">
+									  	 	<div style="float:left;width:99%;height:206px;">
+											    <iframe id="ResultFileIframe" name="ResultFileIframe" src="" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="yes"  width="100%" height="100%">
+												</iframe>
+											</div>
+									  	 </td>
+									  </tr>
+									  <tr>
+									    <td  width="81px" style="text-align:center;"><p >项目造价 </p>（资金）</td>
+									    <td width="186px">									   
+									    <input type="text" id="F_ProjectCost" name="F_ProjectCost" style="width:85%;" />&nbsp;元
+									    </td>
+									    <td width="59" style="text-align:center;">项目规模</td>
+									    <td colspan="3"><label style="color:blue;" id="fxmgm" name="fxmgm"></label></td>
+									    <td width="60" style="text-align:center;">单位造价</td>
+									    <td width="234"><input id="F_UnitCost"   name="F_UnitCost" type="text"/>&nbsp;元</td>
+									  </tr>
+									  <tr>
+									    <td colspan="2" style="font-weight:bold;text-align:center;"><p>项目经理复核意见</p></td>
+									    <td>复核人</td>
+									    <td colspan="3"><input id="F_PMRO_ReviewMan" name="F_PMRO_ReviewMan" style="width:101px;" type="text"/></td>
+									    <td>时间</td>
+									    <td><input  class="easyui-datetimebox" data-options="required:false" value="" style="width:120px" id="F_PMRO_ReviewTime" name="F_PMRO_ReviewTime"/></td>
+									  </tr>
+									  <tr>
+									    <td colspan="8" style="padding-left:30px;">
+									    	<p>发现的问题： </p>
+											<textarea id="F_PMRO_Problems" name="F_PMRO_Problems" style="height:121px;width:96%;" ></textarea>
+									      	<p>整改情况： </p>
+											<textarea id="F_PMRO_Rectification" name="F_PMRO_Rectification" style="height:121px;width:96%;" ></textarea>
+									       	<p> 需进一步讨论：</p>
+											<textarea id="F_PMRO_Discuss" name="F_PMRO_Discuss" style="height:121px;width:96%;" ></textarea>
+										</td>
+									  </tr>
+									  <tr>
+									    <td colspan="2" style="font-weight:bold;text-align:center;">
+									    	<p >部门经理复核意见</p>
+									    </td>
+									    <td>复核人</td>
+									    <td colspan="3"><input id="F_DMRO_ReviewMan" name="F_DMRO_ReviewMan" style="width:101px;"  type="text"/></td>
+									    <td>时间</td>
+									    <td><input class="easyui-datetimebox" data-options="required:false" value="" style="width:120px"  id="F_DMRO_ReviewTime" name="F_DMRO_ReviewTime" /></td>
+									  </tr>
+									  <tr>
+									    <td colspan="8"  style="padding-left:30px;">
+									    	<p>发现的问题： </p>
+											<textarea id="F_DMRO_Problems" name="F_DMRO_Problems" style="height:121px;width:96%;" ></textarea>
+									      	<p>整改情况： </p>
+											<textarea id="F_DMRO_Rectification" name="F_DMRO_Rectification" style="height:121px;width:96%;" ></textarea>
+									  	    <p>需进一步讨论：</p>
+											<textarea id="F_DMRO_Discuss" name="F_DMRO_Discuss" style="height:121px;width:96%;" ></textarea>
+									  	</td>
+									  </tr>
+									  <tr>
+									    <td colspan="2" style="font-weight:bold;text-align:center;"><p >公司总工办复核意见</p></td>
+									    <td>最终造价</td>
+									    <td colspan="3"><input id="F_CGLRO_FinalCost" name="F_CGLRO_FinalCost" type="text" style="width:131px;"/>&nbsp;元</td>
+									    <td>&nbsp;</td>
+									    <td>&nbsp;</td>
+									  </tr>
+									  <tr>
+									    <td colspan="8"  style="padding-left:30px;">
+									    	<p>发现的问题：</p>
+											<textarea id="F_CGLRO_Problems" name="F_CGLRO_Problems" style="height:121px;width:96%;" ></textarea>
+									      	<p>整改情况：</p>
+											<textarea id="F_CGLRO_Rectification" name="F_CGLRO_Rectification" style="height:121px;width:96%;" ></textarea>
+									   		<p>需进一步讨论：</p>
+											<textarea id="F_CGLRO_Discuss" name="F_CGLRO_Discuss" style="height:121px;width:96%;" ></textarea>
+									   </td>
+									  </tr>
+									  <tr>
+									    <td colspan="5">
+										      <p >复核人：（签字）<input id="F_ReviewMan" name="F_ReviewMan" style="width:90px" type="text"/>
+										      				<label>日期：</label>
+										      				<input style="color:blue;width:90px;" class="easyui-datetimebox" data-options="required:false" value="" id="F_ReviewMan_Time" name="F_ReviewMan_Time"/>
+										      </p>
+									      	  </br>
+										      </br>
+										      </br>
+										      
+									      </td>
+									    <td colspan="3">
+											  <p>总工办会签：<input id="F_GLOSign" name="F_GLOSign" type="text" style="width:131px;"/>
+										    	 <label>日期：</label>
+										    	 <input style="color:blue;width:90px;" class="easyui-datetimebox" data-options="required:false" value=""  id="F_Glosign_Time" name="F_Glosign_Time"/>
+										      </p>
+									    	  </br>
+										      </br>
+										      </br>
+										     
+									    </td>
+									  </tr>									 								 							 
+								</table>	 
+								<br/>
+								<br/>								
+							</div>										
+						</div>						
+					</td>
+				</tr>
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aB_OK" style="display: black;"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aB_CANCLE" style="display: black;"><img
+									src="../../images/oa/delete.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel='#' id="aB_BACK" style="display: black;"><img src="../../images/oa/quite.png"
+									  style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />返回列表</a>
+							</li>
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+						</ul> <br /> <br />
+						<p></p>
+						<div  style="float:left;width:100%;height:251px;">
+							<table id="qkTable" name="qkTable" style="height:100%;">
+							</table>
+						</div>
+						<br/>						
+						</td>
+				</tr>
+			</table>
+			<br/>			
+		</div>
+		<div id="divRead" class="easyui-dialog" title="签字" style="width:430px;height:181px;padding:10px"
+			data-options="
+				iconCls: 'icon-save',				
+				buttons: '#pcrpdlg-buttons',
+				modal:true,
+				closed:true,
+				closable:true
+			">
+			<lable>说明:选择签字人时,复核人为一个人，总工办会签为多人;</lable><br/>
+			<lable>请选择签字人姓名:</lable><br/>
+			<input type="text" style="width:291px;" id="acceptUserId" name="acceptUserId" class="easyui-combotree" data-options="url:'',editable:false,required:true"><br/>
+		</div>	
+		<div id="pcrpdlg-buttons">
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="javascript:FUN_READ()">签字确认</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divRead').dialog('close')">取消</a>
+		</div>
+  </body>
+</html>
+<script type="text/javascript">
+	function  addDivClass(){
+		$("#divDisable").addClass("div-disabled");
+	}
+		function showLoadings(){
+		jQuery('#MainDiv').showLoading({ 'addClass': 'loading-indicator-bars'});
+	}
+	function hideLoadings(){
+		jQuery('#MainDiv').hideLoading();
+	}
+	var isWhoRead="";
+	var FormPKID=0;
+	var FormState=0;
+	showLoadings();
+	if($.browser.msie){
+		if($.browser.version<=8){
+			setActiveStyleSheet("papers.css");
+		}else				
+			setActiveStyleSheet("papersother.css");
+	} else if($.browser.mozilla){
+		setActiveStyleSheet("papersother.css");
+	} else{
+		setActiveStyleSheet("papersother.css");
+	}
+	function setActiveStyleSheet(filename) {
+		document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+	}
+	var IFrame='<iframe id="fileUplaod" src="{0}" style="width:100%;height:98%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';
+	function SelectTask() {
+		//ISHISTORY:0,1,2
+	    var Parameter={
+	    	ISHISTORY: 1
+		};
+		var ParameterJSON= Base64.encode($.toJSON(Parameter));				
+		var win = $(IFrame.format('/html/module/public/SelectTask.html?Parameter='+ParameterJSON));
+		$.lightbox(win, {
+			modal  : true,
+			width   : 560,
+			height  : 385
+	   }); 
+		return false;
+	}			 
+	function MessageInfo(Title,Msg){
+		$.messager.show({
+			title:Title,
+			msg:Msg,
+			showType:'fade',
+			timeout:3000,
+			style:{
+				right:'',
+				bottom:''
+			}
+		});
+	}
+	
+	function setButtonState(id,state){
+		if(state)
+			$(id).show();
+		else
+			$(id).hide();
+	}
+	
+	function FUN_READ(){
+		if(isWhoRead=="1")
+			$("#F_PMRO_ReviewMan").val($("#acceptUserId").combotree('getText'));
+		if(isWhoRead=="2")
+			$("#F_DMRO_ReviewMan").val($("#acceptUserId").combotree('getText'));
+		if(isWhoRead=="3")
+			$("#F_ReviewMan").val($("#acceptUserId").combotree('getText'));
+		if(isWhoRead=="4")
+			$("#F_GLOSign").val($("#acceptUserId").combotree('getText'));
+		$('#divRead').dialog('close');
+	}
+	
+	function getTaskInfo(taskid,taskname,taskservertype,tasknumber,deptmgrid){							
+		$("#ftaskid").attr("value",taskid);
+		$("#ftaskname").attr("value",taskname);				
+		$.post("/Buss/CheckReviewService/5", {"TaskID":taskid}, function(data) {
+			if (data.success) {									
+				var jsonlist= data.root.toString();						
+				var arraylist= jsonlist.split(',');						
+				$("#ftaskid").attr("value",arraylist[0].toString());											
+				$("#fwlb").text(arraylist[3].toString());
+				$("#wtdw").text(arraylist[2].toString());
+				$("#fxmgm").text(arraylist[4].toString()+" "+arraylist[5].toString());												
+				$("#fdeptmgid").attr("value",arraylist[7].toString());
+				$("#fdeptid").attr("value",arraylist[8].toString());
+				var tasknumber=arraylist[6].toString();				
+				$.post("/GetNumber/FunForNumber/", {
+					"year": new Date().getFullYear(),
+					"taskname": tasknumber.substring(0,tasknumber.length-11), 
+					"fid": $("#formPKID").val(),
+					"numbercode": "FH"
+						}, function(data) {
+							if (data.success) {
+								$("#FFHNumbers").attr("value",data.Number);
+								//fn_loadManCode();
+							}else
+							{															
+								return false;
+							}
+				}, "json");
+				$.LightBoxObject.close();
+			}else
+			{
+				//MessageInfo('系统提示', '获取任务异常，请检查网络或联系系统管理员！');
+				return false;
+			}
+		}, "json");				
+	}
+	function fn_initpage(){
+		FormPKID=Request.QueryString("id")==null?0:Request.QueryString("id");
+		if(FormPKID==0)
+			FormState=0;
+		else
+			FormState=1;
+		$("#F_ProjectCost").numberbox({  
+	        min:0,
+	        required: true,
+	        max:1000000000000,
+	        precision:2
+	    }); 
+	    $("#F_UnitCost").numberbox({  
+	        min:0,
+	        required: true,
+	        max:1000000000000,
+	        precision:2  
+	    }); 
+	    $("#F_CGLRO_FinalCost").numberbox({  
+	        min:0,
+	        required: true,
+	        max:1000000000000,
+	        precision:2  
+	    });
+	    fn_loadCode();
+		fn_loadData(FormPKID);
+		$("#ResultFileIframe").attr("src","/html/module/public/ResultsFileList.html?fkCheckReviewId="+FormPKID+"&isView=0");
+	}
+	function fn_loadCode(){
+		$('#F_ResultsType').combobox({
+					url:'/GetCode/Query/',  
+					valueField:'FId', 
+					editable:false,
+					textField:'FCodeText',
+					panelheight:'auto',
+					onSelect: function(record){
+						$('#F_ResultsType_Name').val($('#F_ResultsType').combobox('getText'));
+					},
+					onBeforeLoad: function(param){
+						param.action = "getAppCode";
+						param.CodeTypeId = 381;
+						param.State = 1;
+					}
+		});	
+		$('#F_SubmitMaterials').combobox({
+					url:'/GetCode/Query/',  
+					valueField:'FId', 
+					editable:false,
+					textField:'FCodeText',
+					multiple:true,
+					panelheight:'auto',						
+					onBeforeLoad: function(param){
+						param.action = "getAppCode";
+						param.CodeTypeId = 390;
+						param.State = 1;
+					}
+		});		
+	}
+	function fn_loadManCode(multiple){
+		if(multiple){
+			$('#acceptUserId').combotree ({								
+				url: "/GetCode/OrgUserTreeExt/0/",
+				panelWidth: 251,
+				multiple:true,
+				cascadeCheck:false,
+				required:true,
+				onBeforeSelect:function(node){								
+					if(!$(this).tree('isLeaf',node.target)){
+						return false;
+					}
+				},
+				onCheck: function(node){
+					if(node.attributes.isLeaf)
+						$('#acceptUserId').combotree('showPanel');								 
+				},
+				onClick:function(node){
+					if(!$(this).tree('isLeaf',node.target)){
+						$('#acceptUserId').combotree('showPanel');
+						MessageInfo('系统提示','部门不能选择！');
+					}
+				}
+			});
+		}else{
+			$('#acceptUserId').combotree ({								
+				url: "/GetCode/OrgUserTreeExt/0/",
+				panelWidth: 251,
+				cascadeCheck:false,
+				required:true,
+				onBeforeSelect:function(node){
+					if(!$(this).tree('isLeaf',node.target)){
+						return false;
+					}
+				},
+				onClick:function(node){
+					if(!$(this).tree('isLeaf',node.target)){
+						$('#acceptUserId').combo('showPanel');
+					}
+				}
+			});
+		}
+	}
+	function fn_loadData(id){				
+		$.post("/Buss/CheckReviewService/16", {
+			"ID" : id			
+			}, function(data) {
+				if(data.root)
+					if(data.success)
+						SetFormValue(data, "");
+					else
+						
+				hideLoadings();
+			}, "json");
+		if(FormState==0)
+		{
+			$("#ResultFileIframe").attr("src","/html/module/public/ResultsFileList.html?fkCheckReviewId="+id+"&isView=0");
+			setButtonState("#aT_LOADRESULT",false);
+		}else
+		{
+			setButtonState("#aT_LOADRESULT",true);
+		}
+	}
+	//上传成果文件
+	function FUN_LOADRESULT(id){								
+		var url='/html/module/public/ResultsFileLoadMgt.html?fkCheckReviewId=' +id;
+		var win = $(IFrame.format(url));
+			$.lightbox(win, {
+				modal  : true,
+				width   : 721,
+				height  : 390,
+				onClose : function(){
+					$("#fileUplaod").attr("src","");
+					$("#ResultFileIframe").attr("src","/html/module/public/ResultsFileList.html?fkCheckReviewId="+id+"&isView=0");
+				}
+		   });
+		return false;
+	}
+	function getPostData(){
+		return {
+			FId: $("#FId").val()==""? 0:$("#FId").val(),
+			FCurrentStep: $("#FCurrentStep").val(),
+			FLastStep: $("#FLastStep").val(),				
+			fkTaskId: $("#ftaskid").val(),
+			FNumbers: $("#FFHNumbers").val(),				
+			FConstructionUnit: $("#F_ConstructionUnit").val(),
+				//if(data.root[0].FResultsType!="")
+					FResultsType: $("#F_ResultsType").combobox("getValue"),
+					FResultTypeName: $('#F_ResultsType').combobox('getText'),
+				//if(data.root[0].FSubmitMaterials!="")
+					FSubmitMaterials: $("#F_SubmitMaterials").combobox("getValues").toString(),
+					FSubmitMaterialsName: $("#F_SubmitMaterials_Name").val(),
+					FProjectCost: $("#F_ProjectCost").numberbox("getValue"),
+					FUnitCost: $("#F_UnitCost").numberbox("getValue"),
+					FPmroReviewMan: $("#F_PMRO_ReviewMan").val(),
+					FPmroReviewTime: $("#F_PMRO_ReviewTime").datetimebox('getValue'),
+					FPmroProblems: $("#F_PMRO_Problems").val(),
+					FPmroRectification: $("#F_PMRO_Rectification").val(),
+					FPmroDiscuss: $("#F_PMRO_Discuss").val(),
+					FDmroReviewMan: $("#F_DMRO_ReviewMan").val(),
+					FDmroReviewTime: $("#F_DMRO_ReviewTime").datetimebox('getValue'),
+					FDmroProblems: $("#F_DMRO_Problems").val(),
+					FDmroRectification: $("#F_DMRO_Rectification").val(),
+					FDmroDiscuss: $("#F_DMRO_Discuss").val(),
+					FCglroFinalCost: $("#F_CGLRO_FinalCost").numberbox("getValue"),
+					FCglroProblems: $("#F_CGLRO_Problems").val(),
+					FCglroRectification: $("#F_CGLRO_Rectification").val(),
+					FCglroDiscuss: $("#F_CGLRO_Discuss").val(),
+					FReviewMan: $("#F_ReviewMan").val(),
+					FReviewManTime: $("#F_ReviewMan_Time").datetimebox('getValue'),
+					FGlosign: $("#F_GLOSign").val(),
+					FGlosignTime: $("#F_Glosign_Time").datetimebox('getValue')
+		};
+	}
+	function LoadTaskInfo(taskid){
+		$.post("/Buss/CheckReviewService/5", {"TaskID":taskid}, function(data) {
+			if (data.success) {									
+				var jsonlist= data.root.toString();						
+				var arraylist= jsonlist.split(',');						 
+					$("#ftaskid").attr("value",arraylist[0].toString());
+					$("#ftaskname").attr("value",arraylist[1].toString());						
+					$("#fwlb").text(arraylist[3].toString());
+					$("#wtdw").text(arraylist[2].toString());
+					$("#fxmgm").text(arraylist[4].toString()+" "+arraylist[5].toString());
+					$("#fdeptmgid").attr("value",arraylist[7].toString());
+					$("#fdeptid").attr("value",arraylist[8].toString());
+				if($("#ftaskid").val()==0)
+					$("#ftaskname").attr("value","");	
+			}else
+			{																					
+				MessageInfo('系统提示', '获取任务异常，请检查网络或联系系统管理员！');
+				return false;
+			}
+		}, "json");
+	}
+	function SetFormValue(data, type) {
+		$("#FId").attr("value", data.root[0].FId);
+		$("#FCurrentStep").attr("value",data.root[0].FCurrentStep);
+		$("#FLastStep").attr("value",data.root[0].FLastStep);
+		fn_loadCode();
+		$("#FKPNumbers").attr("value", data.root[0].FNumber);					
+		var taskid=data.root[0].fkTaskId;
+		LoadTaskInfo(taskid);
+		$("#ftaskid").attr("value",data.root[0].fkTaskId);
+		$("#FFHNumbers").attr("value",data.root[0].FNumbers);				
+		$("#F_ConstructionUnit").attr("value",data.root[0].FConstructionUnit);
+		if(data.root[0].FResultsType!="")
+			$("#F_ResultsType").combobox("setValue",data.root[0].FResultsType);
+		$("#F_ResultsType_Name").attr("value",data.root[0].FResultTypeName);
+		if(data.root[0].FSubmitMaterials!="")
+			$("#F_SubmitMaterials").combobox("setValues",data.root[0].FSubmitMaterials.split(","));
+		$("#F_SubmitMaterials_Name").attr("value",data.root[0].FSubmitMaterialsName);
+		$("#F_ProjectCost").numberbox("setValue",data.root[0].FProjectCost);
+		$("#F_UnitCost").numberbox("setValue",data.root[0].FUnitCost);
+		$("#F_PMRO_ReviewMan").attr("value",data.root[0].FPmroReviewMan);
+		$("#F_PMRO_ReviewTime").datetimebox('setValue',data.root[0].FPmroReviewTime);
+		$("#F_PMRO_Problems").attr("value",data.root[0].FPmroProblems);
+		$("#F_PMRO_Rectification").attr("value",data.root[0].FPmroRectification);
+		$("#F_PMRO_Discuss").attr("value",data.root[0].FPmroDiscuss);
+		$("#F_DMRO_ReviewMan").attr("value",data.root[0].FDmroReviewMan);
+		$("#F_DMRO_ReviewTime").datetimebox('setValue',data.root[0].FDmroReviewTime);
+		$("#F_DMRO_Problems").attr("value",data.root[0].FDmroProblems);
+		$("#F_DMRO_Rectification").attr("value",data.root[0].FDmroRectification);
+		$("#F_DMRO_Discuss").attr("value",data.root[0].FDmroDiscuss);
+		$("#F_CGLRO_FinalCost").numberbox("setValue",data.root[0].FCglroFinalCost);
+		$("#F_CGLRO_Problems").attr("value",data.root[0].FCglroProblems);
+		$("#F_CGLRO_Rectification").attr("value",data.root[0].FCglroRectification);
+		$("#F_CGLRO_Discuss").attr("value",data.root[0].FCglroDiscuss);
+		$("#F_ReviewMan").attr("value",data.root[0].FReviewMan);
+		$("#F_ReviewMan_Time").datetimebox('setValue',data.root[0].FReviewManTime);
+		$("#F_GLOSign").val(data.root[0].FGlosign);
+		$("#F_Glosign_Time").datetimebox('setValue',data.root[0].FGlosignTime);
+		$("#ResultFileIframe").attr("src","/html/module/public/ResultsFileList.html?fkCheckReviewId="+$("#FId").val()+"&isView=0");
+		//setFormButtonState($("#unitStation").val().toString(),$("#action").val().toString(),$("#fState").val().toString());
+	}
+	$(document).ready(function() {
+		
+		fn_initpage();		
+		//fn_loadManCode();
+		$("#aT_BACK,#aB_BACK").click(function() {
+			window.location.href='/html/module/history/history.html?id=10006';
+		});
+		$("#aT_OK,#aB_OK").click(function() {
+			showLoadings();
+			$.post("/Buss/CheckReviewService/17", {
+				"JSONDATA" : JSON.stringify(getPostData()),
+				"TaskName" : $("#ftaskname").val()
+			}, function(data) {
+				if(data)
+					if(data.success){
+						$("#FId").val(data.id);
+						$("#ResultFileIframe").attr("src","/html/module/public/ResultsFileList.html?fkCheckReviewId="+$("#FId").val()+"&isView=0");
+						setButtonState("#aT_LOADRESULT",true);
+						MessageInfo('系统提示', '项目检查复核申报,保存成功。');
+					}
+				hideLoadings();
+			}, "json");
+			
+		});
+		$("#aT_CANCLE,#aB_CANCLE").click(function() {
+			$.messager.confirm('系统提示', '您确定要撤销吗？撤销将彻底删除所有复核申报记录,撤销后不能恢复？', function(r){
+				if (r){
+					showLoadings();
+					$.post("/Buss/CheckReviewService/18", {
+						"FId" : $("#FId").val()
+					}, function(data) {
+						if(data)
+							if(data.success){
+								$("#FId").val(data.id);						
+								MessageInfo('系统提示', '项目检查复核申报,撤销成功。');
+								window.location.href='/html/module/history/history.html?id=10006';
+							}
+						hideLoadings();
+					}, "json");									
+					}
+				});
+		});
+		$("#aT_LOADRESULT").click(function() {
+			FUN_LOADRESULT($('input[name=FId]').fieldValue());
+		});
+		$("#F_PMRO_ReviewMan").click(function() {
+			 isWhoRead="1";
+			 fn_loadManCode(false);
+			 $('#divRead').dialog('open');
+			 $('#divRead').dialog('center');
+		});
+		$("#F_DMRO_ReviewMan").click(function() {
+			 isWhoRead="2";
+			 fn_loadManCode(false);
+			 $('#divRead').dialog('open');
+			 $('#divRead').dialog('center');		
+		});
+		$("#F_ReviewMan").click(function() {
+			isWhoRead="3";
+			fn_loadManCode(false);
+			 $('#divRead').dialog('open');
+			 $('#divRead').dialog('center');
+		});
+		$("#F_GLOSign").click(function() {
+			isWhoRead="4";
+			fn_loadManCode(true);
+			$('#divRead').dialog('open');
+			$('#divRead').dialog('center');
+		});
+		
+		hideLoadings();
+	});
+</script>

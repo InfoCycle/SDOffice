@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OpinionBoxEasy.html</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script tyoe="text/javascript">
+		/**
+		 * JQuery扩展方法，用户对JQuery EasyUI的DataGrid控件进行操作。
+		 */
+		$.fn.extend({
+			 /**
+			  * 修改DataGrid对象的默认大小，以适应页面宽度。
+			  * 
+			  * @param heightMargin
+			  *            高度对页内边距的距离。
+			  * @param widthMargin
+			  *            宽度对页内边距的距离。
+			  * @param minHeight
+			  *            最小高度。
+			  * @param minWidth
+			  *            最小宽度。
+			  * 
+			  */
+			 resizeDataGrid : function(heightMargin, widthMargin, minHeight, minWidth) {
+				  var height = $(document.body).height() - heightMargin;
+				  var width = $(document.body).width() - widthMargin;				
+				  height = height < minHeight ? minHeight : height;
+				  width = width < minWidth ? minWidth : width;				
+				  $(this).datagrid('resize', {
+				   height : height,
+				   width : width
+				  });
+			 }
+		});
+		$(function() {
+		 // datagrid数据表格ID
+		 /*var datagridId = 'OpinionBox';
+		
+		 // 第一次加载时自动变化大小
+		 $('#' + datagridId).resizeDataGrid(0, 0, 0, 0);
+		
+		 // 当窗口大小发生变化时，调整DataGrid的大小
+		 $(window).resize(function() {
+		  $('#' + datagridId).resizeDataGrid(0, 0, 0, 0);
+		 });
+		 */
+		});				
+	</script>
+	<script type="text/javascript">		
+		var formid =  Request.QueryString("formid");
+		var tablename =  Request.QueryString("tablename");
+		var updatefield =  Request.QueryString("updatefield");
+		var userid =  Request.QueryString("userid");
+		/**
+		 * @author
+		 * 
+		 * 增加formatString功能
+		 * 
+		 * 使用方法：formatString('字符串{0}字符串{1}字符串','第一个变量','第二个变量');
+		 * 
+		 * @returns 格式化后的字符串
+		 */
+		formatString = function(str) {
+			for ( var i = 0; i < arguments.length - 1; i++) {
+				str = str.replace("{" + i + "}", arguments[i + 1]);
+			}
+			return str;
+		};
+		function delOpinion(id){
+			$.post("/Buss/CommonOpinionService/2", {						 
+					"FId" : id
+			       }, function(data) {
+						 if (data.success) {
+							  $("#FId").attr("value",0);								 
+							  $.messager.alert('系统提示','常用意见删除成功。','info'); 
+							  $('#OpinionBoxGrid').datagrid("reload");
+						 } else {								
+							 $.messager.alert('系统提示','常用意见删除失败，请检查网络或联系系统管理员！','error');  
+							 return false;
+						 }
+			}, "json");
+		}
+		$(document).ready(function() {
+			//初始化Grid
+			//data-options="rownumbers:true,fit:true,singleSelect:true,url:'/Buss/CommonOpinionService/searchEasy/1',toolbar:'#tb'"
+			$("#OpinionBoxGrid").datagrid({
+				title:'',
+				width: '98%',
+				height: '98%',
+				columns:[
+					[{title:'编号',field:'FId',width:60,hidden:true},
+					{title:'内容',field:'FContent',width:150,align:'center'},
+					{
+						field : 'action',
+						title : '动作',
+						align:'center',
+						width : 60,
+						formatter : function(value, row, index) {
+							return '<a href="javascript:void(0)" id="aDel" name="aDel" onClick="javascript:delOpinion('+row.FId+')">删除</a>'; 
+						}
+					}]],
+				url: '/Buss/CommonOpinionService/searchEasy/'+userid,
+				rownumbers:true,fit:true,singleSelect:true,toolbar:'#tb',
+				pagination:true,
+				onSelect: function(index,row){				
+					$("#FId").attr("value",row.FId);
+					$("#FContentT").text(row.FContent);
+				}
+			});
+			//设置分页控件 
+		    var pagebar = $('#OpinionBoxGrid').datagrid('getPager'); 
+		    $(pagebar).pagination({ 
+		        pageSize: 10,//每页显示的记录条数，默认为10 
+		        pageList: [5,10,15],//可以设置每页记录条数的列表 
+		        //beforePageText: '第',//页数文本框前显示的汉字 
+		        //afterPageText: '页    共 {pages} 页',
+		        beforePageText: '',//页数文本框前显示的汉字 
+		        afterPageText: '{pages}', 
+		        displayMsg: '当前显示 {from} - {to} 条记录   共 {total} 条记录', 
+		        /*onBeforeRefresh:function(){
+		            $(this).pagination('loading');
+		            alert('before refresh');
+		            $(this).pagination('loaded');
+		        }*/ 
+		    });  
+			$("#butDelete").click(function(){				
+				var anSelected =  $('#OpinionBoxGrid').datagrid("getSelected");	//获取你选择的行//fnGetSelected( oTableON );				
+				if (anSelected) {
+					$.post("/Buss/CommonOpinionService/2", {						 
+							"FId" : anSelected.FId
+				       }, function(data) {
+							 if (data.success) {
+								  $("#FId").attr("value",0);								 
+								  $.messager.alert('系统提示','常用意见删除成功。','info'); 
+								  $('#OpinionBoxGrid').datagrid("reload");
+							 } else {								
+								 $.messager.alert('系统提示','常用意见删除失败，请检查网络或联系系统管理员！','error');  
+								 return false;
+							 }
+				}, "json");
+				}else				
+				 	$.messager.alert('系统提示','请选择要删除的常用意见记录。','question');  
+			});
+			$("#butPost").click(function(){				
+				if($('#FContentT').val().length>2000){
+					 $.messager.alert('系统提示','意见最大长度不能超过1000','info'); 
+					 return false;
+				}
+				$.post("/Buss/CommonOpinionService/3", {						 
+							"FormID" : formid,
+							"Table" : tablename,
+							"Field" : updatefield,
+							"OPinion" : $('#FContentT').val()//; $('#FContent').htmlarea('html')
+				       }, function(data) {
+							 if (data.success) {		
+								 //$.LightBoxObject.close();
+								 $.messager.alert('系统提示','意见保存成功。','info');
+								 //SetFormValue(data, "Edit");
+							 } else {								 
+								 $.messager.alert('系统提示','意见保存失败，请检查网络或联系系统管理员！','error');  
+								 return false;
+							 }
+				}, "json");
+			});
+			$("#butAdd").click(function(){
+				var conMessage= $('#FContentT').val();//$('#FContent').htmlarea('html');			
+				$.post("/Buss/CommonOpinionService/1", {						  
+							"FId" : 0,
+							"FContent" : conMessage
+				       }, function(data) {
+							 if (data.success) {								 								
+								  $.messager.alert('系统提示','常用意见添加成功。','info');
+								 //SetFormValue(data, "Edit");
+								  $('#OpinionBoxGrid').datagrid("reload");
+							 } else {								 
+								 $.messager.alert('系统提示','常用意见添加失败，请检查网络或联系系统管理员！','error'); 
+								 return false;
+							 }
+				}, "json");				
+			});			
+		});    	
+    </script>
+  </head>
+<body class="easyui-layout">	
+	<div data-options="region:'west',split:true,title:'常用意见列表'" style="width:280px;padding:2px;">
+		<table id="OpinionBoxGrid" name="OpinionBoxGrid" title="">			
+		</table>
+		<div id="tb" style="padding:5px;height:auto">
+			<div style="margin-bottom:5px">
+				<!-- <a href="#" id="butAdd" name="butAdd" class="easyui-linkbutton" iconCls="icon-add" plain="true"></a>
+				<a href="#" id="butEdit" name="butEdit" class="easyui-linkbutton" iconCls="icon-edit" plain="true"></a>
+				<a href="#" id="butSave" name="butSave" class="easyui-linkbutton" iconCls="icon-save" plain="true"></a> -->
+				<a href="#" id="butDelete" name="butDelete" class="easyui-linkbutton" iconCls="icon-remove" plain="true"></a>		
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'center',title:'请填写意见'">
+		<div class="easyui-layout" fit="true"> 
+			<div region="north" split="false" border="false" style="height: 35px;">                 
+				<a href="javascript:void(0)" id="butPost" name="butPost" class="easyui-linkbutton">提交</a>
+				<a href="javascript:void(0)" id="butAdd" name="butAdd" class="easyui-linkbutton">加入常用</a>				
+            </div>  
+            <div region="center" border="false">
+           	 	<input type="hidden" id="FId" name="FId"/> 
+				<textarea id="FContentT" name="FContentT" style="border:0;width:98%;height:98%;resize:none"></textarea>
+            </div>  
+        </div>
+	</div>
+</body>
+</html>

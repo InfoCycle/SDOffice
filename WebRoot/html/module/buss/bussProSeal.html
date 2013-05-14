@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>项目用章申请申办.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+ 	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+   	
+    <link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	
+	 <style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 98%;
+			width: 98%;
+		}
+		.classerror{
+			 border: 1px solid #f00;
+			 background:#fcc;
+		}
+
+	</style>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+		
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/EasyUIautoMergeCells.js"></script>
+	<script type="text/javascript" language="javascript">
+		if($.browser.msie){
+			if($.browser.version<=8){
+				setActiveStyleSheet("papers.css");
+			}else				
+				setActiveStyleSheet("papersother.css");
+		} else if($.browser.mozilla){
+			setActiveStyleSheet("papersother.css");
+		} else{
+			setActiveStyleSheet("papersother.css");
+		}
+
+		function setActiveStyleSheet(filename) {
+			document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+		}
+    </script>
+    <script language="JavaScript" type="text/javascript">
+			function nowTime(format){
+				var dt=new Date();
+				//年份
+				this.Year=dt.getFullYear();
+				//月份
+				this.Month=dt.getMonth()+1;
+				//日期
+				this.Day=dt.getDate();
+				//星期几,数字
+				this.Week=dt.getDay();
+				//星期几，中文
+				this.WeekDay='日一二三四五六'.charAt(dt.getDay());
+				//24制小时
+				this.Hours24=dt.getHours();
+				//12制小时
+				this.Hours12=this.Hours24>12 ? this.Hours24-12 : this.Hours24;
+				//分钟
+				this.Minutes=dt.getMinutes();
+				//秒
+				this.Seconds=dt.getSeconds();
+				
+				format=format.replace("yy",this.Year);
+				format=format.replace("MM",this.Month<10?'0'+this.Month:this.Month);
+				format=format.replace("dd",this.Day<10?'0'+this.Day:this.Day);
+				format=format.replace("HH",this.Hours24<10?'0'+this.Hours24:this.Hours24);
+				format=format.replace("hh",this.Hours12<10?'0'+this.Hours12:this.Hours12);
+				format=format.replace("mm",this.Minutes<10?'0'+this.Minutes:this.Minutes);
+				format=format.replace("ss",this.Seconds<10?'0'+this.Seconds:this.Seconds);
+				format=format.replace("ww",this.Week);
+				format=format.replace("WW",this.WeekDay);
+				//时间显示在页面中哪个标签里，这里是其id
+				return format;
+			}
+	</script>
+    <script type="text/javascript" src="../../js/myEasymg.js" ></script>
+    <script type="text/javascript" language="javascript">
+	var user;
+	
+	var action;
+	var processId;
+	var activeId;
+	var formPKID;
+	var state;
+	
+	var seal;
+	var task;
+	var isLogin;
+	
+	var activeUser;
+	
+	var ispost=false;
+	
+	//获取页面数据
+	var sealDate={
+				FId:"",
+				FKTaskId:"",
+				FNumbers:"",
+				FBidForReason:"",
+				FSealContent:"",
+				FTheApplicant:"",
+				FTheApplicantTime:"",
+				FDeptOpinion:"",
+				FProductionACO:"",
+				FTheGeneralMO:"",
+				FTheApplicantId:"",
+				processId:"",
+				fromPKID:"",
+				title:"",
+			}
+	
+	var IFrame='<iframe src="{0}" style="width:100%;height:100%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';
+	//选择任务提示框
+	function selectwin(){
+		var win =$(IFrame.format('/html/module/report/selectTask2.html'));
+  		$.lightbox(win, {
+			    modal  : true,
+				width   : 600,
+			    height  : 440
+			  });
+	}
+	function postwin(){
+		var entitys={
+	    		userID:user.userID,
+	    		userName:user.userName
+	    	}
+	    	var entityJSON= Base64.encode($.toJSON(entitys));
+	    	var win = $(IFrame.format('/html/module/controls/PostTask.html?entitys='+entityJSON));
+	    	$.lightbox(win, {
+				    modal: true,
+					width: 550,
+				    height: 350
+			});
+			return false;
+	}
+	//selectTask的回掉父类方法
+	function closeJBox(){
+		var param=$('input[id=FKTaskName]').val();
+		var kTaskId=$('#fkTaskId').val();
+		var taskNumber=$('#taskNumbers').val();
+ 		setButtonState('#aB_OK,#aT_OK',true);
+ 		setButtonState('#aB_Post,#aT_Post',false);
+ 		state=1;
+		if($.trim(param)){ 
+			$('input[id=FKTaskName]').val(param);
+			$('#fkTaskId').val(kTaskId); 
+			$('#taskNumbers').val();
+			
+			//$.fn.query(); 
+		} 
+		$.LightBoxObject.close();
+	}
+	//提交的回调函数
+	function ToPart(entitys){
+		$.loadmg("温馨提示","正在提交...");
+		$.post(
+		"/buss/seal/6",
+		{
+			'processId':processId,
+			'aboveActId':activeId,
+			'userId':entitys.acceptUserId,
+			'remark':entitys.remark
+		},
+		function(data){
+			$.LightBoxObject.close();
+			if(data){
+				if(data.success){
+					setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aT_Post,#aT_Cancel,#aT_Return',false);
+					setButtonState('#aB_CuiBan,#aB_BLQK,#aT_CuiBan,#aT_BLQK',true);
+					//$.tipmg('温馨提示',data.message,'success');
+					$('textarea').attr('onfocus','blur()');
+					$('input').attr('onfocus','blur()');
+					activeId+=1;
+					ispost=true;
+					if($('#FTheApplicant').val()==""){
+						$('#FTheApplicant').val(user.userName);
+						$('#FTheApplicantId').val(user.userID);
+						//var d = new Date();
+						var d=nowTime('yy-MM-dd HH:mm:ss');
+						$('#FTheApplicantTime').val(d);
+						updateseal();
+					}else{
+						$.tipmg('温馨提示',data.message,'success');	
+					}
+					
+				}else{
+					$.tipmg('温馨提示',data.message,'error');
+				}
+			}else{
+				$.tipmg('温馨提示','网络错误,请稍后再试，或与管理员联系','warning');
+			}
+		});
+	}
+	//验证非空
+	function todom(dom){
+				var body = (window.opera) ? (document.compatMode == "CSS1Compat" ? $('html') : $('body')) : $('html,body');
+				body.animate({scrollTop: $(dom).offset().top}, 500);
+			}
+	//$("#").validData("不能为空！请仔细填写");
+	$.fn.extend({        
+			   validData :function(msg,types){   //msg 例如：'不能为空！请仔细填写。'			   
+				   var obj=$(this);
+				  if(types=="datatime"){
+				  	//alert(obj.datetimebox('getValue'));
+				  	if(trim(obj.datetimebox('getValue'))==""){
+								obj.addClass("classerror");
+							    //obj.val("该输入项为必输项！");
+								//ar scroll_y = parseInt(800);
+								//window.scrollBy(0, scroll_y);						
+							   obj.focus(function(){
+									obj.removeClass("classerror");
+							    });
+								//window.location.hash = this;
+								todom(this);
+							    //MsgBox('系统提示',msg);
+							    return false;
+						   }else
+								return true;
+				  	}else if(types=="text"){
+				  		if(trim(obj.val())==""){
+								obj.addClass("classerror");
+							    //obj.val("该输入项为必输项！");
+								//ar scroll_y = parseInt(800);
+								//window.scrollBy(0, scroll_y);						
+							    obj.focus(function(){
+									obj.val("");
+									obj.removeClass("classerror");
+							    });
+								//window.location.hash = this;
+								todom(this);
+							    //MsgBox('系统提示',msg);
+							    return false;
+						   }else
+								return true;
+				  	}
+				  }
+			});
+	
+	//按钮显示隐藏
+	function setButtonState(id,states){
+		if(states)
+			$(id).show();
+		else
+			$(id).hide();
+	}
+	
+	function setsealDate(){
+		sealDate.FId=formPKID;
+		sealDate.FKTaskId=FKTaskId=$('#fkTaskId').val();
+		sealDate.FNumbers=$('#FNumbers').val();
+		sealDate.FBidForReason=$('#FBidForReason').val();
+		sealDate.FSealContent=$('#FSealContent').val();
+		sealDate.FTheApplicant=$('#FTheApplicant').val();
+		sealDate.FTheApplicantTime=$('#FTheApplicantTime').val();
+		sealDate.FDeptOpinion=$('#FDeptOpinion').val();
+		sealDate.FProductionACO=$('#FProductionACO').val();
+		sealDate.FTheGeneralMO=$('#FTheGeneralMO').val();
+		sealDate.FTheApplicantId=$('#FTheApplicantId').val();
+		sealDate.fromPKID=formPKID;
+		sealDate.processId=processId;
+		sealDate.title=$('#FKTaskName').val();
+	}
+	//添加用章申请
+	function addseal(){
+		setsealDate();
+		
+		//alert($('#fkTaskId').val());
+		$.post(
+			"/buss/seal/0",
+			sealDate,
+			function(data){
+				if(data){
+					if(data.success){
+						formPKID=data.root.FId
+						$.tipmg('温馨提示',data.message,'success');
+						setButtonState('#aT_OK,#aB_OK',false);
+						setButtonState('#aT_Post,#aB_Post',true);
+					}else{
+						$.tipmg('温馨提示',data.message,'error');
+					}
+				}else{
+					$.tipmg('温馨提示','网络错误！请检查网络连接，或与管理员联系！','warning');
+				}
+			});
+	}
+	//修改用章申请
+	function updateseal(){
+		setsealDate();
+		$.post(
+			"/buss/seal/1",
+			sealDate,
+			function(data){
+				if(data){
+					$.tipmg('温馨提示','保存成功','success');
+					if(!ispost){
+						setButtonState('#aT_OK,#aB_OK',false);
+						setButtonState('#aT_Post,#aB_Post',true);
+					}
+					//$.tipmg('温馨提示','保存失败','error');
+				}else{
+					$.tipmg('温馨提示','网络错误！请检查网络连接，或与管理员联系！','warning');
+				}
+			});
+		}
+	//保存方法
+	function saveseal(){
+		$.loadmg('温馨提示','正在保存...');
+		
+		if($('#FKTaskName').val()==""){
+			$.messager.alert('温馨提示','请选择任务');
+		}else{
+			getcode();
+		}
+	}
+	//提交前验证
+	function postdefultcheck(){
+		switch(user.unitStation){
+    		case 1007:
+    			return postcheck1();
+    		case 1002:
+    			return postcheck2();
+    		case 1000:
+    			return postcheck3();
+    	}
+    	if(!$('#FBidForReason').validData("申办事由","text")){
+    		$('#FBidForReason').validatebox({required:true});
+    		$('#FBidForReason').focus();
+    		return false;
+    	}else if(!$('#FSealContent').validData("印章内容","text")){
+    		$('#FBidForReason').validatebox({required:true});
+    		$('#FBidForReason').focus();
+    		return false;
+    	}else if(!$('#FKTaskName').validData("选择任务","text")){
+    		$('#FKTaskName').validatebox({required:true});
+    		$('#FKTaskName').focus();
+    		return false;
+    	}
+    	return true;
+	}
+	//验证部门经理意见是否填写
+	function postcheck1(){
+		if(!$("#FDeptOpinion").validData("部门经理请填写部门经理意见","text")){
+			$("#FDeptOpinion").validatebox({required:true});
+			$("#FDeptOpinion").focus();
+			return false;
+		}else{
+			return true;
+		}
+	}
+	//验证生产副总意见是否填写
+	function postcheck2(){
+		if(!$("#FProductionACO").validData("生产副总请填写生产副总意见","text")){
+			$("#FProductionACO").validatebox({required:true});
+			$("#FProductionACO").focus();
+			return false;
+		}else{
+			return true;
+		}
+	}
+	//验证总经理意见是否填写
+	function postcheck3(){
+		if(!$("#FTheGeneralMO").validData("总经理请填写总经理意见","text")){
+			$("#FTheGeneralMO").validatebox({required:true});
+			$("#FTheGeneralMO").focus();
+			return false;
+		}else{
+			return true;
+		}
+	}
+	//提交方法选择
+	function changpost(){
+		if(trim($("#FTheGeneralMO").val())==""||trim($("#FProductionACO").val())==""||trim($("#FDeptOpinion").val())==""){
+			return false;
+		}else{
+			return true;
+		}
+	}
+	//提交方法
+	function postseal(){
+		if(postdefultcheck()){
+			if(changpost()){
+				//设置任务完成
+				$.loadmg('温馨提示','正在提交');
+				$.post(
+					'/buss/seal/5',
+					{"activeId":activeId},
+					function(data){
+						if(data){
+							if(data.success){
+								$.tipmg('温馨提示',data.message,'success');
+								setButtonState("#aT_OK,#aB_OK,#aT_Post,#aB_Post,#aT_Cancel,#aB_Cancel,#aT_Return,#aB_Return,#aT_CuiBan,#aB_CuiBan",false);
+							}else{
+								$.tipmg('温馨提示',data.message,'error');
+							}
+						}else{
+							$.tipmg('温馨提示','网络错误，请稍后再试，或与管理员联系','warning');
+						}
+					}
+				);
+			}else{
+				postwin();
+			}
+		}else{
+			return false;
+		}
+	}
+	//撤销方法
+	function cancelseal(){
+		if(state==0){
+			var submit=function(r){
+				if(r){
+					$.loadmg("温馨提示","正在撤销项目检查记录登记，请稍等...");
+					$.post(
+						"/buss/seal/7",
+						{
+							"FId":formPKID,
+							"processId":processId,
+							"activeId":activeId
+						},
+						function(data){
+							if(data){
+								if(data.success){
+									$.tipmg('温馨提示',data.message,'success');
+									setButtonState('#aB_OK,#aB_Post,#aB_Return,#aB_CuiBan,#aB_QianShou,#aB_Cancel,#aB_BLQK,#aT_OK,#aT_Post,#aT_Return,#aT_CuiBan,#aT_QianShou,#aT_Cancel,#aT_BLQK',false);
+									$('#btnSelectPlan').attr('disabled','true');
+									$('input').attr('onfocus','blur()');
+									$('textarea').attr('onfocus','blur()');
+								}else{
+									$.tipmg('温馨提示',data.message,'error');
+								}
+							}else{
+								$.tipmg('温馨提示','网络错误，请稍后再试，或与管理员联系','warning');
+							}
+						}
+					);
+				}else{
+					$.messager.alert('温馨提示','项目处于办理阶段不能撤销','info');
+				}
+			}
+			$.messager.confirm('温馨提示', '确定要撤销该用章申请吗？',submit);
+		}
+	}
+	//打回方法
+	function returnseal(){
+		if(!postdefultcheck()){
+			return false;
+		}
+		if(state == 0){
+			$.messager.alert('温馨提示','起草阶段不能打回','info');
+		}else if(state == 3){
+			$.messager.alert('温馨提示','项目处于终止阶段不能打回','info');
+		}else{
+			$('#OpinionMessage1').attr('onfocus','');
+			var submit = function(){
+				
+				if ($('#OpinionMessage1').val() != '' && $('#OpinionMessage1').val() != null) {
+					$.loadmg("温馨提示","正在保存打回信息...");
+					$.post(
+						"/buss/seal/8",
+						{
+							"activeId":activeId, 
+							"remark":$('#OpinionMessage1').val()
+						},
+						function(data){
+							if(data){
+								if(data.success){
+									$.tipmg('温馨提示',data.message,'success');
+									setButtonState('#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aT_Post,#aT_Cancel,#aT_Return',false);
+									setButtonState('#aB_CuiBan,#aB_BLQK,#aT_CuiBan,#aT_BLQK',true);
+									$('input').attr('onfocus','blur()');
+									$('textarea').attr('onfocus','blur()');
+									$("#divreturn").dialog('close');
+								}else{
+									$.tipmg('温馨提示',data.message,'error');
+								}
+							}else{
+								$.tipmg('温馨提示','网络错误，请稍后再试，或与管理员联系','warning');
+							}
+						}
+					);
+				}else{
+					$.messager.alert('温馨提示','请输入打回意见。','info'); 
+				}
+			}
+			$("#divreturn").dialog({
+					width:400,
+					title:'打回操作',
+					modal:true,
+					closed:true,
+					closable:true,
+					buttons:[{text:'确认',iconCls:"okbut-esaybt",handler:submit}]
+				});	
+			$("#divreturn").dialog('open');
+		}
+	}
+	//催办方法
+	function cuibanseal(){
+		if(state==0){
+			$.messager.alert('温馨提示','项目用章申请处于起草阶段，不能催办','info');
+		}else{
+			$('#OpinionMessage2').attr('onfocus','');
+			var submit=function(){
+				
+				if ($('#OpinionMessage2').val()!= '' && $('#OpinionMessage2').val()!= null) {
+					$.loadmg("温馨提示","正在保存催办信息...");
+					$.post(
+						"/buss/seal/9",
+						{
+							"activeId":activeId, 
+							"remark":$('#OpinionMessage2').val()
+						},
+						function(data){
+							if(data){
+								if(data.success){
+									$.tipmg("温馨提示",data.message,"success");
+									$("#divcuiban").dialog("close");
+								}else{
+									$.tipmg('温馨提示',data.message,'error');
+								}
+							}else{
+								$.tipmg('温馨提示','网络错误，请稍后再试，或与管理员联系','warning');
+							}
+						});
+				}else{
+					$.messager.alert('温馨提示','请输入催办意见。','error');
+				}
+			}
+			$("#divcuiban").dialog({
+				width:400,
+				title:'催办操作',
+				modal:true,
+				closed:true,
+				closable:true,
+				buttons:[{text:'确认',iconCls:"okbut-esaybt",handler:submit}]
+			});	 
+			$("#divcuiban").dialog('open');
+		}
+	}
+	//办理情况
+	function BLQK(processId){
+			var href="../wf/HandleStatus.html?processId="+processId;
+			parent.NavigateUrl('wf_handle_'+processId,'办理情况',href);
+			return false;
+		}
+	//签收
+	function qianshouseal(){
+		$.loadmg('温馨提示','正在签收...');
+		$.post(
+			'/buss/seal/11',
+			{'activeId':activeId},
+			function(data){
+				if(data){
+					if(data.success){
+						$.tipmg('温馨提示',data.message,'success');
+						setButtonState("#aB_Return,#aT_Return",true);
+						setButtonState("#aB_QianShou,#aT_QianShou",false);
+						switch(user.unitStation){
+				    		case 1007:
+				    			setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+				    			$("#FDeptOpinion").attr('onfocus','');
+				    			break;
+				    		case 1002:
+				    			setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+				    			$("#FProductionACO").attr('onfocus','');
+				    			break;
+				    		case 1000:
+				    			setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+				    			$("#FTheGeneralMO").attr('onfocus','');
+				    			break;
+						}
+					}else{
+						$.tipmg('温馨提示',data.message,'error');
+					}
+				}else{
+					$.tipmg("温馨提示",'网络错误,请稍后再试,或与管理员联系');
+				}
+			}
+		);
+	}
+	//返回用章申请
+	function getseal(){
+		$.post(
+			"/buss/seal/3",
+			{
+				"FId":formPKID
+			},
+			function(data){
+				if(data){
+					if(data.success){
+						seal=data.root;
+						if(seal.fkTaskId!=-1){
+							getTask(seal.fkTaskId);	
+						}else{
+							settext();
+							xsblqk();
+						}
+					}else{
+						$.tipmg('温馨提示','数据错误！','error');
+					}
+				}else{
+					$.tipmg('温馨提示','网络错误，请检查网络，或与管理员联系','warning');
+				}
+			}
+		);
+	}
+	//根据taskId返回task
+	function getTask(taskId){
+		$.post(
+			"/Buss/TaskService/1",
+			{"ID":taskId},
+			function(data){
+				if(data){
+					if(data.success){
+						task=data.root[0];
+						settext();
+						//alert($('#FTheApplicantId').val());
+						//xsblqk();
+					}else{
+						$.tipmg('温馨提示','数据错误请与管理员联系','warning');
+					}
+				}else{
+					$.tipmg('温馨提示','网络错误，请稍后再试，或与管理员联系','warning');
+				}
+				buttoncheck();
+			}
+		);
+	}
+	
+	//按钮控制
+	function buttoncheck(){
+		if(action==0){
+			setButtonState('#aB_OK,#aB_Post,#aB_Return,#aB_CuiBan,#aB_QianShou,#aB_Cancel,#aB_BLQK,#aT_OK,#aT_Post,#aT_Return,#aT_CuiBan,#aT_QianShou,#aT_Cancel,#aT_BLQK',false);
+			$('input').attr('onfocus','blur()');
+			$('textarea').attr('onfocus','blur()');
+			setButtonState('#aT_Cancel,#aB_Cancel',true);
+			$('#FBidForReason').attr('onfocus','');
+			$('#FSealContent').attr('onfocus','');
+			setsealDate();
+			$.post("/buss/seal/12",
+				sealDate,
+				function(data){
+					if(data){
+						if(data.success){
+							$.post(
+								'/buss/seal/11',
+								{'activeId':activeId},
+								function(data){
+									if(data){
+										$.tipmg('温馨提示','数据加载完成','success');
+										xsblqk();
+									}else{
+										$.tipmg('温馨提示','数据加载失败','error');
+									}
+								});
+						}else{
+							$.tipmg('温馨提示',data.message,'warning');
+							return false;
+						}
+					}else{
+						$.tipmg('温馨提示','网络错误,请稍后再试，或与管理员联系','warning');
+						return false;
+					}
+				});
+		}else if(action==1){
+			setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Return,#aB_CuiBan,#aB_QianShou,#aB_Cancel,#aB_BLQK,#aT_OK,#aT_Post,#aT_Return,#aT_CuiBan,#aT_QianShou,#aT_Cancel,#aT_BLQK',false);
+			if(state==0){
+				setButtonState('#btnSelectPlan,#aT_Cancel,#aB_Cancel,#aB_Post,#aT_Post',true);
+				$('input').attr('onfocus','blur()');
+				$('textarea').attr('onfocus','blur()');
+				$('#FBidForReason').attr('onfocus','');
+				$('#FSealContent').attr('onfocus','');
+				$.tipmg('温馨提示','数据加载完成','success');
+				xsblqk();
+			}else{
+				getaccept();
+			}
+		}else if(action==2){
+				setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Return,#aB_CuiBan,#aB_QianShou,#aB_Cancel,#aT_OK,#aT_Post,#aT_Return,#aT_CuiBan,#aT_QianShou,#aT_Cancel',false);
+				$('input').attr('onfocus','blur()');
+				$('textarea').attr('onfocus','blur()');
+				$.tipmg('温馨提示','数据加载完成','success');
+		}else{
+				setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Return,#aB_CuiBan,#aB_QianShou,#aB_Cancel,#aB_BLQK,#aT_OK,#aT_Post,#aT_Return,#aT_CuiBan,#aT_QianShou,#aT_Cancel,#aT_BLQK',false);
+				$('input').attr('onfocus','blur()');
+				$('textarea').attr('onfocus','blur()');
+				$.tipmg('温馨提示','数据加载完成','success');
+		}
+		
+	}
+	//获取当前办理人
+	function getaccept(){
+		$.post(
+			"/buss/seal/10",
+			{"activeId":activeId},
+			function (data){
+				if(data){
+					activeUser=data;
+					if(activeUser.FAcceptUser!=user.userID){
+						setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aB_QianShou,#aT_QianShou,#aT_Post,#aT_Cancel,#aT_Return',false);
+						setButtonState('#aT_CuiBan,#aB_CuiBan,#aT_BLQK,#aB_BLQK',true)
+						$('input').attr('onfocus','blur()');
+						$('textarea').attr('onfocus','blur()');
+					}else{
+						setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aB_QianShou,#aT_QianShou,#aT_Post,#aT_Cancel,#aT_Return',false);
+						$('input').attr('onfocus','blur()');
+						$('textarea').attr('onfocus','blur()');
+						if(activeUser.FAcceptTime==""){
+							setButtonState("#aB_QianShou,#aT_QianShou,#aT_BLQK,#aB_BLQK",true);
+							xsblqk();
+						}else{
+							//alert("user"+user.userOrgID);
+								switch(user.unitStation){
+				    				case 1007:
+				    					setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+				    					$("#FDeptOpinion").attr('onfocus','');
+				    					break;
+				    				case 1002:
+				    					setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+				    					$("#FProductionACO").attr('onfocus','');
+				    					break;
+						    		case 1000:
+						    			setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+						    			$("#FTheGeneralMO").attr('onfocus','');
+						    			break;
+								}
+								//alert(user.userID+"d"+$('#FTheApplicantId').val()+"x"+(user.userID==$('#FTheApplicantId').val()))
+								if(user.userID==$('#FTheApplicantId').val()){
+									
+									$('#FBidForReason').attr('onfocus','');
+									$('#FSealContent').attr('onfocus','');
+								}
+								xsblqk();
+							}
+						}
+					$.tipmg('温馨提示','加载成功','success');
+				}else{
+					$.tipmg('温馨提示','网络错误，请稍后再试，或与管理员联系','warning');
+					return false;
+				}
+			}
+		);
+	}
+	//text内容发生改变时
+	function textchan(){
+		setButtonState('#aB_OK,#aT_OK',true);
+		setButtonState('#aB_Post,#aT_Post',false);
+	}
+	//获取任务编号
+	function getcode(){
+		$.post(
+		"/GetNumber/ForNumberRule/",
+		 {
+		 	"Code": "XMYZ",
+			"Title": $("#FKTaskName").val(),
+			"isHaveSub": 0
+		 },
+		 function(data){
+		 	if(data){
+		 		if(data.success){
+		 			$("#FNumbers").val(data.Number);
+		 			//alert($('#formPKID').val());
+		 			if(formPKID==0){
+						addseal();
+					}else{
+						updateseal();
+					}
+		 		}else{
+		 			$.tipmg('温馨提示','生成编号失败','');
+		 		}
+		 	}else{
+		 		$.tipmg('温馨提示','网络错误，请稍后再试，或与管理员联系','wanring');
+		 	}
+		 });
+	}
+	function xsblqk(){
+		//alert(processId);
+		$("#qkTable").datagrid({ 
+			title:'办理情况(近4次)', 
+			width: '98%', 
+			showHeader:false, 
+			//height: 221, 
+			columns:[ [
+				{/*title:'类型',*/field:'FStyle',width:80,align:'center', formatter: function(value,row,index){
+					if(value=="1") 
+						return "办理情况"; 
+					else if(value=="2") 
+						return "催办情况"; 
+					else if(value=="3") 
+						return "打回情况"; 
+					else if(value=="-1") 
+						return ""; 
+					else if(value=="-2") 
+						return ""; 
+						else if(value=="-3") 
+							return ""; 
+					} }, 
+				{/*title:'发送人员',*/field:'sendUser',width:80,hidden:false}, 
+				{/*title:'发送时间',*/field:'FSendTime',width:141,align:'center'}, 
+				{/*title:'接收人员',*/field:'acceptUser',width:80,align:'center'}, 
+				{/*title:'接收时间',*/field:'FAcceptTime',width:141,align:'center'}, 
+				{/*title:'办理状态',*/field:'FStateText',width:81,align:'center'}, 
+				{/*title:'完成时间',*/field:'completeTime',width:141,align:'center'}, 
+				{/*title:'备注',*/field:'FRemark',width:151,align:'center'}						]], 
+				url: '/Buss/CommonOpinionService/6/?processId='+processId+"&toprecord="+4, 
+				rownumbers:false,fit:true,singleSelect:true, //pagination:true, 
+				onSelect: function(index,row){
+				$("#FId").attr("value",row.FId); 
+				$("#FContentT").text(row.FContent); 
+			}, 
+			onLoadSuccess:function(){ 
+			//所有列进行合并操作 //$(this).datagrid("autoMergeCells"); //指定列进行合并操作 
+			$(this).datagrid("autoMergeCells",['FStyle','sendUser','FStateText']); 
+			mergeCellsByField(
+				"qkTable",
+				"FAcceptTime",
+				"FStateText",
+				"FStateText",
+				"complleteTime",
+				"FRemark"
+			); 
+			}, 
+			rowStyler:function(index,row){ 
+				if(row.FStyle=="-1" || row.FStyle=="-2" || row.FStyle=="-3") 
+				return 'background-color: #fafafa;'
+				+ 'background: -webkit-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+				+ 'background: -moz-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+				+ 'background: -o-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+				+ 'background: linear-gradient(to bottom,#fdfdfd 0,#f5f5f5 100%);'
+				+ 'background-repeat: repeat-x;'
+				+ 'filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#fdfdfd,endColorrstr=#f5f5f5,GradientType=0);'
+				+ 'color:blue;font-weight:bold;'; 
+			}
+		}); 
+	}
+	//获取当前用户方法
+	function getcurrentuser(){
+		$.post(
+			'/system/SvrService/AppIndex/4/',
+			{},
+			function(data){
+				if(data){
+					if(data.success){
+						user=data.root;
+						action = Request.QueryString("action"); 
+						processId = Request.QueryString("processId");
+						activeId = Request.QueryString("activeId");
+						formPKID = Request.QueryString("formPKID");
+						state = Request.QueryString("state");
+						if(formPKID!=0){
+							getseal();
+						}else{
+							buttoncheck();
+						}
+					}else{
+						$.tipmg('温馨提示','获取用户信息失败','error');
+						window.location.href='/html/module/system/loginApp.html'; 
+					}
+					isLogin=true;
+				}else{
+					$.tipmg('温馨提示','网络错误，请检查网络，或与管理员联系！','warning');
+					setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aB_QianShou,#aT_QianShou,#aT_Post,#aT_Cancel,#aT_Return',false);
+					isLogin=false;
+				}
+			}
+		);
+		//alert("DDD");
+	}
+	//设置值
+	function settext(){
+		//alert(seal.FId);
+		//alert(task.FTaskName);
+		//alert(seal.fkTaskId);
+		$('#FTheGeneralMO').val(seal.FTheGeneralMo);
+		$('#FNumbers').val(seal.FNumbers);
+		$('#fkTaskId').val(seal.fkTaskId);
+		$('#FBidForReason').val(seal.FBidForReason);
+		$('#FKTaskName').val(task.FTaskName);
+		$('#FSealContent').val(seal.FSealContent);
+		$('#FTheApplicantId').val(seal.FTheApplicantId);
+		$('#FTheApplicant').val(seal.FTheApplicant);
+		$('#FTheApplicantTime').val(seal.FTheApplicantTime);
+		$('#FDeptOpinion').val(seal.FDeptOpinion);
+		$('#FProductionACO').val(seal.FProductionAco);
+		$('#taskNumbers').val(task.FTaskNumbers);
+	}
+	//主方法
+	$(document).ready(function(){
+		
+		$.loadmg('温馨提示','正在加载...');
+		$('#btnSelectPlan').click(selectwin);
+		$("#aT_OK,#aB_OK").click(saveseal);
+		$("#aT_Post,#aB_Post").click(postseal);
+		$("#aT_Cancel,#aB_Cancel").click(cancelseal);
+		$("#aT_Return,#aB_Return").click(returnseal);
+		$("#aT_CuiBan,#aB_CuiBan").click(cuibanseal);
+		$('#aB_QianShou,#aT_QianShou').click(qianshouseal);
+		$("#aT_BLQK,#aB_BLQK").click(function(){
+			BLQK(processId);
+		});
+		//初始化弹出窗
+		$("#divcuiban").dialog({
+				width:400,
+				title:'催办操作',
+				modal:true,
+				closed:true,
+				closable:true
+				//buttons:[{text:'确认',iconCls:"okbut-esaybt",handler:submit}]
+			});
+		$("#divreturn").dialog({
+				width:400,
+				title:'打回操作',
+				modal:true,
+				closed:true,
+				closable:true
+				//buttons:[{text:'确认',iconCls:"okbut-esaybt",handler:submit}]
+			});
+		getcurrentuser();
+	});
+	
+    </script>
+    
+  </head>
+  <body>
+  	<form>
+    	<input type="hidden" id="action" name="action"  value=""/>
+		<input type="hidden" id="processId" name="processId" value=""/>
+		<input type="hidden" id="activeId" name="activeId" value=""/>
+		<input type="hidden" id="formPKID" name="formPKID" value=""/>
+		<input type="hidden" id="state" name="state" value=""/>
+		<input type="hidden" id="FId" name="FId" value=""/>
+		<table border="0" cellpadding="3" cellspacing="0" class="pagetable" style="width:810px;margin:auto">
+			<tr>
+				<td><ul id="css3menu">
+						<li class="topfirst">
+							<a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+						</li>
+						<li>
+							<a rel="#" id="aT_OK"><img src="../../images/oa/ok.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+						</li>  
+						<li>
+							<a rel="#" id="aT_Post"><img src="../../images/oa/passfile.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+						</li>
+						<li>
+							<a rel="#" id="aT_Cancel"><img src="../../images/oa/refresh.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+					 	</li>
+					 	<li>
+					 		<a rel="#" id="aT_Return"><img src="../../images/oa/refresh.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+					 	</li>
+					 	<li>
+					 		<a rel="#" id="aT_CuiBan"><img	src="../../images/oa/talk.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+					 	</li>
+					 	<li><a rel="#" id="aT_QianShou">
+								<img src="../../images/oa/talk.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+						</li>
+						<li>
+							<a rel='#' id="aT_BLQK"><img src="../../images/oa/quite.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+						</li>														
+						<li class="toplast"><a rel="#">
+							<img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+						</li>
+						</ul> <br /> <br /></td>
+				</tr>
+				<tr>
+					<td style="padding-left:3px;">
+						<div class="content" id="content" style="height:800px;width:810px;display:table;text-align:center;" >
+							<div class="divimageclass"></div>
+							<br />
+							<br />
+							<br />							
+							<div style="float:left;" align="center">
+								<table id="custb" class="content_table1" width="780px" border="1" cellpadding="0" style="position:absolute; margin:10px 0px 0px 10px;">
+									<caption style="height:50px;font-size:18px;">
+										<strong>昆明松岛工程造价咨询有限公司</br>
+											项目用章申办申请表
+											<br><br><br><br><br><br>
+									</caption>
+									<tr>
+										<th colspan="6" align="left" valign="middle" scope="col">编号:
+												<input type="text" id="FNumbers" name="FNumbers" value="" style="width:90%;">
+										</th>
+									</tr>
+									<tr>
+										<td width="10%">
+											任务编号:
+										</td>
+										<td colspan="3">
+											<input class="easyui-validatebox" type="text" id="taskNumbers" name="taskNumbers" data-options="required:true" style="width:98%;" ></input>
+										</td>
+									</tr>
+									<tr>
+										<td width="10%">
+											任务名称:
+										</td>
+										<td colspan="3">
+											<input type="hidden" style="width:25px;" id="fkTaskId" name="fkTaskId">
+											<input class="easyui-validatebox" type="text" id="FKTaskName" name="taskName" data-options="required:true" style="width:90%;"  ></input>
+											<input id="btnSelectPlan" type="button" class="btnSelect"/>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											申办事由:
+										</td>
+										<td height="30px"  colspan="3"> 
+											<input class="easyui-validatebox" type="text" id="FBidForReason" name="FBidForReason" data-options="required:true" style="width:98%;" onchange='textchan()'></input>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											印章内容:
+										</td>
+										<td height="30px"  colspan="3"> 
+											<input class="easyui-validatebox" type="text" id="FSealContent" name="FSealContent" data-options="required:true" style="width:98%;" onchange='textchan()'></input>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											申请人:
+										</td>
+										<td> 
+											<input type="hidden" style="width:25px;" id="FTheApplicantId" name="FTheApplicantId">
+											<input class="easyui-validatebox" type="text" id="FTheApplicant" name="FTheApplicant"  style="width:98%;" ></input>
+										</td>
+										<td>
+											申请时间:
+										</td>
+										<td> 
+											<input class="easyui-validatebox" type="text" id="FTheApplicantTime" name="taskNumber" style="width:98%;"></input>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="4">
+											部门意见
+										</td>
+									</tr>
+									<tr>
+										<td colspan="4">
+											<textarea id="FDeptOpinion" name="message" style="height:100px;width:98%;color:blue;" onchange='textchan()'></textarea>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="4">
+											生产副总意见
+										</td>
+									</tr>
+									<tr>
+										<td colspan="4">
+											<textarea id="FProductionACO" name="message" style="height:100px;width:98%;color:blue;" onchange='textchan()'></textarea>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="4">
+											总经理意见
+										</td>
+									</tr>
+									<tr>
+										<td colspan="4">
+											<textarea id="FTheGeneralMO" name="message" style="height:100px;width:98%; color:blue;" onchange='textchan()'></textarea>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+				<td><ul id="css3menu">
+						<li class="topfirst">
+							<a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+						</li>
+						<li>
+							<a rel="#" id="aB_OK"><img src="../../images/oa/ok.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+						</li>  
+						<li>
+							<a rel="#" id="aB_Post"><img src="../../images/oa/passfile.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+						</li>
+						<li>
+							<a rel="#" id="aB_Cancel"><img src="../../images/oa/refresh.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+					 	</li>
+					 	<li>
+					 		<a rel="#" id="aB_Return"><img src="../../images/oa/refresh.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+					 	</li>
+					 	<li>
+					 		<a rel="#" id="aB_CuiBan"><img	src="../../images/oa/talk.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+					 	</li>
+					 	<li>
+					 		<a rel="#" id="aB_QianShou"><img src="../../images/oa/talk.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+						</li>
+						<li>
+							<a rel='#' id="aB_BLQK"><img src="../../images/oa/quite.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+						</li>														
+						<li class="toplast"><a rel="#">
+							<img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+						</li>
+						</ul> <br /> <br />
+						<div  style="float:left;width:100%;height:251px;">
+							<table id="qkTable" name="qkTable" style="height:100%;"></table>
+						</div>
+					</td>
+				</tr>
+			</table>
+			<!--<div id="tb">
+				<input class="easyui-validatebox" style="width:190px" id="text"/>
+  				<a href="#" class="easyui-linkbutton" iconCls="query-esaytb" onClick="selectClick();">查询</a>
+			</div>--> 
+			<div id="divtaskName" align="center">
+				<table id="tableTask"></table>
+			</div>
+			<div  style="float:left;width:100%;height:251px;">
+				<table id="qkTable" name="qkTable" style="height:100%;"></table>
+			</div>
+			<div id='divreturn' width="300px" style="padding:5px;">打回意见：<textarea  cols="38" rows="3" id="OpinionMessage1" name="OpinionMessage"></textarea></div>
+			<div id="divcuiban" width="300px" style="padding:5px;">催办意见：<textarea  cols="38" rows="3" id="OpinionMessage2" name="OpinionMessage"></textarea></div>
+  </body>
+</html>

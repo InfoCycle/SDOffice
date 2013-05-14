@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="../../css/wfMain.css" />
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../css/IconButton.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+<script type="text/javascript"
+	src="../../plugin/js/jquery.js"></script>
+<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+
+<title>业务中心</title>
+<!--[if IE 8]>
+<style>
+#menuButton {
+	margin:0;
+	padding:0; 
+	display: block;
+    font-size: 0;
+    height:39px;
+    width:574px;   
+    margin-left: 120px;
+}
+
+#processtype_list:before {
+	top:6px;
+	right:8px;
+}
+</style>
+<![endif]-->
+<style type="text/css">
+html,body {
+	height: 100%;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+.search_detail {
+    width: 580px;
+    margin-right: auto;
+    margin-left: auto;
+    border-collapse: collapse;
+    border: none;
+    margin-top:40px;
+}
+
+.search_detail td {
+    border: solid #000 1px;
+    font-size: 13px;
+    text-align: center;
+    height: 28px;
+}
+#title {
+	height:24px;
+	line-height:24px;
+}
+</style>
+<script type="text/javascript">
+	var IFrame = "<iframe name='{0}' id='{1}' src='{2}' height='100%' width='100%' frameBorder='0' style='border-width: 0px;overflow-x:hidden;overflow-y:auto'/>";
+	var limit = 15;
+	var action =2;//查看
+	function rendererLeftAlign(value) {
+		return "<div style='text-align:left'>" + value + "</div>";
+	}
+	function NavigateUrl(id, text, href) {
+		var tabid = "wf_" + id;
+		parent.NavigateUrl(tabid, text, href);
+	}
+	function changeStyle(id) {
+		for ( var i = 1; i < 6; i++) {
+			document.getElementById(i).className = 'otherButton';
+		}
+		document.getElementById(id).className = 'menuButtonClick';
+	}
+	
+	function checkTask(id) {
+		changeStyle(id);
+		switch (id) {
+		case 1: {
+			Ext.getCmp('tabpanel').activate('wf_process_new');
+			break;
+		}
+		case 2: {
+			//待办事项
+			action =1;
+			dataStore.lastOptions = null;
+			dataStore.baseParams = {
+				start : 0,
+				limit : limit,
+				action : 1
+			}
+			dataStore.reload();
+			Ext.getCmp('tabpanel').activate('wf_process');
+			break;
+		}
+		case 3: {
+			//我新建的业务事项
+			action =2;
+			dataStore.lastOptions = null;
+			dataStore.baseParams = {
+				start : 0,
+				limit : limit,
+				action : 2
+			}
+			dataStore.reload();
+			Ext.getCmp('tabpanel').activate('wf_process');
+			break;
+		}
+		case 4: {
+			//我经手的业务事项
+			action =2;
+			dataStore.lastOptions = null;
+			dataStore.baseParams = {
+				start : 0,
+				limit : limit,
+				action : 3
+			}
+			dataStore.reload();
+			Ext.getCmp('tabpanel').activate('wf_process');
+			break;
+		}
+		case 5: {
+			//查询
+			Ext.getCmp('tabpanel').activate('wf_process_query');
+			break;
+		}
+		}
+	}
+
+	function addProcess(id, text, href) {
+		var parent = window.parent;
+		var confirm = "确定新增" + text + "吗？";
+		var tabid = "wf_" + id;
+		if (parent.checkProcess(tabid)) {
+			showMessage("已打开新建" + text + "窗口。请关闭后再试！");
+			return;
+		} else {
+			Ext.Msg.confirm('系统提示', confirm, function(btn) {
+				if (btn == "yes") {
+					var mask = new Ext.LoadMask(Ext.getBody(), {
+						msg : '正在初始化数据，请稍候...',
+						removeMask : true
+					});
+					mask.show();
+					Ext.Ajax.request({
+						url : '/wf/process/2/',
+						method : 'post',
+						params : {
+							typeid : id
+						},
+						success : function(response) {
+							mask.hide();
+							var responseArray = Ext.util.JSON
+									.decode(response.responseText);
+							if (responseArray.success) {
+								var processId = responseArray.root;
+								var activeId = responseArray.message;
+								href += "?action=0&processId=" + processId
+										+ "&activeId=" + activeId
+										+ "&formPKID=0&state=0";
+								parent.NavigateUrl(tabid, text, href);
+							} else {
+								Ext.MessageBox.show({
+									title : '系统提示',
+									msg : responseArray.message,
+									width : 300,
+									buttons : Ext.Msg.OK,
+									icon : Ext.MessageBox.INFO
+								});
+							}
+						},
+						failure : function() {
+							mask.hide();
+							showMessage('网络错误，连接失败！', true);
+						}
+					});
+				}
+			});
+		}
+	}
+	var dataStore = new Ext.data.JsonStore({
+		url : '/wf/processtask/',
+		idProperty : 'FId',
+		root : 'root',
+		autoLoad : true,
+		totalProperty : 'totalProperty',
+		fields : [ {
+			name : 'FId'
+		}, {
+			name : 'FTitle'
+		}, {
+			name : 'FCreateUserId'
+		}, {
+			name : 'FCreateUserName'
+		}, {
+			name : 'FCreateTime'
+		}, {
+			name : 'FTypeName'
+		}, {
+			name : 'FState'
+		}, {
+			name : 'FStateText'
+		}, {
+			name : 'FCurrentUserId'
+		}, {
+			name : 'FCurrentUserName'				
+		}, {
+			name : 'FSendUser'
+		},{
+			name : 'FSendTime'
+		}, {
+			name : 'FFormUrl'
+		}, {
+			name : 'activeId'
+		}, {
+			name : 'FFormPkid'
+		} ]
+	});
+	Ext
+			.onReady(function() {
+				//创建查询按钮
+				var btn_search=new Ext.Button({
+			    	renderTo:'btn_search',
+			    	id : 'btn_search',
+			    	height:22,
+			    	text:'查询',
+			    	iconCls:'icon-query',
+			    	handler:function(){
+			    		action=2;
+			    		var scopeData=$("input[name='RadioCheck']:checked").val(); 
+			    		var filetype = $('#filetype').combotree('getValues');
+			    		if(filetype)
+			    			filetype=filetype.toString();
+			    		var title =$('#title').val();
+			    		dataStore.lastOptions = null;
+						dataStore.baseParams = {
+							start : 0,
+							limit : limit,
+							scopeData :scopeData,
+							filetype :filetype,
+							title :title,
+							action : 5
+						}
+						dataStore.reload({callback:function(){
+    						if(dataStore.getTotalCount()>0){
+    							Ext.getCmp('tabpanel').activate('wf_process');
+    						}else{
+    							showMessage("该条件未查询到数据。请改变查询条件后再试！");
+    						}
+    					}});			    		
+			    	}
+			    });
+				var btn_reset=new Ext.Button({
+			    	renderTo:'btn_reset',
+			    	id : 'btn_reset',
+			    	height:22,
+			    	text:'重置',
+			    	iconCls:'icon-reset',    	
+			    	handler:function(){
+			    		$('#filetype').combotree('setValues',[]);			    		
+			    		$('#title').val('');		
+			    	}
+			    });
+				//查询类型赋值
+				Ext.Ajax.request({
+					url: '/wf/process/3/', 
+					method: 'POST',
+					success: function(response) {
+						var responseArray = Ext.util.JSON.decode(response.responseText);
+						if(responseArray.success){	
+							var root = responseArray.root;
+							var node = {};
+							node.id="-1";
+							node.text = "所有类型";
+							var children=[];
+							for(var i=0;i<root.length;i++){
+								var nodes={};
+								nodes.id   = root[i].FId;
+								nodes.text = root[i].FTypeName;
+								children.push(nodes);
+							}
+							node.children = children;
+							var treenode =[];
+							treenode.push(node);							
+							$('#filetype').combotree('loadData',treenode);
+							$('#filetype').combotree({
+								cascadeCheck:true
+							});
+						}
+					},
+					failure: function() { 
+						showMessage("网络连接错误！",true);
+					}
+				});
+				var mainViewport = new Ext.Viewport(
+						{
+							layout : 'border',
+							items : [
+									{
+										xtype : 'panel',
+										region : 'north',
+										bodyBorder : false,
+										baseCls : 'border-width: 0px;',
+										bodyStyle : 'background: #f5f5f5;',
+										height : 42,
+										contentEl : 'btn_container'
+									},
+									{
+										xtype : 'tabpanel',
+										id : 'tabpanel',
+										region : 'center',
+										activeTab : 0,
+										bodyBorder : false,
+										headerStyle : 'display:none;',
+										baseCls : 'border-width: 0px;',
+										items : [
+												{
+													id : 'wf_process_new',
+													title : '新建',
+													contentEl : 'processType_container'
+												},
+												{
+													id : 'wf_process',
+													title : '列表',
+													layout : 'border',
+													items : [ {
+														xtype : 'grid',
+														region : 'center',
+														id : 'wfGrid',
+														store : dataStore,
+														loadMask : {
+															msg : '加载数据中,请等待......'
+														},
+														sm : new Ext.grid.RowSelectionModel(
+																{
+																	singleSelect : true
+																}),
+														viewConfig : {
+															forceFit : true
+														},
+														bodyStyle : 'padding:0px;',
+														columns : [ new Ext.grid.RowNumberer(), {
+															xtype : 'gridcolumn',
+															align : 'center',
+															dataIndex : 'FTitle',
+															header : '项目名称',
+															renderer : rendererLeftAlign,
+															width : 240
+														}, {
+															xtype : 'gridcolumn',
+															align : 'center',
+															dataIndex : 'FTypeName',
+															header : '工作内容',
+															renderer : rendererLeftAlign,
+															width : 100
+														}, {
+															xtype : 'gridcolumn',
+															align : 'center',
+															dataIndex : 'FSendUser',
+															header : '发送人',
+															renderer : rendererLeftAlign,
+															width : 80
+														}, {
+															xtype : 'gridcolumn',
+															align : 'center',
+															dataIndex : 'FSendTime',
+															header : '发送时间',
+															width : 120
+														}, {
+															xtype : 'gridcolumn',
+															align : 'center',
+															dataIndex : 'FStateText',
+															renderer : rendererLeftAlign,
+															header : '状态',
+															width : 80
+														}, {
+															xtype : 'gridcolumn',
+															align : 'center',
+															dataIndex : 'FCurrentUserName',
+															header : '当前办理人',
+															renderer : rendererLeftAlign,
+															width : 90
+														}, {
+															xtype : 'gridcolumn',
+															align : 'center',
+															dataIndex : 'FCreateUserName',
+															header : '起草人',
+															renderer : rendererLeftAlign,
+															width : 80
+														} ,{
+															xtype : 'gridcolumn',
+															align : 'center',
+															dataIndex : 'FCreateTime',
+															header : '起草时间',
+															width : 120
+														} ],
+														bbar : new Ext.PagingToolbar(
+																{
+																	displayInfo : true,
+																	pageSize : limit,
+																	store : dataStore,
+																	displayMsg : ' 当前记录数:{0}-{1}条 &nbsp;&nbsp;总记录数: {2}条 ',
+																	emptyMsg : " 没有符合条件的记录 "
+																}),
+														listeners : {
+															rowdblclick : function(
+																	grid,
+																	number, e) {
+																var record = grid
+																		.getSelectionModel()
+																		.getSelected();
+																var id = record.data.FId;
+																var activeId = record.data.activeId;
+																var formPKID = record.data.FFormPkid;
+																var state = record.data.FState;
+																var href = record.data.FFormUrl;
+																href += "?action="+action+"&processId="
+																		+ id
+																		+ "&activeId="
+																		+ activeId
+																		+ "&formPKID="
+																		+ formPKID
+																		+ "&state="
+																		+ state;
+																parent
+																		.NavigateUrl(
+																				id,
+																				record.data.FTitle,
+																				href);
+															}
+														}
+													} ]
+												},
+												{
+													id : 'wf_process_query',
+													title : '查询',
+													contentEl:'search_container'
+												} ]
+									} ]
+						});
+				var mask = new Ext.LoadMask(Ext.getBody(), {
+					msg : '正在获取数据，请稍候！',
+					removeMask : true
+				});
+				mask.show();
+				Ext.Ajax
+						.request({
+							url : '/wf/process/1/',
+							method : 'post',
+							success : function(response) {
+								mask.hide();
+								var responseArray = Ext.util.JSON
+										.decode(response.responseText);
+								if (responseArray.success) {
+									Ext.getDom("processtype_list").innerHTML = responseArray.root;
+								} else {
+									Ext.MessageBox.show({
+										title : '系统提示',
+										msg : responseArray.message,
+										width : 300,
+										buttons : Ext.Msg.OK,
+										icon : Ext.MessageBox.INFO
+									});
+								}
+							},
+							failure : function() {
+								mask.hide();
+								showMessage('网络错误，连接失败！', true);
+							}
+						});
+
+			});
+</script>
+</head>
+<body>
+	<div id="btn_container">
+		<ul id="menuButton">
+			<li class="topfirst"><a class="menuButtonClick" id="1"
+				onclick="javascript:checkTask(1);"
+				onmouseover="javascript:changeStyle(1);"><img
+					src="../../images/oa/new.png" />新建业务事项</a>
+			</li>
+			<li><a class="otherButton" id="2"
+				onclick="javascript:checkTask(2);"
+				onmouseover="javascript:changeStyle(2);"><img
+					src="../../images/oa/checkfile.png" />待办事项</a>
+			</li>
+			<li><a class="otherButton" id="3"
+				onclick="javascript:checkTask(3);"
+				onmouseover="javascript:changeStyle(3);"><img
+					src="../../images/oa/info.png" />我新建的业务事项</a>
+			</li>
+			<li><a class="otherButton" id="4"
+				onclick="javascript:checkTask(4);"
+				onmouseover="javascript:changeStyle(4);"><img
+					src="../../images/oa/passfile.png" />我经手的业务事项</a>
+			</li>
+			<li><a class="otherButton" id="5"
+				onclick="javascript:checkTask(5);"
+				onmouseover="javascript:changeStyle(5);"><img
+					src="../../images/oa/query.png" />查询</a>
+			</li>
+		</ul>
+	</div>
+	<div id="processType_container">
+		<ul id="processtype_list"></ul>
+	</div>
+
+	<div id="search_container" class="x-hidden">
+		<table class="search_detail">
+			<tr>
+				<td style="width:145px;">状态选择</td>
+				<td style="width:145px;"><input id="RadioCheck1" checked="true" name="RadioCheck" type="radio"
+					value="1" />所有经手业务</td>
+				<td style="width:145px;"><input id="RadioCheck2" name="RadioCheck" type="radio" value="2" />正在办理的业务</td>
+				<td style="width:145px;"><input id="RadioCheck3" name="RadioCheck" type="radio" value="3" />已归档业务</td>
+			</tr>
+			<tr>
+				<td>文件类型</td>
+				<td colspan="3"
+					style="vertical-align: middle; text-align: left">
+					<select
+						id = "filetype"
+						class="easyui-combotree"
+						multiple 
+						style="margin-top: 3px;width:430px;">
+					</select>					
+				</td>
+			</tr>			
+			<tr>
+				<td>文件标题</td>
+				<td colspan="3" style="text-align: left">
+				<input id="title" type="text" style="width:435px;"/></td>
+			</tr>			
+		</table>
+		<div style="width:580px;margin-left:auto;margin-right:auto;margin-top:5px;">
+			<div id="btn_search" style="width:80px;float:left;margin-left:320px"></div>
+			<div id="btn_reset"  style="width:80px;float:left;"></div>
+		</div>
+	</div>
+</body>
+</html>
+  

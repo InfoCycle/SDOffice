@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>项目过程情况</title>
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="this is my page">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../css/layout.css" />
+	<link rel="stylesheet" href="../../plugin/from/emptyPattern.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/tooltip/tip-yellowsimple/tip-yellowsimple.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/showLoading/css/showLoading.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	<script type="text/javascript" src="../../plugin/from/emptyPattern.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.textField.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+	<script type="text/javascript" src="../../plugin/showLoading/js/jquery.showLoading.min.js"></script>
+	
+	<style type="text/css">
+	body {
+		background: #f5f5f5;
+		height: 100%;
+		width: 98%;
+	}
+	.loading-indicator-bars {
+		background-image: url('/html/plugin/showLoading/images/loading.gif');
+		width: 150px;
+	}
+	.div-disabled{
+		background: none repeat scroll 0 0 #FFFFF0;
+		position: fixed; 
+		top: 0px; 
+		left: 0px; 
+		opacity: 0.23; 
+		display: block; 
+		z-index: 99998; 
+		height: 100%; 
+		width: 100%;
+	}
+	.txta{width:98%; height:120px; color:#0000FF; font-size:1em; overflow:auto;}
+	.txta_focus{color:#333; border:2px solid #C93;}	
+	</style>
+	<script type="text/javascript" src="../../js/myEasymg.js" ></script>
+<script type="text/javascript" language="javascript">
+	var user = checkUserLogin();
+	var today = new Date();
+	var IFrame='<iframe src="{0}" style="width:100%;height:100%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';
+	function  addDivClass(){
+		$("#divDisable").addClass("div-disabled");
+	}
+	function setButtonState(id,state){
+			if(state)
+				$(id).show();
+			else
+				$(id).hide();
+		}
+		function textchan(){
+			$('#aT_Post,#aB_Post').hide();
+			$('#aB_OK,#aT_OK').show();
+		}
+		
+	$(document).ready(function(){
+		$.loadmg('温馨提示','正在加载数据...');
+		textchan();
+		if(!checkUserLogin){
+			return false;
+		}
+		
+		$("#FTheFirst").textField({
+			focusClass : "txta_focus"
+		});
+		$("#FTheSecond").textField({
+			focusClass : "txta_focus"
+		});
+		$("#FOther").textField({
+			focusClass : "txta_focus"
+		});
+		$(".inputWithImge").each(
+			function() {
+				$(this).add($(this).next()).wrapAll(
+					'<div class="imageInputWrapper"></div>');
+		});
+		
+		function setReadOnly(state){
+			if(state >= 3){
+				$("form input").prop("readonly", true);
+				$("#FTheFirst").attr({readonly : 'true'});
+				$("#FTheSecond").attr({readonly : 'true'});
+				$("#FOther").attr({readonly : 'true'});
+			}else{
+				$("form input").prop("readonly", true);
+			}
+		}
+		
+		var action = Request.QueryString("action"); 
+		var processId = Request.QueryString("processId");
+		var activeId = Request.QueryString("activeId");
+		var formPKID = Request.QueryString("formPKID");
+		var state = Request.QueryString("state");
+		//alert(action);
+		setReadOnly(state);
+		if(state >= 3){
+			//setButtonState("aT_OK",false);
+			//setButtonState("aT_Post",false);
+			//setButtonState("aT_Cancel",false);
+			setButtonState("#aB_OK,#aT_OK",false);
+			setButtonState("#aB_Post,#aT_Post",false);
+			setButtonState("#aB_Cancel,#aT_Cancel",false);
+		}
+		//alert('action:'+action +',processid:'+processId+',activeid:'+activeId+',formid:'+formPKID+',state:'+state);
+		if(action == 0){
+			setButtonState("#aB_OK,#aT_OK",false);
+			setButtonState("#aB_Post,#aT_Post",false);
+			$.post("/Buss/ProjectProcessService/0", {
+				"ID" : formPKID,
+				"processId":processId,
+				"title":"项目过程情况"
+			}, function(data) {
+				if(data.success){
+					$('#FId').val(data.root.FId);
+					$('#FJiLuRenId').val(user.userID);
+					$('#FJiLuRenName').val(user.userName);
+					$('#FJiLuTime').val(today.format('yyyy-MM-dd hh:mm:ss')); 
+					action = 1;
+					formPKID = data.root.FId;
+					$.tipmg('温馨提示','加载成功','success');
+				}else{
+					$.messager.alert('温馨提示','项目过程情况保存失败，请检查网络或联系系统管理员！','info');
+					//$.jBox.info('项目过程情况保存失败，请检查网络或联系系统管理员！');
+				}
+				//SetFormValue(data, "New");
+			}, "json");
+		}else if(action == 1){
+			setButtonState("#aB_OK,#aT_OK",false);
+			setButtonState("#aB_Post,#aT_Post",false);
+			$.post("/Buss/ProjectProcessService/2", {
+				"ID" : formPKID
+			}, function(data) {
+				if(data.success){
+					$("#FId").val(data.root.FId);
+					if(data.root.fkTaskId > 0){
+						setTaskName(data.root.fkTaskId);
+						$("#FNumber").val(data.root.FNumbers);
+						setButtonState("#aB_OK,#aT_OK",false);
+						setButtonState("#aB_Post,#aT_Post",true);
+					}else{
+						$("#fkTaskId").val(0);
+						$("#FKTaskName").val('');
+						$.tipmg('温馨提示','加载成功！','success');
+					}
+					$("#FTheFirst").val(data.root.FTheFirst);
+					$("#FTheSecond").val(data.root.FTheSecond);
+					$("#FOther").val(data.root.FOther);
+					//alert(data.root.FJiLuRenId);
+					if(data.root.FJiLuRenId > 0){
+						
+						$("#FJiLuRenId").val(data.root.FJiLuRenId);
+						$("#FJiLuRenName").val(data.root.FJiLuRenName);
+						$("#FJiLuTime").val(data.root.FJiLuTime);
+					}else{
+						$('#FJiLuRenId').val(user.userID);
+						$('#FJiLuRenName').val(user.userName);
+						$('#FJiLuTime').val(today.format('yyyy-MM-dd hh:mm:ss')); 
+					}
+					$("#FNote").val(data.root.FNote);
+					
+				}else{
+					$.tipmg('温馨提示','读取项目过程情况失败，请检查网络或联系系统管理员！','warning',2000);
+					//$.jBox.info('读取项目过程情况失败，请检查网络或联系系统管理员！');
+				}
+			}, "json");
+		}else if(action == 2){
+			
+			$.post("/Buss/ProjectProcessService/2", {
+				"ID" : formPKID
+			}, function(data) {
+				if(data.success){
+					$("#FId").val(data.root.FId);
+					if(data.root.fkTaskId > 0){
+						setTaskName(data.root.fkTaskId);
+						$("#FNumber").val(data.root.FNumbers);
+						$('#aT_Post,#aB_Post').show();
+					}else{
+						$("#fkTaskId").val(0);
+						$("#FKTaskName").val('');
+						$.tipmg('温馨提示','加载成功！','success');
+					}
+					$("#FTheFirst").val(data.root.FTheFirst);
+					$("#FTheSecond").val(data.root.FTheSecond);
+					$("#FOther").val(data.root.FOther);
+					//alert(data.root.FJiLuRenId);
+					$("#FJiLuRenId").val(data.root.FJiLuRenId);
+					$("#FJiLuRenName").val(data.root.FJiLuRenName);
+					$("#FJiLuTime").val(data.root.FJiLuTime);
+					$("#FNote").val(data.root.FNote);
+					//
+				}else{
+					$.messager.alert('温馨提示','读取项目过程情况失败，请检查网络或联系系统管理员','error');
+					//$.jBox.info('读取项目过程情况失败，请检查网络或联系系统管理员！');
+				}
+				setButtonState("#aB_OK,#aT_OK,#aB_Cancel,#aT_Cancel,#aB_Post,#aT_Post",false);
+				$('input').attr('disabled','true');
+				$('textarea').attr('disabled','true');
+			}, "json");
+			
+			
+		}
+		
+		
+		function checkField(){
+			var err=$('[empty=true]').emptyAll({parentID:true});
+			return err;
+		}
+		
+		function checkOperation(){
+			if(state == 3){
+				$.messager.alert('温馨提示','操作失败，该项目过程情况已经终止！','error');
+				//$.jBox.tip('操作失败，该项目过程情况已经终止！','error');
+				return false;
+			}else if(state == 4){
+				$.messager.alert('温馨提示','操作失败，该项目过程情况已经办理完成！','error');
+				//$.jBox.tip('操作失败，该项目过程情况已经办理完成！','error');
+				return false;
+			}else if(state == 5){
+				$.messager.alert('温馨提示','操作失败，该项目过程情况已经归档！','error');
+				//$.jBox.tip('操作失败，该项目过程情况已经归档！','error');
+				return false;
+			}else{
+				return true;
+			}
+		}
+		
+		function FUN_Save() {
+			//if(checkOperation()){
+				var Id = $("#FId").val();
+				var fkTaskId =  $("#fkTaskId").val();
+				var FTheFirst = $("#FTheFirst").val();
+				var FTheSecond = $("#FTheSecond").val();
+				var FOther = $("#FOther").val();
+				var FJiLuRenId = $("#FJiLuRenId").val();
+				var FJiLuRenName = $("#FJiLuRenName").val();
+				var FNote = $("#FNote").val();
+				var FNumbers=$("#FNumber").val();
+				//$('input[empty=true]').emptyAll({parentID:true});
+				//if (checkField()){
+					$.loadmg("温馨提示","正在保存...");
+					$.post("/Buss/ProjectProcessService/1", {
+						"ID" : formPKID,
+						"FNumbers":FNumbers,
+						"processId":processId,
+						"fkTaskId" : fkTaskId,
+						"FTheFirst" : FTheFirst,
+						"FTheSecond" : FTheSecond,
+						"FOther" : FOther,
+						"FJiLuRenId" : FJiLuRenId,
+						"FJiLuRenName" : FJiLuRenName,
+						"FJiLuTime":$("#FJiLuTime").val(),
+						"FNote" : FNote,
+						"title": $("#FKTaskName").val()
+					}, function(data) {
+						if(data.success){
+							$('#FId').val(data.root.FId);
+							$.tipmg('温馨提示','项目过程情况保存成功。','success');
+							setButtonState("#aT_Post,#aB_Post",true);
+							setButtonState("#aB_OK,#aT_OK",false);
+							//$("#aT_Post,#aB_Post").show();
+							//$("#aB_OK,#aT_OK").hide();
+							//$.jBox.tip('项目过程情况保存成功。','success');
+						}else{
+							$.tipmg('温馨提示','项目过程情况保存失败，请检查网络或联系系统管理员！','error');
+							//$.jBox.tip('项目过程情况保存失败，请检查网络或联系系统管理员！','error');
+						}
+					}, "json");
+				//}else{
+					//$.messager.alert('温馨提示','校验失败，请检查必填项！','info');
+					//$.jBox.info('校验失败，请检查必填项！');
+				//}
+			//}
+		}
+		
+		$("#aT_OK,#aB_OK").click(function() {
+			FUN_Save();
+		});
+		
+		function FUN_Post() {
+			var message="";
+			if(checkOperation()){
+				var fkTaskId =  $("#fkTaskId").val();
+				var FTheFirst = $("#FTheFirst").val();
+				var FTheSecond = $("#FTheSecond").val();
+				var FOther = $("#FOther").val();
+				var FJiLuRenId = $("#FJiLuRenId").val();
+				var FJiLuRenName = $("#FJiLuRenName").val();
+				var FNote = $("#FNote").val();
+				if(fkTaskId==""){
+					$.messager.alert('温馨提示','请选择项目','info');
+					return false;
+				}
+				if(trim(FTheFirst)==""){
+					//message+="一、主要工作完成情况及进度情况 为空<br/>"
+					$.messager.alert('温馨提示','一、主要工作完成情况及进度情况不能为空','info');
+					return false;
+				}
+				 if(trim(FTheSecond)==""){
+					//message+="二、工作中存在问题及处理情况 为空<br/>"
+					$.messager.alert('温馨提示','二、工作中存在问题及处理情况不能为空','info');
+					return false;
+				}
+				if(trim(FOther)==""){
+					//message+="三、其它（包括会议记录，时间、任务目标、范围等调整，重大变更等与工程有关的内容）为空<br/>"
+					$.messager.alert('温馨提示','三、其他不能为空','info');
+					return false;
+				}
+				//var submit = function(v, h, f) {
+				var submit=function(r){
+					//if (v == 'ok' && checkField()) {
+						if(r){
+						//$.jBox.tip("正在提交项目过程情况，请稍等...", 'loading');
+						$.loadmg("温馨提示","正在提交...");
+						$.post("/Buss/ProjectProcessService/4", {
+							"ID" : formPKID,
+							"activeId":activeId,
+							"fkTaskId" : fkTaskId,
+							"FTheFirst" : FTheFirst,
+							"FTheSecond" : FTheSecond,
+							"FOther" : FOther,
+							"FJiLuRenId" : FJiLuRenId,
+							"FJiLuRenName" : FJiLuRenName,
+							"FJiLuTime":$("#FJiLuTime").val(),
+							"FNote" : FNote
+						}, function(data) {
+							if(data.success){
+								$('#formtask')[0].reset();
+								//$.jBox.tip('项目过程情况提交成功。', 'success');
+								$.tipmg("温馨提示","项目过程情况提交成功！","success");
+								$('#aB_OK,#aT_OK,#aT_Post,#aB_Post,#aT_Cancel,#aB_Cancel').hide();
+								$('input').attr('disabled','true');
+							}else{
+								//$.jBox.tip('项目过程情况提交失败！','error');
+								$.tipmg("温馨提示","项目过程情况提交失败！","error");
+							}
+						}, "json");
+					//} else if (v == 'cancel') {
+					}else{
+						// 取消
+					}
+					return true;
+					window.location.reload();
+				};
+				$.messager.confirm('温馨提示',message+ '确定要提交该项目过程情况吗？', submit);
+				//$.jBox.confirm("确定要提交该项目过程情况吗？", "重要提示", submit);
+			}
+		}
+		
+		$("#aT_Post").click(function() {
+			FUN_Post();
+		});
+		$("#aB_Post").click(function() {
+			FUN_Post();
+		});
+		
+		function FUN_Cancel() {
+			if(state == 0){
+				//var submit = function(v, h, f) {
+				var submit=function(r){
+					//if (v == 'ok') {
+					if(r){
+						$.loadmg("温馨提示","正在撤销...");
+						//$.jBox.tip("正在撤销项目过程情况，请稍等...", 'loading');
+						$.post("/Buss/ProjectProcessService/3", {
+							"ID" : formPKID,
+							"processId":processId,
+							"activeId":activeId
+						}, function(data) {
+							//alert(data);
+							if(data.success){
+								$('#formtask')[0].reset();
+								$('#aT_Cancel,#aB_Cancel,#aB_Post,#aT_Post,#aT_OK,#aB_OK').hide();
+								$('input').attr('disabled','true');
+								$.tipmg("温馨提示","撤销成功","success");
+								//$.jBox.tip('撤销成功。', 'success');
+							}else{
+								$.tipmg("温馨提示",data.message,"error");
+								//$.jBox.tip(data.message,'error');
+							}
+						}, "json");
+					//} else if (v == 'cancel') {
+					}else{
+						// 取消
+					}
+					return true;
+					window.location.reload();
+				};
+				$.messager.confirm('温馨提示', '确定要撤销该项目过程情况吗？', submit);
+				//$.jBox.confirm("确定要撤销该项目过程情况吗？", "重要提示", submit);
+			}else{
+				$.messager.alert('温馨提示','该项目过程情况正在处理中，不能撤销！','error');
+				//$.jBox.tip("该项目过程情况正在处理中，不能撤销！", 'error');
+				
+			}
+		}
+		$("#aT_Cancel").click(function() {
+			FUN_Cancel();
+		});
+		$("#aB_Cancel").click(function() {
+			FUN_Cancel();
+		});
+		
+		/*$('input[id=btnSelectPlan]').click(function(){
+			$.jBox.open('iframe:../report/SelectTask.html', '项目选择', 510, 321, { buttons: { '关闭': true} });
+			return false;
+		});*/
+		
+		$('#btnSelectPlan').click(function(){
+			var win =$(IFrame.format('/html/module/report/SelectTask.html'));
+	  		$.lightbox(win, {
+				    modal  : true,
+					width   : 600,
+				    height  : 440
+				  });
+			return false;
+		});
+	});
+
+	function closeJBox(){
+		var param=$('#FKTaskName').val();
+		if($.trim(param)){
+			$('#FKTaskName').val(param);
+			$.fn.query();
+		}
+		//$.jBox.close(true);
+		textchan();
+		$.LightBoxObject.close();
+	}
+	
+	$.fn.extend({
+		query:function(){
+			$.ajax({
+				url:'/Buss/ProjectProcessService/5',
+				type: 'POST',
+				data:{ID:$('#fkTaskId').val()}, 
+				dataType: 'json',
+				async :  false,
+				success:function(data) {
+					if(data.success){
+						if(data.root !=null){
+							$('#FNote').val(data.root);
+							$.post("/GetNumber/ForNumberRule/", {
+								"Code": "GC",
+								"Title": $("#FKTaskName").val(),
+								"isHaveSub": 0
+									}, function(data) {
+										if (data.success) {
+											$("#FNumber").attr("value",data.Number);
+											//$.messager.alert('系统提示','编号生成成功!','info');
+										}else
+										{															
+											$.messager.alert('系统提示','编号生成失败，请重试!','error');
+											return false;
+										}
+							}, "json");
+						}
+					}
+				}
+			});
+		}
+	});
+	
+	if (window.navigator.userAgent.indexOf("Firefox") >= 1) {
+		//如果浏览器为Firefox
+		setActiveStyleSheet("papersother.css");
+	} else {
+		//如果浏览器为其它
+		setActiveStyleSheet("papers.css");
+	}
+	
+	function setActiveStyleSheet(filename) {
+		document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+	}
+	//   
+	function checkUserLogin(){	
+		var CurrentUser;
+		$.ajax({
+		    url: "/system/SvrService/AppIndex/4/",
+		    method: 'GET',
+		    async :  false,//同步请求
+		    success: function (data) {
+		    	if(data.success){
+		    		CurrentUser=data.root;
+		        }else{
+		        	window.location.href='/html/module/system/loginApp.html';
+		        }
+		    }
+		}); 
+		return CurrentUser;
+	}
+	
+	function setTaskName(taskid){	
+		$.ajax({
+			url:'/Buss/TaskService/1',
+			type: 'POST',
+			data:{ID:taskid}, 
+			dataType: 'json',
+			async :  false,
+			success:function(data) {
+				if(data.success){
+					if(data.root !=null){
+						if(data.root[0].FId > 0){
+							$('#fkTaskId').val(data.root[0].FId);
+							$('#FKTaskName').val(data.root[0].FTaskName);
+							$.tipmg("温馨提示","加载成功！",'success');
+						}
+					}else{
+						$.tipmg("温馨提示","未找到数据！",'error');
+					}
+				}else{
+					$.tipmg("温馨提示","数据加载失败，请与管理员联系",'error');
+				}
+			}
+		});
+	}
+	
+	Date.prototype.format = function(fmt)   
+	{ //author: meizz   
+	  var o = {   
+	    "M+" : this.getMonth()+1,                 //月份   
+	    "d+" : this.getDate(),                    //日   
+	    "h+" : this.getHours(),                   //小时   
+	    "m+" : this.getMinutes(),                 //分   
+	    "s+" : this.getSeconds(),                 //秒   
+	    "q+" : Math.floor((this.getMonth()+3)/3), //季度   
+	    "S"  : this.getMilliseconds()             //毫秒   
+	  };   
+	  if(/(y+)/.test(fmt))   
+	    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));   
+	  for(var k in o)   
+	    if(new RegExp("("+ k +")").test(fmt))   
+	  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
+	  return fmt;   
+	}
+</script>
+</head>
+
+<body>
+	<div  id="divDisable" name="divDisable"></div>
+	<form id="formtask" action="/Buss/ProjectProcessService/2" method="post">
+	<input type="hidden"  id="FId" name="FId">
+	<input type="hidden"  id="action" name="action">
+	<input type="hidden"  id="processId" name="processId">
+	<input type="hidden"  id="activeId" name="activeId">
+	<input type="hidden"  id="formPKID" name="formPKID">
+		<div style="text-align:center">
+			<table border="0" cellpadding="3" cellspacing="0" class="pagetable" style="width:810px;margin:auto">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aT_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aT_Post"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aT_Cancel"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br /></td>
+				</tr>
+				<tr>
+					<td>
+						<div class="content" id="content"
+							style="height:780px;width:780px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br />
+							<br />
+							<br />
+							<br />
+							<br />
+							<div style="float:left;">
+								<table class="content_table1" width="750px" border="1"
+									cellpadding="0"  style="position:absolute;margin:10px 0px 0px 20px;">
+									<caption style="height:30px;font-size:18px;">
+										<strong>昆明松岛工程造价咨询有限公司<label id="TitleYear"></label>项目过程情况记录<br>
+										</strong>
+									</caption>
+									<tr>
+										<td width="80" nowrap>项目编号</td>
+										<td colspan="7"><input type="text" style="width:600px;" id="FNumber"
+												name="FNumber" empty="true"></td>
+									</tr>
+									<tr>
+										<td width="80" nowrap>项目名称</td>
+										<td colspan="7">
+												<input type="hidden"
+												style="width:25px;" id="fkTaskId" name="fkTaskId">
+												<input type="text" style="width:461px;" id="FKTaskName"
+												name="FKTaskName" empty="true"><input id="btnSelectPlan" type="button" class="btnSelect"/>
+										
+										<!-- <label> <input type="text"
+												id="fkTaskId" name="fkTaskId" style="width:461px;"
+												class="validate[required,minSize[5],maxSize[100]]">
+										</label> --></td>
+									</tr>
+									<tr>
+										<td colspan="7" align="center" valign="middle" scope="col">一、主要工作完成情况及进度情况</td>
+									</tr>
+									<tr>
+									    <td colspan="7" >				
+										    <div class="test_x" style="width:754px;">
+										    	<!-- <textarea id="FTheSecond" name="FTheSecond" class="txta mt5" style="resize:none;" empty="true" type="textarea"></textarea> -->
+										    	<textarea id="FTheFirst" name="FTheFirst"  class="txta mt5" type="textarea" onchange='textchan()'></textarea>	
+										    </div>							 										
+										</td>									    
+									  </tr>
+									<tr>
+										<td colspan="7" align="center" valign="middle" scope="col">二、工作中存在问题及处理情况</td>
+									</tr>
+									<tr>
+									    <td colspan="7" >		
+										    <div class="test_x" style="width:754px;">
+										    	<!--<textarea id="FTheSecond" name="FTheSecond" class="txta mt5" style="resize:none;" empty="true" type="textarea"></textarea>  -->
+										    	<textarea id="FTheSecond" name="FTheSecond"  class="txta mt5" type="textarea" onchange='textchan()'></textarea>		
+										    </div>				 										
+								
+										</td>									    
+									  </tr>
+									<tr>
+										<td colspan="7" align="center" valign="middle" scope="col">三、其它（包括会议记录，时间、任务目标、范围等调整，重大变更等与工程有关的内容）</td>
+									</tr>
+									<tr>
+									    <td colspan="7" >	
+									    <div class="test_x" style="width:754px;">
+									    <!-- <textarea id="FOther" name="FOther" class="txta mt5" style="resize:none;" empty="true" type="textarea"></textarea> -->
+										    <textarea id="FOther" name="FOther" class="txta mt5" type="textarea" onchange='textchan()'></textarea>		
+										</div>			
+										</td>									    
+									  </tr>
+	
+									<tr>
+										<td width="80px" nowrap>记录人</td>
+										<td ><input type="hidden"
+												style="width:10px;" id="FJiLuRenId" name="FJiLuRenId">
+												<input type="text" style="width:55px;" id="FJiLuRenName"
+												name="FJiLuRenName" empty="true"></td>
+										<td width="80px" nowrap>记录时间</td>
+										<td ><input type="text"
+												style="width:150px;" id="FJiLuTime" name="FJiLuTime" type="text" empty="true"> </td>
+										<td width="80px" nowrap>项目经理</td>
+										<td colspan="2"><input type="hidden"
+												style="width:25px;" id="FProjMgrId" name="FProjMgrId">
+												<input type="text" style="width:251px;" id="FNote"
+												name="FNote" empty="true"></td>
+									</tr>
+									
+								</table>
+								<br />
+								<br />
+								<input id="output2" type="hidden" value="" />
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aB_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aB_Post"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aB_Cancel"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br /></td>
+				</tr>
+			</table>
+			<br />
+		</div>
+	</form>
+</body>
+</html>

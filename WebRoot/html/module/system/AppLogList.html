@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AppLogList.html</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+</head>
+<body>
+<body>
+</body>
+</html>
+<script type="text/javascript">
+var logMasterDS = new Ext.data.JsonStore({
+	url: '/system/SvrService/LogTemplateService/5/',
+    idProperty: 'FId',
+    root: 'root',
+    totalProperty: 'totalProperty',
+    fields: [
+        {name: 'FId'},
+        {name: 'fkUserId'},
+        {name: 'FActionType'},
+        {name: 'FActionObject'},
+        {name: 'FActionTime'},
+        {name: 'FUserName'}
+    ]
+});
+logMasterDS.on('beforeload', function(){
+	logMasterDS.baseParams={start:0,limit:20}
+});
+logMasterDS.load({
+	callback:function(){
+		if(logMasterDS.getCount()>0){
+			Ext.getCmp("logMasterGrid").getSelectionModel().selectRow(0);
+		}
+	}
+});
+var logDetailDS = new Ext.data.JsonStore({
+	url: '/system/SvrService/LogTemplateService/6/',
+    idProperty: 'FId',
+    root: 'root',
+    totalProperty: 'totalProperty',
+    fields: [
+       {name: 'FId'},
+       {name: 'FColumn'},
+       {name: 'FColumnName'},
+       {name: 'FSoruceValue'},
+       {name: 'FCurrentValue'}
+    ]
+});
+
+	Ext.onReady(function(){	
+		var obj=checkUserLogin();	
+	    if(!obj) return;
+		Ext.QuickTips.init();
+	    Ext.form.Field.prototype.msgTarget = 'side';
+		var mainViewport= new Ext.Viewport({
+			id: 'MainViewport',
+		    layout: 'fit',
+		    items: [
+		            {
+		                xtype: 'panel',
+		                id: 'mainPanel',
+		                layout: 'border',
+		                title: '',
+		                tbar: {
+		                    xtype: 'toolbar',
+		                    region: 'center',
+		                    items: [
+								{
+									xtype: 'tbspacer',
+		                            width: 60
+								},
+		                        {
+		                            xtype: 'tbtext',
+		                            text: '操作时间:'
+		                        },
+		                        {
+		                            xtype: 'datefield',
+		                            format:'Y-m-d',
+		                            id: 'startActionDate'
+		                        },
+		                        {
+		                            xtype: 'tbtext',
+		                            text: '至'
+		                        },
+		                        {
+		                            xtype: 'datefield',
+		                            format:'Y-m-d',
+		                            id: 'endActionDate'
+		                        },
+		                        {
+		                            xtype: 'tbspacer',
+		                            width: 20
+		                        },
+		                        {
+		                            xtype: 'tbtext',
+		                            text: '操作人姓名：'
+		                        },
+		                        {
+		                            xtype: 'textfield',
+		                            id: 'txt_name',
+		                            width: 80
+		                        },
+		                        {
+		                            xtype: 'tbtext',
+		                            text: '业务对象：'
+		                        },
+		                        {
+		                            xtype: 'textfield',
+		                            id: 'actionObject',
+		                            width: 100
+		                        },
+		                        {
+		                            xtype: 'button',
+		                            iconCls: 'query',
+		                            text: '查询',
+		                            handler:function(){
+		                            	var startActionDate=Ext.getCmp("startActionDate").getValue();
+		                            	var endActionDate=Ext.getCmp("endActionDate").getValue();
+		                            	var actionUserName=Ext.getCmp("txt_name").getValue();
+		                            	var actionObject=Ext.getCmp("actionObject").getValue();
+		                            	logMasterDS.reload({params:{
+		                            			startActionDate:formatTime(startActionDate,'yyyy-MM-dd'),
+		                            			endActionDate:formatTime(endActionDate,'yyyy-MM-dd'),
+		                            			actionUserName:actionUserName,
+		                            			actionObject:actionObject
+		                            		},
+		                            		callback:function(){
+		                            			if(logMasterDS.getCount()>0){
+		                            				Ext.getCmp("logMasterGrid").getSelectionModel().selectRow(0);
+		                            			}
+		                            		}
+		                            	})
+		                            }
+		                        }	                        
+		                    ]
+		                },
+		                items: [
+		                    {
+		                        xtype: 'grid',
+		                        id: 'logMasterGrid',
+		                        width: 440,
+		                        store: logMasterDS,
+		                        margins: '0 2 0 0',
+		                        region: 'west',
+		                        sm:new Ext.grid.RowSelectionModel({  
+			                        singleSelect: true,  
+			                        listeners: {  
+						                rowselect: function(sm, row, rec) {  
+						                    logDetailDS.baseParams.logMasterId=rec.data.FId;
+						                    logDetailDS.load();
+						                }  
+						            }  
+			                    }),
+		                        columns: [
+									new Ext.grid.RowNumberer(),
+		                            {
+		                                xtype: 'gridcolumn',
+		                                align: 'center',
+		                                dataIndex: 'FUserName',
+		                                header: '操作人',
+		                                sortable: true,
+		                                width: 80
+		                            },
+		                            {
+		                                xtype: 'gridcolumn',
+		                                align: 'center',
+		                                dataIndex: 'FActionType',
+		                                header: '操作类型',
+		                                sortable: true,
+		                                width: 80
+		                            },
+		                            {
+		                                xtype: 'gridcolumn',
+		                                align: 'center',
+		                                dataIndex: 'FActionObject',
+		                                header: '业务对象',
+		                                sortable: true,
+		                                width: 120
+		                            },
+		                            {
+		                                xtype: 'gridcolumn',
+		                                align: 'center',
+		                                dataIndex: 'FActionTime',
+		                                header: '操作时间',
+		                                sortable: true,
+		                                width: 130
+		                            }
+		                        ],
+		                        bbar:new Ext.PagingToolbar({
+		                        	displayInfo: true,
+		                            pageSize: 20,
+		                            store: logMasterDS,
+		                            displayMsg: ' 当前记录数:{0}-{1}条 &nbsp;&nbsp;总记录数: {2}条 ',
+		                            emptyMsg: " 没有符合条件的记录 ",
+		                            listeners:{
+		                            	change:function(){
+		                            		if(this.store.getCount()>0){
+	                            				Ext.getCmp("logMasterGrid").getSelectionModel().selectRow(0);
+	                            			}
+		                            	}
+		                            }
+		                        })
+		                    },
+		                    {
+		                        xtype: 'grid',
+		                        id: 'logDetailGrid',
+		                        width: 215,
+		                        store: logDetailDS,
+		                        region: 'center',
+		                        columns: [
+		                            {
+		                                xtype: 'gridcolumn',
+		                                align: 'center',
+		                                dataIndex: 'FColumn',
+		                                header: '字段',
+		                                sortable: true,
+		                                width: 100
+		                            },
+		                            {
+		                                xtype: 'gridcolumn',
+		                                align: 'center',
+		                                dataIndex: 'FColumnName',
+		                                header: '字段名',
+		                                sortable: true,
+		                                width: 100
+		                            },
+		                            {
+		                                xtype: 'gridcolumn',
+		                                align: 'center',
+		                                dataIndex: 'FSoruceValue',
+		                                header: '原值',
+		                                sortable: true,
+		                                width: 160
+		                            },
+		                            {
+		                                xtype: 'gridcolumn',
+		                                align: 'center',
+		                                dataIndex: 'FCurrentValue',
+		                                header: '新值',
+		                                sortable: true,
+		                                width: 220
+		                            }
+		                        ]
+		                    }
+		                ]
+		            }
+		        ]
+		});
+    })
+</script>

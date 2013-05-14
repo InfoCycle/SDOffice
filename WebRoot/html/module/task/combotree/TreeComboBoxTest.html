@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>种类指派</title>
+<!-- ExtJS library -->
+<link rel="stylesheet" href="../../../ext/resources/css/ext-all.css" type="text/css"></link>
+	<script type="text/javascript" src="../../../ext/adapter/ext/ext-base.js"></script>
+	<script type="text/javascript" src="../../../ext/ext-all.js"></script>
+<script type="text/javascript" src="categorychecktree.js"></script>
+<script type="text/javascript" src="TreeCheckNodeUI.js"></script>
+<link href="../../../ext/resources/css/ext-patch.css"  type="text/css" rel="stylesheet"/>
+
+
+
+<style type="text/css">
+    .complete .x-tree-node-anchor span {
+        text-decoration: line-through;
+        color: #777;
+    }
+  .x-tree-node .root{
+  background-image: url(css/images/default/tree/category.png)
+  }  
+</style>
+</head>
+<body style="padding:0 0 0 ;">
+<!-- EXAMPLES -->
+<div id="tree-div" ></div>
+<input type="hidden" id="name" name="name" value='<s:property value="product.name"/>'/>
+<input type="hidden" id="productid" name="productid" value='<s:property value="productid"/>'/>
+</body>
+</html>
+

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>任务书下达</title>
+
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<link rel="stylesheet" type="text/css" href="../../css/table.css" />
+<link rel="stylesheet" type="text/css" href="../../css/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../css/inputtext.css" />
+<link rel="stylesheet" href="../../css/validationEngine.jquery.css" type="text/css"></link>
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"></link>
+<link rel="stylesheet" href="../../ext/resources/css/xtheme-gray.css" type="text/css"></link>
+<link rel="stylesheet" href="../../css/button.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+<script type="text/javascript" src="../../js/jquery.form.js"></script>
+<script type="text/javascript" src="../../js/jQueryUtils.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.validationEngine-zh.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.validationEngine.js"></script>
+<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+
+<style type="text/css">
+body {
+	background: #f5f5f5;
+	height: 100%;
+	width: 98%;
+}
+-->
+</style>
+<script type="text/javascript">
+<!--	
+	if (window.navigator.userAgent.indexOf("Firefox") >= 1) {
+		//如果浏览器为Firefox
+		setActiveStyleSheet("papersother.css");
+	} else {
+		//如果浏览器为其它
+		setActiveStyleSheet("papers.css");
+	}
+	function setActiveStyleSheet(filename) {
+		document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+	}
+	//   
+	function SelectEntrustUnit() {
+		window.showModalDialog("SelectEntrustUnit.html",window,"dialogLeft:300px;dialogTop:300px;dialogWidth:510px;dialogHeight:301px;scroll:no;status:no");
+		//window.location.reload();
+		//location.href = location.href; //用这个替换 document.location.reload();		 
+    	//$.jBox.open("iframe:http://localhost:8080/html/module/task/SelectEntrustUnit.html", "委托单位选择", 800, 350, { buttons: { '关闭': true} });
+		return false;
+	}
+	function PostTask(id){
+		window.showModalDialog("PostTask.html?ID="+id,window,"dialogLeft:300px;dialogTop:300px;dialogWidth:510px;dialogHeight:301px;scroll:no;status:no");		
+		return false;
+	}
+	function SelectPM(id){
+		window.showModalDialog("AppointTaskPM.html?ID="+id,window,"dialogLeft:300px;dialogTop:300px;dialogWidth:510px;dialogHeight:301px;scroll:no;status:no");		
+		return false;
+	}
+	//Code Store Begin
+	var Store314 = new Ext.data.Store({
+            proxy: new Ext.data.HttpProxy({
+                url: '/GetCode/Query/'
+            }),
+            reader: new Ext.data.JsonReader({
+                totalProperty: "totalProperty",
+                root: 'root',
+                fields: ["FId", "FCodeText"]
+            })
+    });
+    var Store319 = new Ext.data.Store({
+            proxy: new Ext.data.HttpProxy({
+                url: '/GetCode/Query/'
+            }),
+            reader: new Ext.data.JsonReader({
+                totalProperty: "totalProperty",
+                root: 'root',
+                fields: ["FId", "FCodeText"]
+            })
+    });
+    var Store323 = new Ext.data.Store({
+            proxy: new Ext.data.HttpProxy({
+                url: '/GetCode/Query/'
+            }),
+            reader: new Ext.data.JsonReader({
+                totalProperty: "totalProperty",
+                root: 'root',
+                fields: ["FId", "FCodeText"]
+            })
+    });
+    function LoadCodeStore(){
+    		Ext.apply(Store314, {
+            		baseParams: {action: 'getAppCode',
+                		CodeTypeId:314,State:1
+            		},params:{
+            			CodeTypeId:314,State:1
+            		}
+        });
+        Ext.apply(Store319, {
+            		baseParams: {action: 'getAppCode',
+                		CodeTypeId:319,State:1
+            		},params:{
+            			CodeTypeId:319,State:1
+            		}
+        });
+        Ext.apply(Store323, {
+            		baseParams: {action: 'getAppCode',
+                		CodeTypeId:323,State:1
+            		},params:{
+            			CodeTypeId:323,State:1
+            		}
+        });
+        Store314.load({
+        		callback:function(records,options,success){
+        					Store319.load({
+        							callback:function(records,options,success){
+        									Store323.load();
+        							}
+        					});        		
+        	  }
+        });
+    }
+    function CreateCPT(){
+    	var combo001=new Ext.form.ComboBox({
+    			id:'combo001',
+    			store:Store314,
+    			displayField:'FCodeText',
+    			valueField:'FId',
+    			mode:'local',
+    			triggerAction:'all',
+    			selectOnFocus:true,
+    			applyTo:'spanFStructureType'    			
+    		});
+    	var combo002=new Ext.form.ComboBox({
+    			id:'combo002',
+    			store:Store319,
+    			displayField:'FCodeText',
+    			valueField:'FId',
+    			mode:'local',
+    			triggerAction:'all',
+    			selectOnFocus:true,
+    			applyTo:'spanFServiceCategory'    			
+    		});
+    	var combo003=new Ext.form.ComboBox({
+    			id:'combo003',
+    			store:Store323,
+    			displayField:'FCodeText',
+    			valueField:'FId',
+    			mode:'local',
+    			triggerAction:'all',
+    			selectOnFocus:true,
+    			applyTo:'spanFDepartmentId'    			
+    		});
+    		new Ext.form.DateField({ renderTo: 'spanFYjstartTime', id: 'Birth', width: 150, format: 'Y-m-d', tabIndex: 3 });
+    		new Ext.form.DateField({ renderTo: 'spanFYjfinishTime', id: 'Birth', width: 150, format: 'Y-m-d', tabIndex: 3 });
+    		new Ext.form.DateField({ renderTo: 'spanFGiveTime', id: 'Birth', width: 150, format: 'Y-m-d', tabIndex: 3 });
+    		new Ext.form.DateField({ renderTo: 'spanFReceivingTaskTime', id: 'Birth', width: 150, format: 'Y-m-d', tabIndex: 3 });
+    }
+    Ext.onReady(function() {		        
+        Ext.QuickTips.init();
+        CreateCPT();
+        LoadCodeStore();
+      });	
+</script>
+</head>
+
+<body>
+	<form id="formtask" action="/Buss/TaskService/2" method="post">
+		<div style="text-align:center">
+			<table border="0" cellpadding="3" cellspacing="0"
+				style="width:810px;margin:auto">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a></li>
+							<li><a rel="#" id="aT_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aT_Post"><img src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aT_Cancel"><img src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel="#" id="aT_CuiBan"><img src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#'><img
+									src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />返回</a>
+							</li>
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul>
+						<br />
+					<br />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="content" id="content"
+							style="height:399px;width:810px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br /><br /><br /><br /><br />
+							<div style="float:left;">							
+								<table class="content_table1" width="780px" border="1" cellpadding="0"
+									style="position:absolute;">
+									<caption style="height:30px;font-size:18px;">
+										<strong>昆明松岛工程造价咨询有限公司<label id="TitleYear"></label>年度任务书下达<br> </strong>
+									</caption>
+									<tr>
+										<th colspan="7" align="left" valign="middle" scope="col">编号：<label>
+												<input type="text" id="FId" name="FId" style="width:20px;"/> <label id="TaskH" >KMSD-任务-</label><input
+												type="text" id="FTaskNumbers" name="FTaskNumbers" value=""
+												style="width:361px;" class="validate[required,minSize[5],maxSize[50]]"><label id="TaskYear"></label> </label>
+										</th>
+									</tr>
+									<tr>
+										<td width="73">任务名称</td>
+										<td colspan="6"><label> <input type="text"
+												id="FTaskName" name="FTaskName" style="width:461px;" class="validate[required,minSize[5],maxSize[100]]">
+										</label>
+										</td>
+									</tr>
+									<tr>
+										<td>委托单位</td>
+										<td colspan="6"><label> <input type="text"
+												id="FEntrustUnitId" name="FEntrustUnitId" style="width:45px"
+												value=""> <input type="text" id="FEntrustUnitName"
+												name="FEntrustUnitName" style="width:461px;"> </label> <span
+											style="width:24px;height:24px;"><input type="button"
+												text="选择委托单位" value="" class="btnSelect" id="butnSelectEU"
+												onClick="javascript:SelectEntrustUnit();" /> </span></td>
+									</tr>
+									<tr>
+										<td>项目规模</td>
+										<td colspan="2"><label> <input type="text" class="validate[required]"
+												id="FProjectScale" name="FProjectScale"> </label></td>
+										<td width="106">结构类型</td>
+										<td colspan="3"><label><span id="spanFStructureType"></span><input
+												id="FStructureType" name="FStructureType" type="text"
+												class="txt" value=""> </label>
+										</td>
+									</tr>
+									<tr>
+										<td>服务类别</td>
+										<td colspan="2"><label><span id="spanFServiceCategory"></span><input type="hidden"
+												id="FServiceCategory" name="FServiceCategory" class="txt">
+										</label></td>
+										<td>合同预计收费</td>
+										<td colspan="3"><label> <input type="text" class="validate[required]"
+												id="FContractYjCharge" name="FContractYjCharge">
+										</label>
+										</td>
+									</tr>
+									<tr>
+										<td>承接部门</td>
+										<td colspan="2"><label><span id="spanFDepartmentId"></span>
+										<input type="hidden" id="FDepartmentId" name="FDepartmentId"> 
+										<input type="hidden" style="20px;" id="FDepartmentName" name="FDepartmentName">
+										</label></td>
+										<td>预计开始时间</td>
+										<td width="90"><label><span id="spanFYjstartTime"></span><input
+												style="width:108px;" id="FYjstartTime" name="FYjstartTime"> </label>
+										</td>
+										<td width="92">预计完成时间</td>
+										<td width="83"><label><span id="spanFYjfinishTime"></span><input style="width:108px;"
+												id="FYjfinishTime" name="FYjfinishTime">
+										</label>
+										</td>
+									</tr>
+									<tr>
+										<td>下达人</td>
+										<td width="74"><label> <input type="text"
+												style="width:25px;" id="FGivePersonId"
+												name="FGivePersonId"> <input type="text" class="validate[required]"
+												style="width:65px;" id="FGivePersonName"
+												name="FGivePersonName"> </label>
+										</td>
+										<td width="71">下达时间</td>
+										<td><label><span id="spanFGiveTime"></span><input type="text"
+												style="width:108px;" id="FGiveTime" name="FGiveTime"> </label>
+										</td>
+										<td>部门经理</td>
+										<td colspan="2"><label> <input type="text" style="width:45px;"
+												id="FDeptMgrId" name="FDeptMgrId"><input type="text"
+												id="FDeptMgrName" name="FDeptMgrName">
+												</label>
+										</td>
+									</tr>
+									<tr>
+										<td>接收时间</td>
+										<td colspan="2"><label><span id="spanFReceivingTaskTime"></span><input type="text"
+												style="width:135px;" id="FReceivingTaskTime"
+												name="FReceivingTaskTime" value="">
+										</label>
+										</td>
+										<td>项目经理</td>
+										<td colspan="3"><label><input type="text"
+												style="width:45px;" id="FProjMgrId" name="FProjMgrId"> <input type="text"
+												style="width:251px;" id="FProjMgrName" name="FProjMgrName">
+												<span style="width:24px;height:24px;"><input type="button"
+												text="指派项目经理" value="" class="btnSelect" id="butnSelectPM"
+												onClick="javascript:SelectPM();" /> </span>
+										</label>
+										</td>
+									</tr>									
+								</table>
+								<br /><br /><input id="output2" type="hidden" value="" />
+							</div>
+						</div></td>
+				</tr>
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a></li>
+							<li><a rel="#"  id="aB_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aB_Post" ><img src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aB_Cancel" ><img src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel="#" id="aB_CuiBan"><img src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='workflow/process-list'><img
+									src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />返回</a>
+							</li>
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul>
+						<br />
+					<br />
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+	<script type="text/javascript">		
+		
+	</script>
+</body>
+</html>

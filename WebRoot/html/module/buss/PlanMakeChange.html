@@ -1,0 +1,487 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>任务计划变更</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">	
+    <link rel="stylesheet" href="../../css/menu.css" type="text/css"></link>
+    <link rel="stylesheet" href="../../css/inputtext.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../css/treenodeicon.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+    <link rel="stylesheet" href="../../plugin/showLoading/css/showLoading.css" type="text/css"></link>	
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>	
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+	<script type="text/javascript" src="../../plugin/showLoading/js/jquery.showLoading.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/EasyUIautoMergeCells.js"></script>
+	<script type="text/javascript" src="../../plugin/js/arrow34.js"></script>
+
+	<style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 98%;
+			width: 98%;
+		}
+		.tdtextcentet{		
+			text-align: center;
+			width: 120px;
+			color: blue,
+		}
+		.content_table1 td {
+	        font-size:13px;	
+		    height:31px;
+		    font-family:"宋体";
+		    padding-left:3px;
+		    padding-top:2px;
+	    }
+		.loading-indicator-bars {
+			background-image: url('/html/plugin/showLoading/images/loading.gif');
+			width: 150px;
+		}
+		.classerror{
+			 border: 1px solid #f00;
+			 background:#fcc;
+		}
+		.div-disabled{
+			background: none repeat scroll 0 0 #FFFFF0;
+			position: fixed; 
+			top: 0px; 
+			left: 0px; 
+			opacity: 0.3; 
+			display: block; 
+			z-index: 99998; 
+			height: 100%; 
+			width: 100%;
+		}
+		.persontable{
+			border-collapse:collapse;border:none;
+	    	border:solid #000 0px;
+		}
+		.persontable td {
+	        font-size:13px;			    
+		    font-family:"宋体";
+		    padding-left:3px;
+		    padding-top:2px;
+		    border: solid #000 0px;	    
+	    }
+	    .persontable th {
+	        font-size:13px;			    
+		    font-family:"宋体";
+		    padding-left:3px;
+		    padding-top:2px;
+		    border: solid #000 0px;	    
+	    }
+	    .mgtperson{
+	    	border-collapse:collapse;border:none;
+		    border:solid #000 0px;
+		    }
+	    .mgtperson td {
+	        font-size:13px;	
+		    height:26px;
+		    font-family:"宋体";
+		    padding-left:3px;
+		    padding-top:2px;
+		    border: solid #000 1px;	 	   
+	    }
+	</style>	
+  </head>  
+  <body id="dt_example">
+  <noscript><a href="#">Click to the Top</a></noscript>
+  	<div  id="divDisable" name="divDisable"></div>  	
+    <form id="formplan" action="/Buss/TaskPlanService/4" method="post">
+		<div style="display: none;">
+			action:<input type="text" id="action" name="action"  value=""/>
+			processId:<input type="text" id="processId" name="processId" value=""/>
+			activeId:<input type="text" id="activeId" name="activeId" value=""/>
+			formPKID:<input type="text" id="formPKID" name="formPKID" value=""/>
+			state:<input type="text" id="state" name="state" value=""/></br>
+			userID:<input id="userID" name="userID" type="text"/>
+			userName:<input id="userName" name="userName" type="text"/>
+			<input id="userOrgID" name="userOrgID" type="text"/>
+			unitStation:<input id="unitStation" name="unitStation" type="text"/>
+			fAcceptUser:<input id="fAcceptUser" name="fAcceptUser" type="text"/>
+			fState:<input id="fState" name="fState" type="text"/>
+			isAcceptance:<input id="isAcceptance" name="isAcceptance" type="text"/>
+			FPlanMakeId:<input id="FPlanMakeId" name="FPlanMakeId" type="text"/>
+		    <input type="text" id="FCurrentStep" name="FCurrentStep" style="width:20px;" />	
+			<input type="text" id="FLastStep" name="FLastStep" style="width:20px;" />
+		</div>
+		<div style="text-align:center" id="MainDiv">
+			<table border="0" cellpadding="3" cellspacing="0" class="pagetable"
+				style="width:810px;margin:auto">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aT_QSH" style="display:none;"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+							</li>
+							<li><a rel="#" id="aT_SelectPlanMake" style="display:black;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />选择计划</a>
+							</li>
+							<li><a rel="#" id="aT_Post" style="display:none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aT_READ" style="display:none;"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />已阅</a>
+							</li>
+							<li><a rel="#" id="aT_YesSelectPlanMake" style="display:none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />确认</a>
+							</li>
+							<li><a rel="#" id="aT_CancelSelectPlanMake" style="display:none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />取消</a>
+							</li>
+							<li><a rel="#" id="aT_ApprovalY" style="display:none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />同意变更</a>
+							</li>
+							<li><a rel="#" id="aT_ApprovalN" style="display:none;"><img
+									src="../../images/oa/delete.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />不同意变更</a>
+							</li>
+							<li><a rel="#" id="aT_COPY" style="display:none;"><img
+									src="../../images/oa/mail.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />抄送</a>
+							</li>							
+							<li><a rel="#" id="aT_CuiBan" style="display:none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aT_BLQK" ><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>							
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br /><br /></td>
+				</tr>
+				<tr>
+					<td>
+						<div class="content" id="content"
+							style="height:1021px;width:810px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br /><br /><br />							 
+							<div style="float:left;padding:10px;">
+								<table width="780px" border="0" cellpadding="0" class="content_table1" style="position:absolute;margin:10px 0px 0px 10px;border-collapse:collapse;border:none;border:solid #000 0px;">
+									  <caption>
+									     	 <strong style="height:35px;font-size:22px;">昆明松岛工程造价咨询有限公司  项目实施计划编制  变更</strong>
+									  </caption>
+									  <tr>
+										<th  style="height:35px;" colspan="4" align="left" valign="middle" scope="col">
+											<label>编号：</label>
+											<label>
+											<input type="hidden" id="FId" name="FId" style="width:20px;" />
+											<input type="hidden" id="rowid" name="rowid" style="width:20px;"/>
+												<input type="hidden" id="FDeptMgrId" name="FDeptMgrId" style="width:20px;" />
+												<input type="hidden" id="FkTaskId" name="FkTaskId" style="width:20px;" />
+												<input type="text" id="FPlanNumbers" name="FPlanNumbers" value=""
+												style="width:561px;"></label>												
+										</th>
+									  </tr>
+									  <tr>
+									    <td class="tdtextcentet" style="border:solid #000 1px;" nowrap>任务名称</td>
+									    <td colspan="3" style="border:solid #000 1px;" >
+											<label id="Frwmc" name="Frwmc" style="color: blue;"></label>
+										</td>									    
+									  </tr>
+									  <tr>
+									    <td  class="tdtextcentet" style="border:solid #000 1px;" >服务类别</td>
+									    <td style="border:solid #000 1px;" ><label id="Ffwlb" style="color: blue;" ></label></td>
+									    <td class="tdtextcentet" style="border:solid #000 1px;" >项目经理</td>
+									    <td style="border:solid #000 1px;" ><label id="Fxmjl" name="Fxmjl" style="color: blue;"></label>
+									    <input type="hidden" id="FPlanningPerId" name="FPlanningPerId" style="width:20px;" />
+									    </td>
+									  </tr>
+									  <tr>
+									    <td class="tdtextcentet" style="border:solid #000 1px;" >委托单位</td>
+									    <td colspan="3" style="border:solid #000 1px;" ><label id="Fwtdw" name="Fwtdw" style="color: blue;"></label></td>
+									   
+									  </tr>
+									  <tr>
+									    <td colspan="4" align="center" style="border:solid #000 1px;" ><strong>项&nbsp;&nbsp;目&nbsp;&nbsp;组&nbsp;&nbsp;人&nbsp;&nbsp;员&nbsp;&nbsp;安&nbsp;&nbsp;排</strong></td>									    
+									  </tr>
+									  <tr>
+										  <td colspan="4" style="height:181px;" style="border:solid #000 1px;" >
+										  	<div style="float:left;padding:0px;width:100%;height:181px;">
+											  	<table id="teamperson" name="teamperson" class="persontable" style="width:98%;height:auto;cellspacing:0px;cellpadding:0px;border:0px;">											  	
+										  		</table>
+										  		<div id="tbool" style="height:auto;display:none;" >
+													<a href="javascript:void(0)" id="append" name="append" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" >添加组员</a>
+													<a href="javascript:void(0)" id="remove" name="remove"  class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" >删除组员</a>
+													<a href="javascript:void(0)" id="accept" name="accept"  class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" >保存组员</a>
+													<a href="javascript:void(0)" id="reject" name="reject"  class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true">刷新数据</a>
+												</div>
+										  	</div>
+										  </td>
+									  </tr>
+									  <tr id="trperson" name="trperson"  >
+										<td colspan="4" style="border:solid #000 1px;">
+											<div id="divtoolbart" style="width:162px;float:left;padding:1px;display:none;">
+												<input type="button" id="addPerson" value="添加组员"/>												
+												<input type="button" id="DelPerson" value="删除组员"/>
+											</div>
+											<div id="divperson" style="float:left;padding:1px;overflow-x:hidden;overflow-y:auto;">
+											<table id="mgttableperson" class="mgtperson" cellpadding="0" cellspacing="0" border="1" style="width:760px;margin:auto">
+												<tr>
+												<td width="80px;" style="background:#f5f5f5;text-align:left;border-buttom:0px;border-right:0px;">姓名</td>
+												<td width="230px;" style="background:#f5f5f5;text-align:left;border-buttom:0px;border-right:0px;">工作内容</td>
+												<td width="85px;" style="background:#f5f5f5;text-align:left;border-buttom:0px;border-right:0px;">担任职务</td>
+									 			<td width="100px;" style="background:#f5f5f5;text-align:left;border-buttom:0px;border-right:0px;">联系电话</td>
+												<td width="100px;" rowspan="2" scope="col">
+												<div id="divtoolbarb" style="width:90px;float:right;padding:1px;">
+													<!-- <input type="button" id="SavePerson" value="保存组员"/> -->
+													<input type="button" id="ClosePerson" value="&nbsp;&nbsp;关闭&nbsp;&nbsp;"/>
+												</div></td>
+											  </tr>
+											  <tr>
+												<input type="hidden" style="width:20px;" id="PFId" name="PFId">
+												<input type="hidden" style="width:20px;" id="PfkImplementPlanId" name="PfkImplementPlanId">
+												<input type="hidden" style="width:20px;" id="PFPersonnelName" name="PFPersonnelName">
+												<td width="80px" style="border-top:0px;border-right:0px;"><label><input type="text"  class="easyui-combotree" data-options="url:''" style="width:80px;" id="PFPersonnelId" name="PFPersonnelId"></label></td>
+												<td width="230px" style="border-top:0px;border-right:0px;"><label><input type="text" class="easyui-validatebox" style="width:200px;" id="PFJobContent" name="PFJobContent"></label></td>
+												<td width="85px" style="border-top:0px;border-right:0px;"><label><input type="text" class="easyui-validatebox" style="width:110px;" id="PFAsPosition" name="PFAsPosition"></label></td>
+												<td style="border-top:0px;border-right:0px;width:100px;"><label><input type="text" style="width:100px;" id="PFContactPhone" name="PFContactPhone"></label></td>
+											  </tr>
+											</table>											
+											</div>											
+										</td>
+									  <tr>									  
+									  <tr>
+									    <td colspan="4" align="center" style="border:solid #000 1px;" ><strong>时&nbsp;&nbsp;间&nbsp;&nbsp;安&nbsp;&nbsp;排</strong></td>									    
+									  </tr>
+									  <tr>
+									    <td class="tdtextcentet" style="border:solid #000 1px;" >1</td>
+									    <td class="tdtextcentet" style="border:solid #000 1px;"  colspan="2" nowrap>收集资料（现场踏勘）时间</td>
+									    <td  style="border:solid #000 1px;" >&nbsp;<label> <input type="text"
+												style="width:121px;cursor: pointer;"  id="FCollectDataTime"
+												name="FCollectDataTime"> </label></td>
+									  </tr>
+									  <tr>
+									    <td class="tdtextcentet" style="border:solid #000 1px;" >2</td>
+									    <td class="tdtextcentet" style="border:solid #000 1px;"  colspan="2">过程实施时间</td>
+									    <td  style="border:solid #000 1px;" >&nbsp;<label> <input type="text"
+												style="width:121px;cursor: pointer;"  id="FProcessImnTime"
+												name="FProcessImnTime"> </label></td>
+									  </tr>
+									  <tr>
+									    <td class="tdtextcentet" style="border:solid #000 1px;" >3</td>
+									    <td class="tdtextcentet" style="border:solid #000 1px;"  colspan="2">提交复核时间</td>
+									    <td  style="border:solid #000 1px;" >&nbsp;<label> <input type="text"
+												style="width:121px;cursor: pointer;"  id="FSubmitRewTime"
+												name="FSubmitRewTime"> </label></td>
+									  </tr>
+									  <tr>
+									    <td class="tdtextcentet" style="border:solid #000 1px;" >4</td>
+									    <td class="tdtextcentet" style="border:solid #000 1px;"  colspan="2">出具正式成果文件时间</td>
+									    <td  style="border:solid #000 1px;" >&nbsp;<label> <input type="text"
+												style="width:121px;cursor: pointer;"  id="FIssueResultsTime"
+												name="FIssueResultsTime"> </label></td>
+									  </tr>
+									  <tr>
+									    <td class="tdtextcentet"  style="border:solid #000 1px;" >其他</td>
+									    <td colspan="3" style="border:solid #000 1px;" ><label> 									     
+										<textarea cols="78" rows="5" id="FOther" name="FOther" ></textarea>
+										</label></td>
+									  </tr>
+									  <tr>
+									    <td class="tdtextcentet" style="border:solid #000 1px;" >部门意见</td>
+									    <td colspan="3" style="border:solid #000 1px;" >						
+											 <div class="article_new"><a id="aDeptLink" style="cursor: pointer;" name="aDeptLink" rel="#">&lt;&lt;请填写意见 &gt;&gt;</a></div>
+ 											 <textarea id="FDeptOpinions" name="FDeptOpinions" cols="78" rows="5"></textarea>																																
+										</td>
+									  </tr>
+									  <tr>
+										 <td class="tdtextcentet" style="border:solid #000 1px;" >时间</td>
+											<td colspan="3" style="border:solid #000 1px;" >
+												<input type="text"
+													style="width:121px;" id="FDeptOpinionTime"  class="easyui-datetimebox" data-options="required:false"
+													name="FDeptOpinionTime">
+											</td>
+									  </tr>
+									</table>
+								<br /><br /><br /><br /><br />
+								<input id="output2" type="hidden" value="" />
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aB_QSH" style="display:none;"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+							</li>
+							<li><a rel="#" id="aB_SelectPlanMake" style="display:black;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />选择计划</a>
+							</li>
+							<li><a rel="#" id="aB_Post" style="display:none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aB_YesSelectPlanMake" style="display:none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />确认</a>
+							</li>
+							<li><a rel="#" id="aB_CancelSelectPlanMake" style="display:none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />取消</a>
+							</li>
+							<li><a rel="#" id="aB_READ" style="display:none;"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />已阅</a>
+							</li>
+							<li><a rel="#" id="aB_ApprovalY" style="display:none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />同意变更</a>
+							</li>
+							<li><a rel="#" id="aB_ApprovalN" style="display:none;"><img
+									src="../../images/oa/delete.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />不同意变更</a>
+							</li>
+							<li><a rel="#" id="aB_COPY" style="display:none;"><img
+									src="../../images/oa/mail.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />抄送</a>
+							</li>							
+							<li><a rel="#" id="aB_CuiBan" style="display:none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aB_BLQK" ><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>						
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br />
+						<p></p>
+						<div  style="float:left;width:100%;height:281px;">
+							<table id="qkTable" name="qkTable" style="height:100%;">
+							</table>
+						</div>
+						</td>
+				</tr>
+			</table>
+			<br/>
+		</div>
+	</form>
+	<div id="divselectplanmake" class="easyui-dialog" title="请选择需要变更的计划书" style="width:621px;height:360px;padding:10px"
+				data-options="
+					iconCls: 'icon-save',				
+					buttons: '#planmakedlg-buttons',
+					modal:true,
+					closed:true,
+					closable:true
+				">
+			<table id="PlanMakeGrid" name="PlanMakeGrid"></table>
+		</div>	
+		<div id="planmakedlg-buttons">
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="javascript:FUN_SELECT()">确定</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divselectplanmake').dialog('close')">关闭</a>
+		</div>
+	<div id="divPostDEPT" class="easyui-dialog" title="提交到部门" style="width:400px;height:250px;padding:10px"
+			data-options="
+				iconCls: 'icon-save',				
+				buttons: '#pddlg-buttons',
+				modal:true,
+				closed:true,
+				closable:true
+			">
+		<lable>请输入意见：</lable>
+		<textarea id="OpinionMessagePostDept" name="OpinionMessagePostDept" style="height:121px;width:98%;"></textarea>
+	</div>	
+	<div id="pddlg-buttons">
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="javascript:FUN_POSTDEPT()">提交</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divPostDEPT').dialog('close')">关闭</a>
+	</div>
+	<div id="divApprovalY" class="easyui-dialog" title="审核同意变更操作" style="width:400px;height:250px;padding:10px"
+			data-options="
+				iconCls: 'icon-save',				
+				buttons: '#aydlg-buttons',
+				modal:true,
+				closed:true,
+				closable:true
+			">
+		<lable>请输入意见：</lable>
+		<textarea id="OpinionMessageApprovalY" name="OpinionMessageApprovalY" style="height:121px;width:98%;"></textarea>
+	</div>	
+	<div id="aydlg-buttons">
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="javascript:FUN_ApprovalY()">确认</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divApprovalY').dialog('close')">关闭</a>
+	</div>
+	
+	<div id="divApprovalN" class="easyui-dialog" title="审核不通过操作" style="width:400px;height:250px;padding:10px"
+			data-options="
+				iconCls: 'icon-save',				
+				buttons: '#andlg-buttons',
+				modal:true,
+				closed:true,
+				closable:true
+			">
+		<lable>请输入意见：</lable>
+		<textarea id="OpinionMessageApprovalN" name="OpinionMessageApprovalN" style="height:131px;width:98%;"></textarea>
+	</div>	
+	<div id="andlg-buttons">
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'"  onclick="javascript:FUN_ApprovalN()">确认</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divApprovalN').dialog('close')">关闭</a>
+	</div>
+	<div id="divcopy" class="easyui-dialog" title="抄送生产部及总工办" style="width:400px;height:250px;padding:10px"
+			data-options="
+				iconCls: 'icon-save',				
+				buttons: '#copydlg-buttons',
+				modal:true,
+				closed:true,
+				closable:true
+			">
+		<lable>请输入抄送意见：</lable>
+		<textarea id="OpinionMessageCopy" name="OpinionMessageCopy" style="height:131px;width:98%;"></textarea>
+	</div>	
+	<div id="copydlg-buttons">
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="javascript:FUN_Copy()">抄送</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divcopy').dialog('close')">关闭</a>
+	</div>
+	<div id="divcuiban" class="easyui-dialog" title="催办操作" style="width:400px;height:250px;padding:10px"
+			data-options="
+				iconCls: 'icon-save',				
+				buttons: '#cdlg-buttons',
+				modal:true,
+				closed:true,
+				closable:true
+			">
+		<lable>请输入催办意见：</lable>
+		<textarea id="OpinionMessageCuiBan" name="OpinionMessageCuiBan" style="height:121px;width:98%;"></textarea>
+	</div>	
+	<div id="cdlg-buttons">
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="javascript:FUN_CuiBan()">催办</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divcuiban').dialog('close')">关闭</a>
+	</div>
+  </body>
+  <script type="text/javascript" src="js/planmakechange.js"></script>  
+</html>

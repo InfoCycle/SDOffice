@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="../../css/wfMain.css" />
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css"
+	type="text/css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+
+<title>工作台</title>
+<style type="text/css">
+html,body {
+	height: 100%;
+	width: 100%;
+}
+
+.x-grid3-scroller {
+	position: relative;
+	background: #f5f5f5;
+}
+a {
+    text-decoration: none;
+}
+</style>
+<script type="text/javascript">
+	var pageSize = 6;
+	function rendererLeftAlign(value) {
+		return "<div style='text-align:left'>" + value + "</div>";
+	}
+	var dataStore = new Ext.data.JsonStore({
+		url : '/wf/processtask/',
+		idProperty : 'FId',
+		root : 'root',
+		totalProperty : 'totalProperty',
+		fields : [ {
+			name : 'FId'
+		}, {
+			name : 'FTitle'
+		}, {
+			name : 'FCreateUserId'
+		}, {
+			name : 'FCreateUserName'
+		}, {
+			name : 'FCreateTime'
+		}, {
+			name : 'FTypeName'
+		}, {
+			name : 'FState'
+		}, {
+			name : 'FStateText'
+		}, {
+			name : 'FCurrentUserId'
+		}, {
+			name : 'FCurrentUserName'
+		}, {
+			name : 'FSendUser'
+		},{
+			name : 'FSendTime'
+		}, {
+			name : 'FFormUrl'
+		}, {
+			name : 'activeId'
+		}, {
+			name : 'FFormPkid'
+		} ]
+	});
+	dataStore.on('beforeload', function() {
+		dataStore.baseParams = {
+			action : 1,
+			start : 0,
+			limit : pageSize
+		}
+	});
+	dataStore.load({callback:function(){
+		urgeStore.load();
+	}});
+	var waitGrid = new Ext.grid.GridPanel({
+		id : 'wfWaitGrid',
+		region : 'center',
+		store : dataStore,
+		loadMask : {
+			msg : '加载数据中,请等待......'
+		},
+		sm : new Ext.grid.RowSelectionModel({
+			singleSelect : true
+		}),
+		viewConfig : {
+			forceFit : false,
+			emptyText : '系统中还没有待办任务'
+		},
+		bodyStyle : 'background: #f5f5f5;',
+		columns : [ new Ext.grid.RowNumberer(), {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FTitle',
+			header : '项目名称',
+			renderer : rendererLeftAlign,
+			width : 240
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FTypeName',
+			header : '工作内容',
+			renderer : rendererLeftAlign,
+			width : 100
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FSendUser',
+			header : '发送人',
+			renderer : rendererLeftAlign,
+			width : 80
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FSendTime',
+			header : '发送时间',
+			width : 120
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FStateText',
+			renderer : rendererLeftAlign,
+			header : '状态',
+			width : 80
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FCurrentUserName',
+			header : '当前办理人',
+			renderer : rendererLeftAlign,
+			width : 90
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FCreateUserName',
+			header : '起草人',
+			renderer : rendererLeftAlign,
+			width : 80
+		} ,{
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FCreateTime',
+			header : '起草时间',
+			width : 120
+		} ],
+		bbar : new Ext.PagingToolbar({
+			displayInfo : true,
+			pageSize : pageSize,
+			store : dataStore,
+			displayMsg : ' 当前记录数:{0}-{1}条 &nbsp;&nbsp;总记录数: {2}条 ',
+			emptyMsg : " 没有符合条件的记录 "
+		}),
+		listeners : {
+			rowdblclick : function(grid, number, e) {
+				var record = grid.getSelectionModel().getSelected();
+				var id = record.data.FId;
+				var activeId = record.data.activeId;
+				var state = record.data.FState;
+				var formPKID = record.data.FFormPkid;
+				var href = record.data.FFormUrl;
+				href += "?action=1&processId=" + id + "&activeId=" + activeId
+						+ "&formPKID=" + formPKID + "&state=" + state;
+				parent.NavigateUrl("wf_" + id, record.data.FTitle, href);
+			}
+		}
+	})
+	var urgeStore = new Ext.data.JsonStore({
+		url : '/wf/processtask/',
+		idProperty : 'FId',
+		root : 'root',
+		totalProperty : 'totalProperty',
+		fields : [ {
+			name : 'FId'
+		}, {
+			name : 'FTitle'
+		}, {
+			name : 'FCreateUserId'
+		}, {
+			name : 'FCreateUserName'
+		}, {
+			name : 'FCreateTime'
+		}, {
+			name : 'FTypeName'
+		}, {
+			name : 'FState'
+		}, {
+			name : 'FStateText'
+		}, {
+			name : 'FCurrentUserId'
+		}, {
+			name : 'FCurrentUserName'				
+		}, {
+			name : 'FSendUser'
+		},{
+			name : 'FSendTime'
+		}, {
+			name : 'FFormUrl'
+		}, {
+			name : 'activeId'
+		}, {
+			name : 'FFormPkid'
+		} ]
+	});
+	urgeStore.on('beforeload', function() {
+		urgeStore.baseParams = {
+			action : 4,
+			start : 0,
+			limit : pageSize
+		}
+	});
+	var urgeGrid = new Ext.grid.GridPanel({
+		id : 'wfUgreGrid',
+		region : 'center',
+		store : urgeStore,
+		loadMask : {
+			msg : '加载数据中,请等待......'
+		},
+		sm : new Ext.grid.RowSelectionModel({
+			singleSelect : true
+		}),
+		viewConfig : {
+			forceFit : false,
+			emptyText : '系统中还没有催办任务'
+		},
+		bodyStyle : 'background: #f5f5f5;',
+		columns : [ new Ext.grid.RowNumberer(), {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FTitle',
+			header : '项目名称',
+			renderer : rendererLeftAlign,
+			width : 240
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FTypeName',
+			header : '工作内容',
+			renderer : rendererLeftAlign,
+			width : 100
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FSendUser',
+			header : '发送人',
+			renderer : rendererLeftAlign,
+			width : 80
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FSendTime',
+			header : '发送时间',
+			width : 120
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FStateText',
+			renderer : rendererLeftAlign,
+			header : '状态',
+			width : 80
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FCurrentUserName',
+			header : '当前办理人',
+			renderer : rendererLeftAlign,
+			width : 90
+		}, {
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FCreateUserName',
+			header : '起草人',
+			renderer : rendererLeftAlign,
+			width : 80
+		} ,{
+			xtype : 'gridcolumn',
+			align : 'center',
+			dataIndex : 'FCreateTime',
+			header : '起草时间',
+			width : 120
+		} ],
+		bbar : new Ext.PagingToolbar({
+			displayInfo : true,
+			pageSize : pageSize,
+			store : urgeStore,
+			displayMsg : ' 当前记录数:{0}-{1}条 &nbsp;&nbsp;总记录数: {2}条 ',
+			emptyMsg : " 没有符合条件的记录 "
+		}),
+		listeners : {
+			rowdblclick : function(grid, number, e) {
+				var record = grid.getSelectionModel().getSelected();
+				var id = record.data.FId;
+				var activeId = record.data.activeId;
+				var state = record.data.FState;
+				var formPKID = record.data.FFormPkid;
+				var href = record.data.FFormUrl;
+				href += "?action=1&processId=" + id + "&activeId=" + activeId
+						+ "&formPKID=" + formPKID + "&state=" + state;
+				parent.NavigateUrl("wf_" + id, record.data.FTitle, href);
+			}
+		}
+	})
+	function freshWait() {
+		dataStore.reload();
+	}
+	function freshUrge() {
+		urgeStore.reload();
+	}
+	function showNoticeView(id,href,title){
+		parent.NavigateUrl("Notice_"+id,title,href+"?FId="+id);
+		return;
+	}
+	function showMoreNotice(){
+		parent.NavigateUrl("Notice_More","通知公告","../construction/Construction.html");
+		return;
+	}
+	function showFileView(id,href,title){
+		parent.NavigateUrl("Construction_"+id,title,href+"?FId="+id);
+		return;
+	}
+	function showMoreFile(){
+		parent.NavigateUrl("Construction_More","造价资料","../construction/Construction.html");
+		return;
+	}
+	function unReadShow(){
+		var count=Ext.getDom("unReadCount").innerHTML;
+		count = count+' ';
+		if(count.trim()=='0') {return false;}
+		var unReadStore = new Ext.data.JsonStore({
+			url : '/wf/desk/4/',
+			idProperty : 'FId',
+			root : 'root',
+			totalProperty : 'totalProperty',
+			fields : [ 
+			   {name : 'FId'}, 
+			   {name : 'FTitle'}, 
+			   {name : 'FCreateUserId'}, 
+			   {name : 'FCreateUserName'}, 
+			   {name : 'FCreateTime'}, 
+			   {name : 'FTypeName'}, 
+			   {name : 'FState'}, 
+			   {name : 'FStateText'}, 
+			   {name : 'FCurrentUserId'}, 
+			   {name : 'FCurrentUserName'}, 
+			   {name : 'FSendUser'},
+			   {name : 'FSendTime'}, 
+			   {name : 'FFormUrl'}, 
+			   {name : 'activeId'}, 
+			   {name : 'FFormPkid'} 
+			]
+		});
+		unReadStore.load();
+		var unReadGrid=new Ext.grid.GridPanel({
+			id : 'unReadGrid',
+			region : 'center',
+			store : unReadStore,
+			loadMask : {
+				msg : '加载数据中,请等待......'
+			},
+			sm : new Ext.grid.RowSelectionModel({
+				singleSelect : true
+			}),
+			columns : [ new Ext.grid.RowNumberer(), {
+				xtype : 'gridcolumn',
+				align : 'center',
+				dataIndex : 'FTitle',
+				header : '项目名称',
+				renderer : rendererLeftAlign,
+				width : 290
+			}, {
+				xtype : 'gridcolumn',
+				align : 'center',
+				dataIndex : 'FTypeName',
+				header : '工作内容',
+				renderer : rendererLeftAlign,
+				width : 100
+			}, {
+				xtype : 'gridcolumn',
+				align : 'center',
+				dataIndex : 'FSendUser',
+				header : '抄送人',
+				renderer : rendererLeftAlign,
+				width : 80
+			}, {
+				xtype : 'gridcolumn',
+				align : 'center',
+				dataIndex : 'FSendTime',
+				header : '抄送时间',
+				width : 120
+			}],			
+			listeners : {
+				rowdblclick : function(grid, number, e) {
+					var record = grid.getSelectionModel().getSelected();
+					var id = record.data.FId;
+					var activeId = record.data.activeId;
+					var state = record.data.FState;
+					var formPKID = record.data.FFormPkid;
+					var href = record.data.FFormUrl;
+					href += "?action=3&processId=" + id + "&activeId=" + activeId
+							+ "&formPKID=" + formPKID;
+					parent.NavigateUrl("wf_" + id, record.data.FTitle, href);
+				}
+			}
+		});
+		var win = new Ext.Window({
+			height: 356,
+		    width: 660,
+		    layout:'border',
+		    modal: true,
+		    title: '待阅文件列表',
+		    items: [unReadGrid]
+		});
+		win.show();
+	}
+	//通知公告
+	Ext.Ajax.request({
+		url : '/wf/desk/1/',
+		method : 'post',
+		success : function(response) {
+				var responseArray = Ext.util.JSON.decode(response.responseText);
+				if (responseArray.success) {
+					Ext.getDom("wf_notice_list").innerHTML = responseArray.root;
+				}
+		},
+		failure : function() {
+			showMessage('网络错误，连接失败！', true);
+		}
+	});
+	//造价资料
+	Ext.Ajax.request({
+		url : '/wf/desk/2/',
+		method : 'post',
+		success : function(response) {
+				var responseArray = Ext.util.JSON.decode(response.responseText);
+				if (responseArray.success) {
+					Ext.getDom("wf_files_list").innerHTML = responseArray.root;
+				}
+		},
+		failure : function() {
+			showMessage('网络错误，连接失败！', true);
+		}
+	});
+	//待阅文件
+	Ext.Ajax.request({
+		url : '/wf/desk/3/',
+		method : 'post',
+		success : function(response) {
+				var responseArray = Ext.util.JSON.decode(response.responseText);
+				if (responseArray.success) {
+					Ext.getDom("unReadCount").innerHTML = responseArray.root;
+				}
+		}
+	});
+	Ext.onReady(function() {
+		Ext.QuickTips.init();
+		Ext.form.Field.prototype.msgTarget = 'side';
+		var mainViewport = new Ext.Viewport({
+			id : 'MainViewport',
+			layout : 'border',
+			border: 0,
+			bodyStyle: "padding:0;background-color:#f5f5f5; border-width: 0;",
+			items : [ {
+				xtype : 'panel',
+				region : 'east',
+				width : 350,
+				layout : 'border',
+				border: 0,
+				bodyStyle: "padding:0;background-color:#f5f5f5; border-width: 0;",
+				items : [ {
+					xtype : 'panel',
+					region : 'north',
+					height : 300,
+					layout : 'border',
+					border: 0,
+					bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+					items : [ {
+						xtype : 'panel',
+						region : 'north',
+						height : 34,
+						border: 0,
+						bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+						contentEl : 'noticeTitle'
+					}, {
+						xtype : 'panel',
+						region : 'center',
+						border: 0,
+						bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+						contentEl : 'wf_notice_list'
+					} ]
+				}, {
+					xtype : 'panel',
+					region : 'center',
+					layout : 'border',
+					border: 0,
+					bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+					items : [ {
+						xtype : 'panel',
+						region : 'north',
+						height : 34,
+						border: 0,
+						bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+						contentEl : 'toolsTitle'
+					}, {
+						xtype : 'panel',
+						region : 'center',
+						border: 0,
+						bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+						contentEl : 'wf_files_list'
+					} ]
+				} ]
+			}, {
+				xtype : 'panel',
+				region : 'center',
+				layout : 'border',
+				border: 0,
+				bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+				items : [ {
+					xtype : 'panel',
+					region : 'north',
+					height : 300,
+					layout : 'border',
+					border: 0,
+					bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+					items : [ {
+						xtype : 'panel',
+						region : 'north',
+						height : 34,
+						border: 0,
+						bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+						contentEl : 'waitTitle'
+					}, waitGrid ]
+				}, {
+					xtype : 'panel',
+					region : 'center',
+					layout : 'border',
+					border: 0,
+					bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+					items : [ {
+						xtype : 'panel',
+						region : 'north',
+						height : 34,
+						border: 0,
+						bodyStyle: "background-color:#f5f5f5; border-width: 0;",
+						contentEl : 'urgeTitle'
+					}, urgeGrid ]
+				} ]
+			} ]
+		});
+		mainViewport.doLayout();
+		new Ext.ToolTip({
+		    target: 'unReadCount',
+		    html: '点击查看未阅读文件'
+		});
+	});
+</script>
+</head>
+<body>
+	<div id="waitTitle">
+		<table class="wf_list_title" cellspacing="0" cellpadding="0">
+			<tr>
+				<td width="9%" align="right"><img border="0"
+					style="margin-top: 4px;" src="../../images/oa/date_4.png"></td>
+				<td width="26%" align="left">
+				<font size="2" color="#005276">&nbsp;&nbsp;<b>待办事项</b>
+				</font>
+				</td>
+				<td width="30%">
+				<div style="line-height:32px">
+					<div style="float:left;height:32px;"><font size="2" color="#005276"><b>待阅文件</b></font></div>
+					<div style="float:left;height:32px;width:60px;background:url(../../images/wf_icon/DaiYue.gif) no-repeat center;background-size: 60px 24px;">
+						<span style="margin-left:20px;height:32px;"><a href="#" OnClick="unReadShow();">&nbsp;<span id="unReadCount"></span>&nbsp;</a></span>
+					</div>
+				</span>
+				</td>
+				<td width="30%" align="right"><a href="javascript:freshWait();">
+						<img border="0" src="../../images/oa/fresh.png" title="刷新待办事项列表">
+				</a>
+				</td>
+				<td width="10px"></td>
+			</tr>
+		</table>
+	</div>
+	<div id="urgeTitle">
+		<table class="wf_list_title" cellspacing="0" cellpadding="0">
+			<tr>
+				<td width="9%" align="right"><img border="0"
+					style="margin-top: 4px;" src="../../images/oa/date_4.png"></td>
+				<td width="30%" align="left"><font size="2" color="#005276">&nbsp;&nbsp;<b>催办事项</b>
+				</font></td>
+				<td width="56%" align="right"><a href="javascript:freshUrge();">
+						<img border="0" src="../../images/oa/fresh.png" title="刷新催办事项列表">
+				</a>
+				</td>
+				<td width="10px"></td>
+			</tr>
+		</table>
+	</div>
+	<div id="noticeTitle">
+		<table class="wf_list_title" cellspacing="0" cellpadding="0"
+			height="30px">
+			<tr height="30px">
+				<td width="9%" align="right" height="30px"><img border="0"
+					style="margin-top: 4px;" src="../../images/oa/talk.png">
+				</td>
+				<td width="30%" align="left"><font size="2" color="#005276">&nbsp;&nbsp;<b>通知公告</b>
+				</font></td>
+				<td width="56%" align="right"><a href="#"> <img border="0"
+						src="../../images/oa/fresh.png" title="刷新通知公告列表"> </a>
+				</td>
+				<td width="10px"></td>
+			</tr>
+		</table>
+	</div>
+	<div id="toolsTitle">
+		<table class="wf_list_title" cellspacing="0" cellpadding="0"
+			style="height: 30px; margin-top: 2px;">
+			<tr>
+				<td width="9%" align="right"><img border="0"
+					style="margin-top: 4px;" src="../../images/oa/files.png"></td>
+				<td width="30%" align="left"><font size="2" color="#005276">&nbsp;&nbsp;<b>造价资料</b>
+				</font>
+				</td>
+				<td width="56%" align="right"><a href="javascript:showMoreFile();"> <img border="0"
+						src="../../images/oa/articl.png" title="查看更多造价资料"> </a>
+				</td>
+				<td width="10px"></td>
+			</tr>
+		</table>
+	</div>
+	<ul id="wf_notice_list">
+		<li>2012年度云南省建设工程造价员资格考试注意事项</li>
+		<li>关于开展2012年度造价员续期验证工作的通知</li>
+		<li>南省住房和城乡建设厅关于开展2009年度造价工程师延续注册工作的通知</li>
+	</ul>
+	<ul id="wf_files_list">		
+	</ul>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>文件上传</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../plugin/swfupload/css/default.css" type="text/css"></link>
+<script type="text/javascript" src="../../plugin/swfupload/js/swfupload.js"></script>
+<script type="text/javascript" src="../../plugin/swfupload/js/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../plugin/swfupload/js/fileprogress.js"></script>
+<script type="text/javascript" src="../../plugin/swfupload/js/handlers.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+<script type="text/javascript">
+var swfu;
+var dr=new Array();
+var isFn=false;
+$(document).ready(function(){
+	$.ajax({
+		url:'/Buss/File/2',
+		type: 'POST',
+		dataType: 'json',
+		async :  false,
+		success:function(data) {
+			if(data.success){
+				FlashFile(data.root);
+			}
+		}
+	});
+});
+
+function FlashFile(data){
+	var defaults={size : '100 MB',type : '*.*',description : '所有文件'};
+	var setting=Base64.decode(Request.QueryString('entitys'));
+	var entitys=$.extend(true,{},defaults,$.parseJSON(setting));
+	isFn=entitys.Fn;
+	swfu = new SWFUpload({
+		upload_url: entitys.url+";jsessionid="+data,
+		post_params: entitys.params,
+		file_size_limit : entitys.size,
+		file_types : entitys.type,
+		file_types_description :Base64.decode(entitys.description),
+		file_upload_limit : '10',
+		file_queue_limit : '0',
+		button_placeholder_id : 'SelectFiles',
+		button_width: 80,
+		button_height: 22,
+		button_image_url : '../../plugin/swfupload/images/selects.png',
+		button_cursor: SWFUpload.CURSOR.HAND,
+		button_text_top_padding: 1,
+		button_text_left_padding: 5,
+		custom_settings : {
+			progressTarget : 'fsUploadProgress',
+			cancelButtonId : 'CannelFiles'
+		},
+		use_query_string : true,
+		file_queue_error_handler : fileQueueError,
+		file_dialog_complete_handler : fileDialogComplete,//当文件选取对话框弹出前出发的事件处理函数
+		file_queued_handler : fileQueued,
+		upload_progress_handler : uploadProgress,
+		upload_error_handler : uploadError,
+		upload_complete_handler : uploadComplete,//选择文件后触发的事件处理函数
+		upload_success_handler :FileSuccess ,//件上传成功后触发的事件处理函数
+		flash_url : '../../plugin/swfupload/swfupload.swf',
+		debug: false
+	});
+}
+
+function FileSuccess(file, serverData){
+	try {
+		var progress = new FileProgress(file, this.customSettings.progressTarget);
+		progress.setComplete();
+		progress.setStatus("上传成功");
+		progress.toggleCancel(false);
+		if(isFn){
+		 	parent.FlashFiles(serverData);
+		}
+		
+	} catch (ex) {
+		this.debug(ex);
+	}
+}
+</script>
+
+
+</head>
+
+<body>
+ <div class="fieldset flash" id="fsUploadProgress" style="height:260px;width:auto">
+<span class="legend" style="font-family:微软雅黑">文件上传</span>
+</div>
+<div>
+    &nbsp;&nbsp;<span id="SelectFiles"></span>
+	<input id="CannelFiles" type="button" onclick="swfu.cancelQueue();"  style="background-image: url('../../plugin/swfupload/images/cannel.png');width:70px;height:22px;border: none;background-color: white" />
+</div>
+</body>
+</html>

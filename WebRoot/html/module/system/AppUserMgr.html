@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>人员管理</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+</head>
+
+<body>
+</body>
+</html>
+<script type="text/javascript">
+var dataStore = new Ext.data.JsonStore({
+	url: '/system/SvrService/UserService/1',
+    idProperty: 'FId',
+    root: 'root',
+    totalProperty: 'totalProperty',
+    autoLoad:true,
+    fields: [
+        {name: 'FId'},
+        {name: 'FName'},
+        {name: 'FUserCode'},
+        {name: 'FPassword'},
+        {name: 'FCardid'},
+        {name: 'FPhone'},
+        {name: 'FCreateTime'},
+        {name: 'FSort'},
+        {name: 'FState'},
+        {name: 'FUnitStation'}
+    ]
+});
+var stationStore = new Ext.data.JsonStore({
+	url: '/system/station/',
+    idProperty: 'FId',
+    root: 'root',
+    autoLoad:true,
+    fields: [
+        {name: 'FId'},
+        {name: 'FName'}
+    ]
+});
+var stationCombo = new Ext.form.ComboBox({  
+	id:'FUnitStation',
+	fieldLabel: '岗位',
+    emptyText: '请选择岗位...',  
+    displayField: 'FName',  
+    valueField: 'FId',  
+    mode: 'local',  
+    typeAhead: true,  
+    triggerAction: "all",  
+    editable: false,  
+    allowBlank: false,  
+    blankText: "必须选择岗位！",  
+    autoSelect: true,  
+    selectOnFoucus: true,  
+    store: stationStore  
+});
+function stationRenderer(value){
+	var record = stationStore.getById(value);
+	if(record){
+		return record.data.FName;
+	}else{
+		return "";
+	}
+}
+Ext.onReady(function(){
+	Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+    var obj=checkUserLogin();	
+    if(!obj) return;
+    initForm(); 
+});
+
+function initForm(){
+	var mainViewPort=new Ext.Viewport({
+		id:'mainViewport',
+	    layout: 'fit',
+        items: [
+            {
+                xtype: 'panel',
+                id: 'contentPanel',
+                layout: 'border',
+                tbar: {
+                    xtype: 'toolbar',
+                    region: 'center',
+                    items: [
+                        {
+                            xtype: 'button',
+                            text: '新增',
+                            iconCls:'new',
+                            handler:function(){
+                            	var tree = Ext.getCmp("orgTree");		                        	
+	                            var selectedNode = tree.getSelectionModel().getSelectedNode();
+	                            if (selectedNode) {
+	                            	insertForm(selectedNode.attributes.id);	                                
+	                            }
+	                            else {
+	                                showMessage('请选中组织机构节点！');
+	                            }
+                            }
+                        },
+                        {
+                            xtype: 'button',
+                            text: '保存',
+                            iconCls:'save',
+                            handler:function(){
+                            	var form = Ext.getCmp("userForm");		                        	
+	                        	if(form.getForm().isValid()){
+	                        		Ext.Ajax.request({
+                            			url:'/system/SvrService/UserService/2',
+                            			method : 'post',
+                            			params : {
+                            				FId:Ext.getCmp('FId').getValue(),
+                            				FOrgId:Ext.getCmp('FOrgId').getValue(),                            				
+                            		        FName:Ext.getCmp('FName').getValue(),
+                            		        FUserCode:Ext.getCmp('FUserCode').getValue(),
+                            		        FPassword:Ext.getCmp('FPassword').getValue(),  
+                            		        FCardid:Ext.getCmp('FCardid').getValue(),
+                            		        FPhone:Ext.getCmp('FPhone').getValue(), 
+                            				FSort:Ext.getCmp('FSort').getValue(),
+                            				FState:getChecked(Ext.getCmp('FState').checked),
+                            				FUnitStation:Ext.getCmp('FUnitStation').getValue()
+                            			},
+                            			success : function(response){
+                            				var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+                            				if(responseArray.success){
+                            					Ext.getCmp('FId').setValue(responseArray.root.FId);
+                            					dataStore.reload({callback:function(){
+                            						var rec = dataStore.getById(responseArray.root.FId);
+                            						if(rec){
+                            							var grid = Ext.getCmp("userGrid");                            							
+                            							grid.getSelectionModel().selectRow(dataStore.indexOf(rec), true)                            							
+                            						}
+                            					}});
+                            				}else{
+                            					Ext.MessageBox.show({
+                            						title:'系统提示',
+                            						msg:'数据保存失败！',
+                            						width:300,
+                            						buttons: Ext.Msg.OK,
+                            						icon: Ext.MessageBox.INFO
+                            					});
+                            				}
+                            					
+                            			},
+                            			failure : function(response) {
+                            				showMessage('网络错误，保存失败！',true);
+                            			}
+                            		});
+	                        	}
+                            }
+                        },
+                        {
+                            xtype: 'button',
+                            text: '删除',
+                            iconCls:'delete',
+                            handler:function(){
+                            	var FId=Ext.getCmp('FId').getValue();
+                            	if(FId){
+	                            	Ext.Msg.confirm('系统提示','删除后无法恢复，确定删除选择的人员信息吗？', 
+	                            			function (btn) {
+		                                if (btn == "yes") {		                                	
+		                                	Ext.Ajax.request({
+		                            			url:'/system/SvrService/UserService/3',
+		                            			method : 'post',
+		                            			params : {
+		                            				FId:FId
+		                            			},
+		                            			success : function(response){
+		                            				var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+		                            				if(responseArray.success){
+		                            					dataStore.remove(dataStore.getById(FId));
+		                            					Ext.getCmp('userForm').getForm().reset();
+		                            				}else{
+		                            					Ext.MessageBox.show({
+		                            						title:'系统提示',
+		                            						msg:'人员信息删除失败！',
+		                            						width:300,
+		                            						buttons: Ext.Msg.OK,
+		                            						icon: Ext.MessageBox.INFO
+		                            					});
+		                            				}	
+		                            			},
+		                            			failure : function(response) {
+		                            				showMessage('网络错误，人员信息删除失败！',true);
+		                            			}
+		                            		});
+		                                }else{
+		                                	return;
+		                                }
+		                        	});
+	                            }else {
+	                                showMessage('请选中需要删除的人员记录！');
+	                            }
+                            }
+                        },
+                        {
+                            xtype: 'tbfill'
+                        },
+                        {
+                            xtype: 'tbtext',
+                            text: '姓名：'
+                        },
+                        {
+                            xtype: 'textfield',
+                            id: 'txt_name'
+                        },
+                        {
+                            xtype: 'button',
+                            text: '查找',
+                            iconCls:'icon-query',
+                            handler:function(){
+                            	var txtSearch= Ext.getCmp("txt_name").getValue();
+                           		dataStore.reload({
+                           			params:{
+                           				txt_name :txtSearch
+                           			},
+                           			callback:function(){
+                           				if(dataStore.getCount()>0){
+                           					Ext.getCmp("userGrid").getSelectionModel().selectRow(0,true);
+                           				}
+                           			}
+                           		});
+                            }
+                        },
+                        {
+                            xtype: 'tbspacer',
+                            width: 60
+                        }
+                    ]
+                },
+                items: [
+                    {
+                        xtype: 'treepanel',
+                        id: 'orgTree',
+                        width: 220,
+                        margins: '0 2 0 0',
+                        region: 'west',
+                        split: true,
+                        root: {
+                        	id:'0',
+	                        text: '组织机构',
+	                        expanded:true
+                        },
+                        loader: {
+                        	dataUrl:'/system/SvrService/OrgService/1/'
+                        },
+                        listeners: {
+	        	        	click:function(node,e){
+	        	        		e.stopEvent();
+	        	        		if (!node.isLeaf()) {
+	        	                    node.expand();
+	        	                    node.select();
+	        	                }
+	        	        		Ext.getCmp('userForm').getForm().reset();
+	        	        		dataStore.lastOptions=null;
+	        	        		dataStore.baseParams.FOrgId=node.attributes.id;
+	        	        		dataStore.reload({callback:function(){
+	        	        			if(dataStore.getCount()>0){
+	        	        				Ext.getCmp("userGrid").getSelectionModel().selectRow(0);
+	        	        			}
+	        	        		}})
+	        	        	}
+	        	        }
+                    },
+                    {
+                        xtype: 'panel',
+                        width: 100,
+                        layout: 'border',
+                        frame: true,
+                        region: 'center',
+                        items: [
+                            {
+                                xtype: 'grid',
+                                id: 'userGrid',
+                                ds:dataStore,
+                                height: 320,
+                                margins: '2 0 0 0',
+                                region: 'center',
+                                sm:new Ext.grid.RowSelectionModel({  
+    		                        singleSelect: true,  
+    		                        listeners: {  
+    					                rowselect: function(sm, row, rec) {  
+    					                    Ext.getCmp("userForm").getForm().loadRecord(rec);
+    					                    Ext.getCmp("FState").checked=rec.data.FState==1?true:false;    					                    
+    					                }  
+    					            }  
+    		                    }),
+                                columns: [
+                                    {
+                                        xtype: 'gridcolumn',
+                                        dataIndex: 'FName',
+                                        header: '姓名',
+                                        sortable: true,
+                                        width: 120
+                                    },
+                                    {
+                                        xtype: 'gridcolumn',
+                                        dataIndex: 'FUserCode',
+                                        header: '用户编码',
+                                        sortable: true,
+                                        width: 120
+                                    },{
+                                        xtype: 'gridcolumn',
+                                        dataIndex: 'FUnitStation',
+                                        header: '岗位',
+                                        sortable: true,
+                                        renderer: stationRenderer,
+                                        width: 120
+                                    },{
+                                        xtype: 'gridcolumn',
+                                        dataIndex: 'FCardid',
+                                        header: '省份证号',
+                                        sortable: true,
+                                        width: 120
+                                    },{
+                                        xtype: 'gridcolumn',
+                                        dataIndex: 'FPhone',
+                                        header: '手机号码',
+                                        sortable: true,
+                                        width: 120
+                                    },
+                                    {
+                                        xtype: 'gridcolumn',
+                                        dataIndex: 'FSort',
+                                        header: '排序',
+                                        sortable: true,
+                                        width: 100
+                                    },
+                                    {
+                                        xtype: 'gridcolumn',
+                                        dataIndex: 'FState',
+                                        header: '状态',
+                                        sortable: true,
+                                        width: 100,
+                                        renderer:function(value){
+                                        	return value==1?"启用":"停用";
+                                        }
+                                    },
+                                    {
+                                        xtype: 'gridcolumn',
+                                        dataIndex: 'FCreateTime',
+                                        header: '修改时间',
+                                        sortable: true,
+                                        width: 100
+                                    }
+                                ]
+                            },
+                            {
+                                xtype: 'form',
+                                id: 'userForm',
+                                height: 226,
+                                padding: 10,
+                                title: '',
+                                margins: 0,
+                                region: 'north',
+                                split: true,
+                                labelAlign: 'right',
+                                items: [
+                                    {
+                                        xtype: 'hidden',
+                                        id: 'FId'
+                                    },
+                                    {
+                                        xtype: 'hidden',
+                                        id: 'FOrgId'
+                                    },
+                                    {
+                                        xtype: 'textfield',
+                                        id: 'FUserCode',
+                                        anchor: '60%',
+                                        allowBlank:false,
+                                        blankText:"不能为空",
+                                        fieldLabel: '用户编码'
+                                    },
+                                    {
+                                        xtype: 'textfield',
+                                        id: 'FName',
+                                        anchor: '60%',                                        
+                                        allowBlank:false,
+                                        blankText:"姓名不能为空",
+                                        fieldLabel: '用户姓名'
+                                    },stationCombo,{
+                                        xtype: 'textfield',
+                                        id: 'FCardid',
+                                        anchor: '60%',
+                                        regex : /^(\d{15})$|^(\d{17}[\dXx]{1})$/,
+                                        regexText:"身份证号不合法!",
+                                        fieldLabel: '身份证号'
+                                    },{
+                                        xtype: 'textfield',
+                                        id: 'FPhone',
+                                        anchor: '60%',
+                                        regex : /^1(3|5|8)[0-9]{9}$/,
+                                        regexText:"无效的手机号码!",
+                                        fieldLabel: '手机号码'
+                                    },
+                                    {
+                                        xtype: 'textfield',
+                                        id: 'FPassword',
+                                        inputType: 'password',
+                                        anchor: '60%',
+                                        fieldLabel: '登录密码'
+                                    },
+                                    {
+                                        xtype: 'numberfield',
+                                        id:'FSort',
+                                        anchor: '60%',
+                                        fieldLabel: '排序'
+                                    },
+                                    {
+                                        xtype: 'checkbox',
+                                        id: 'FState',
+                                        boxLabel: '启用',
+                                        checked: true,
+                                        anchor: '100%',
+                                        fieldLabel: '状态'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+	});
+}
+
+function insertForm(id) {
+	Ext.getCmp('FUserCode').setValue('');
+    Ext.getCmp('FName').setValue('');
+    Ext.getCmp('FPassword').setValue('123456');
+    Ext.getCmp('FState').setValue(true);
+    Ext.getCmp('FUnitStation').setValue(-1);
+    Ext.getCmp('FSort').setValue('');
+    Ext.getCmp('FId').setValue(0);
+    Ext.getCmp('FOrgId').setValue(id);
+   }
+</script>

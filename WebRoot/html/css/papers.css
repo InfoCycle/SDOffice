@@ -1,0 +1,58 @@
+/* CSS Document */
+/**********invoice*********/
+.invoice {
+	padding: 0 !important;	
+	margin:5px 0;	
+	margin-left:10px;	
+}
+.divimageclass{	
+	margin:0;
+	margin-top:-20px;
+	padding:1;
+	float:right;
+	width:60px;
+	height:59px;
+	background:url(../images/4J.png) no-repeat right top;
+}
+.content {
+    background: -webkit-gradient(linear, 0% 0%, 0% 80%, from(#FFF), to(#F2F2F2));
+	background: -moz-linear-gradient(#FFF, #F2F2F2 80%);
+	margin-top: 10px;	
+	padding: 20px 0 10px;	
+	border: 0px solid #000;
+	background:#FDFDFD;
+	color:#333;	
+	-moz-box-shadow: 2px 2px 10px #909090;
+	-webkit-box-shadow: 2px 2px 10px #909090;	
+	-webkit-transition: all 0.4s;
+	-moz-transition: all 0.4s;
+	-ms-transition: all 0.4s;
+	-o-transition: all 0.4s;	
+	box-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+	behavior: url(/html/plugin/js/PIE.htc);			
+}
+.contenttemp{	 
+	overflow:hidden;	 
+    border:#909090 1px solid;
+    background: -webkit-gradient(linear, 0% 0%, 0% 80%, from(#FFF), to(#F2F2F2));
+	background: -moz-linear-gradient(#FFF, #F2F2F2 80%);
+	margin-top: 10px;	
+	padding: 20px 0 10px;	
+	border: 0px solid #000;
+	background:#FDFDFD;
+	color:#333; 
+    filter:progid:DXImageTransform.Microsoft.Shadow(color=#909090,direction=120,strength=4);/*兼容ie*/
+    -moz-box-shadow: 2px 2px 10px #909090;/*兼容firefox*/
+    -webkit-box-shadow: 2px 2px 10px #909090;/*兼容safari或chrome*/
+    box-shadow:2px 2px 10px #909090;/*兼容opera或ie9*/
+    behavior: url(/html/plugin/js/PIE.htc);
+ }
+ .content:hover {
+	border-top-right-radius: 30px 36px;
+	box-shadow: 3px 3px 3px rgba(0,0,0.5,0.9);
+	behavior: url(/html/plugin/js/PIE.htc);	
+}
+ 
+.clear {
+	clear: both;
+}

@@ -1,0 +1,26 @@
+.icon-expand-all {
+    background-image: url(../images/expand-all.gif) !important;
+}
+.icon-collapse-all {
+    background-image: url(../images/collapse-all.gif) !important;
+}
+.iconRefresh {
+    background-image: url(../images/refresh.png) !important;
+}
+.iconPost{
+	 background-image: url(../images/commit.png) !important;
+}
+
+
+
+.icon-user{
+	 background-image: url(../images/user.png) !important;
+}
+.isClient-iconCls
+{
+	background-image: url(../images/oa/bank.png)  !important;
+}
+
+.tree-user-pp {  
+  background: url('../images/user.png') !important;
+}

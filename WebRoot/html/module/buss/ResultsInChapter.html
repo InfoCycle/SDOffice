@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ResultsInChapter.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+     <link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+ 	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+   	
+    <link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	
+	 <style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 98%;
+			width: 98%;
+		}
+		.classerror{
+			 border: 1px solid #f00;
+			 background:#fcc;
+		}
+
+	</style>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+		
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.js"></script>
+	<script type="text/javascript" language="javascript">
+    	if($.browser.msie){
+			if($.browser.version<=8){
+				setActiveStyleSheet("papers.css");
+			}else				
+				setActiveStyleSheet("papersother.css");
+		} else if($.browser.mozilla){
+			setActiveStyleSheet("papersother.css");
+		} else{
+			setActiveStyleSheet("papersother.css");
+		}
+
+		function setActiveStyleSheet(filename) {
+			document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+		}
+    </script>
+    <script type="text/javascript" language="javascript">
+    	$(document).ready(function() {
+			$("#qkTable").datagrid({
+						title:'办理情况(近4次)',
+						width: '98%',
+						showHeader:false,
+						//height: 221,
+						columns:[
+							[{/*title:'类型',*/field:'FStyle',width:66,align:'center',
+								formatter: function(value,row,index){
+									if(value=="1")
+										return "办理情况";
+									else if(value=="2")
+										return "催办情况";
+									else if(value=="3")
+										return "打回情况";
+									else if(value=="-1")
+										return "";
+									else if(value=="-2")
+										return "";
+									else if(value=="-3")
+										return "";
+								}},
+							{/*title:'发送人员',*/field:'sendUser',width:60,hidden:false},
+							{/*title:'发送时间',*/field:'FSendTime',width:131,align:'center'},
+							{/*title:'接收人员',*/field:'acceptUser',width:60,align:'center'},
+							{/*title:'接收时间',*/field:'FAcceptTime',width:131,align:'center'},
+							{/*title:'办理状态',*/field:'FStateText',width:70,align:'center'},
+							{/*title:'完成时间',*/field:'completeTime',width:131,align:'center'},
+							{/*title:'备注',*/field:'FRemark',width:150,align:'center'}						
+							]],
+						url: '/Buss/CommonOpinionService/6/?processId='+processId+"&toprecord="+4,
+						rownumbers:false,fit:true,singleSelect:true,
+						//pagination:true,
+						onSelect: function(index,row){				
+							$("#FId").attr("value",row.FId);
+							$("#FContentT").text(row.FContent);
+						},
+						onLoadSuccess:function(){
+						  //所有列进行合并操作
+						  //$(this).datagrid("autoMergeCells");
+						  //指定列进行合并操作
+	
+						  $(this).datagrid("autoMergeCells",['FStyle','sendUser','FStateText']);
+						  mergeCellsByField("qkTable","FAcceptTime","FStateText","FStateText","completeTime","FRemark");
+						},
+						rowStyler:function(index,row){
+							if(row.FStyle=="-1" || row.FStyle=="-2" || row.FStyle=="-3")
+								return 'background-color: #fafafa;'+
+										  'background: -webkit-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'+
+										  'background: -moz-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'+
+										  'background: -o-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'+
+										  'background: linear-gradient(to bottom,#fdfdfd 0,#f5f5f5 100%);'+
+										  'background-repeat: repeat-x;'+
+										  'filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#fdfdfd,endColorstr=#f5f5f5,GradientType=0);'+
+										  'color:blue;font-weight:bold;';
+					}
+    			});
+    		});
+    </script>
+  </head>
+  
+  <body>
+    <input type="hidden" id="action" name="action"  value=""/>
+		<input type="hidden" id="processId" name="processId" value=""/>
+		<input type="hidden" id="activeId" name="activeId" value=""/>
+		<input type="hidden" id="formPKID" name="formPKID" value=""/>
+		<input type="hidden" id="state" name="state" value=""/>
+		<table border="0" cellpadding="3" cellspacing="0" class="pagetable" style="width:810px;margin:auto">
+			<tr>
+				<td><ul id="css3menu">
+						<li class="topfirst">
+							<a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+						</li>
+						<li>
+							<a rel="#" id="aT_OK"><img src="../../images/oa/ok.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+						</li>  
+						<li>
+							<a rel="#" id="aT_Post"><img src="../../images/oa/passfile.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+						</li>
+						<li>
+							<a rel='#' id="aT_BLQK"><img src="../../images/oa/quite.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+						</li>														
+						<li class="toplast"><a rel="#">
+							<img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+						</li>
+						</ul> <br /> <br /></td>
+				</tr>
+				<tr>
+					<td style="padding-left:3px;">
+						<div class="content" id="content" style="height:800px;width:780px;display:table;text-align:center;" >
+							<div class="divimageclass"></div>
+							<br />
+							<br />
+							<br />							
+							<div style="float:left;" align="center">
+								<table id="custb" class="content_table1" width="700px" border="1" cellpadding="0" style="position:absolute; margin:10px 0px 0px 10px;">
+									<caption style="height:50px;font-size:18px;">
+										<strong>昆明松岛工程造价咨询有限公司</br>
+											公司用章申请审批表
+											<br><br><br><br><br><br>
+									</caption>
+									<tr>
+										<td width="10%">
+											用章事由：
+										</td>
+										<td colspan="3">
+											<input class="easyui-validatebox" type="text" id="FBidForReason" name="FBidForReason" data-options="required:true" style="width:630px;"></input>
+										</td>
+									</tr>
+									<tr>
+										<td width="10%">
+											文件标题：
+										</td>
+										<td width="40%">
+											<input class="easyui-validatebox" type="text" id="FTheApplicant" name="FTheApplicant"  style="width:280px;" onfocus="this.blur()"></input>
+										</td>
+										<td width="10%">
+											文件附件：
+										</td>
+										<td width="40%">
+											<input class="easyui-validatebox" type="text" id="FTheApplicant" name="FTheApplicant"  style="width:280px;" onfocus="this.blur()"></input>
+										</td>
+									</tr>
+									<tr>
+										<td width="10%">
+											份数：
+										</td>
+										<td width="40%">
+											<input class="easyui-validatebox" type="text" id="FTheApplicant" name="FTheApplicant"  style="width:280px;" onfocus="this.blur()"></input>
+										</td>
+										<td width="10%">
+											文件类型：
+										</td>
+										<td width="40%">
+											<input class="easyui-validatebox" type="text" id="FTheApplicant" name="FTheApplicant"  style="width:280px;" onfocus="this.blur()"></input>
+										</td>
+									</tr>
+									<tr>
+										<td width="15%">
+											用章类型：
+										</td>
+										<td width="40%">
+											<input class="easyui-validatebox" type="text" id="FTheApplicant" name="FTheApplicant"  style="width:280px;" onfocus="this.blur()"></input>
+										</td>
+										<td width="10%">
+											申请人：
+										</td>
+										<td width="40%">
+											<input class="easyui-validatebox" type="text" id="FTheApplicant" name="FTheApplicant"  style="width:280px;" onfocus="this.blur()"></input>
+										</td>
+									</tr>
+									<tr>
+										<td width="15%">
+											批准人：
+										</td>
+										<td width="40%">
+											<input class="easyui-validatebox" type="text" id="FTheApplicant" name="FTheApplicant"  style="width:280px;" onfocus="this.blur()"></input>
+										</td>
+										<td width="10%">
+											经办人：
+										</td>
+										<td width="40%">
+											<input class="easyui-validatebox" type="text" id="FTheApplicant" name="FTheApplicant"  style="width:280px;" onfocus="this.blur()"></input>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><ul id="css3menu">
+						<li class="topfirst">
+							<a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+						</li>
+						<li>
+							<a rel="#" id="aT_OK"><img src="../../images/oa/ok.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+						</li>  
+						<li>
+							<a rel="#" id="aT_Post"><img src="../../images/oa/passfile.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+						</li>
+						<li>
+							<a rel='#' id="aT_BLQK"><img src="../../images/oa/quite.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+						</li>														
+						<li class="toplast"><a rel="#">
+							<img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+						</li>
+						</ul> <br /> <br /></td>
+				</tr>
+			</table>
+			<div  style="float:left;width:100%;height:251px;">
+				<table id="qkTable" name="qkTable" style="height:100%;"></table>
+			</div>
+  </body>
+</html>

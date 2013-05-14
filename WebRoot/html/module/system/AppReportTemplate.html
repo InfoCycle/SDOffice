@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>报表模板维护</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+</head>
+<body>	
+</body>
+</html>
+<script type="text/javascript">
+Ext.onReady(function(){	
+	var obj=checkUserLogin();	
+    if(!obj) return;
+	Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+    var reportTemplateDS=new Ext.data.JsonStore({        
+    	url: '/system/SvrService/ReportService/get/',
+        idProperty: 'FId',
+        root: 'root',
+        totalProperty: 'totalProperty',        
+        fields: [
+            {name: 'FId'},
+            {name: 'FReportName'},
+            {name: 'FReportlet'},
+            {name: 'FCreatedate'}
+        ]
+    });
+    reportTemplateDS.load({ params : { start : 0, limit : 20 } });
+    
+    function editReport(obj){
+    	var window=new Ext.Window({
+    		height: 160,
+    	    width: 440,
+    		title: 'Window',
+            items: [
+                {
+                    xtype: 'form',
+                    frame:true,
+                    height: 160,
+                    id:'editForm',
+                    labelAlign: 'right',
+                    labelWidth: 60,
+                    tbar: {
+                        xtype: 'toolbar',
+                        items: [
+                            {
+                                xtype: 'button',
+                                iconCls: 'save',
+                                text: '保存',
+                                handler:function(){
+                                	var form = Ext.getCmp("editForm").getForm();
+	                            	if (form.isValid()){
+	                            		Ext.Ajax.request({
+	                            			url:'/system/SvrService/ReportService/save/',
+	                            			method : 'post',
+	                            			params : {
+	                            				FId:Ext.getCmp('FId').getValue(),
+	                            				FReportName:Ext.getCmp('FReportName').getValue(),
+	                            				FReportlet:Ext.getCmp('FReportlet').getValue()
+	                            			},
+	                            			success : function(response){
+	                            				var responseArray = Ext.util.JSON.decode(response.responseText);
+	                            				if(responseArray.success){
+	                            					reportTemplateDS.reload();
+	                            					window.close();
+	                            				}else{
+	                            					Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'数据保存失败！',
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.WARNING
+	                            					});
+	                            				}
+	                            					
+	                            			},
+	                            			failure : function(response) {
+	                            				showMessage('网络初始化失败！',true);
+	                            			}
+	                            		});
+                                }
+                                }
+                            }
+                        ]
+                    },
+                    items: [
+                        {
+                            xtype: 'numberfield',
+                            readOnly: true,
+                            id: 'FId',
+                            anchor: '60%',
+                            fieldLabel: '模板编号'
+                        },
+                        {
+                            xtype: 'textfield',
+                            id: 'FReportName',
+                            allowBlank: false,
+		                    blankText: '模板名称不能为空',
+                            anchor: '90%',
+                            fieldLabel: '模板名称'
+                        },
+                        {
+                            xtype: 'textfield',
+                            id: 'FReportlet',
+                            allowBlank: false,
+		                    blankText: '模板地址不能为空',
+                            anchor: '90%',
+                            fieldLabel: '模板地址'
+                        }
+                    ]
+                }
+            ]
+        });
+    	if(obj){
+    		window.title='修改';
+    		Ext.getCmp('editForm').getForm().loadRecord(obj);
+    		window.show();
+    	}else{
+    		window.title='新增';
+    		Ext.getCmp('FId').setDisabled(true);
+    		window.show();
+    	}
+    }
+    var mainViewport= new Ext.Viewport({
+		id: 'MainViewport',
+	    layout: 'fit',
+	    items: [{
+            xtype: 'panel',
+            id: 'mainPanel',
+            layout: 'border',
+            tbar: {
+                xtype: 'toolbar',
+                region: 'center',
+                items: [
+                    {
+                        xtype: 'button',
+                        iconCls: 'new',
+                        text: '新增',
+                        handler:function(){
+                        	editReport();
+                        }
+                    },
+                    {
+                        xtype: 'button',
+                        iconCls: 'edit',
+                        text: '修改',
+                        handler:function(){
+                        	var grid=Ext.getCmp('reportTemplateGrid');
+                        	var rec = grid.getSelectionModel().getSelected();
+                        	if(rec){
+                        		editReport(rec);
+                        	}else{
+                        		Ext.MessageBox.show({
+                					title:'系统提示',
+                					msg:'未选择数据！',
+                					width:300,
+                					buttons: Ext.Msg.OK,
+                					icon: Ext.MessageBox.INFO
+                				});
+                        		return false;
+                        	}
+                        }
+                    },
+                    {
+                        xtype: 'button',
+                        iconCls: 'delete',
+                        text: '删除',
+                        handler:function(){
+                        	var grid=Ext.getCmp('reportTemplateGrid');
+                        	var rec = grid.getSelectionModel().getSelected();
+                        	if(rec){
+                        		Ext.Msg.confirm('系统提示','删除后无法恢复，确定报表模板吗？', function (btn) {
+                                    if (btn == "yes") {
+                                    	Ext.Ajax.request({
+                                			url:'/system/SvrService/ReportService/delete/'+rec.data.FId,
+                                			method : 'post',                                			
+                                			success : function(response){
+                                				var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+                                				if(responseArray.success){
+                                					reportTemplateDS.reload();
+                                				}else{
+                                					Ext.MessageBox.show({
+                                						title:'系统提示',
+                                						msg:'组织机构删除失败！',
+                                						width:300,
+                                						buttons: Ext.Msg.OK,
+                                						icon: Ext.MessageBox.INFO
+                                					});
+                                				}
+                                					
+                                			},
+                                			failure : function(response) {
+                                				showMessage('网络错误，组织机构删除失败！',true);
+                                			}
+                                		});
+                                    }else{
+                                    	return;
+                                    }
+                            	});
+                        	}else{
+                        		Ext.MessageBox.show({
+                					title:'系统提示',
+                					msg:'未选择数据！',
+                					width:300,
+                					buttons: Ext.Msg.OK,
+                					icon: Ext.MessageBox.INFO
+                				});
+                        		return false;
+                        	}                        	
+                        }
+                    },
+                    {
+                        xtype: 'tbfill'
+                    },
+                    {
+                        xtype: 'tbtext',
+                        text: '模板名称:'
+                    },
+                    {
+                        xtype: 'textfield',
+                        id: 'txt_rname'
+                    },
+                    {
+                        xtype: 'button',
+                        iconCls:'icon-query',
+                        text: '查找',
+                        handler:function(){
+                        	var txt_rname=Ext.getCmp('txt_rname').getValue();
+                        	reportTemplateDS.reload({
+                       			params:{
+                       				txt_rname :txt_rname
+                       			}
+                        	});
+                        }
+                    },
+                    {
+                        xtype: 'spacer',
+                        width: 200
+                    }
+                ]
+            },
+            items: [
+                {
+                    xtype: 'grid',
+                    id: 'reportTemplateGrid',
+                    width: 100,
+                    ds:reportTemplateDS,
+                    region: 'center',
+                    sm:new Ext.grid.RowSelectionModel({  
+                        singleSelect: true
+                    }),
+                    listeners: {
+                    	rowdblclick:function(grid,index, e){  
+                        	var rec = grid.store.getAt(index);
+                        	if(rec)
+                        		editReport(rec);
+                		}
+                	},
+                    columns: [
+                        new Ext.grid.RowNumberer(),
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'FId',
+                            header: '编号',
+                            sortable: true,
+                            width: 100
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'FReportName',
+                            header: '名称',
+                            sortable: true,
+                            width: 200
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'FReportlet',
+                            header: '模板路径',
+                            sortable: true,
+                            width: 240
+                        },
+                        {
+                            xtype: 'gridcolumn',
+                            dataIndex: 'FCreatedate',
+                            header: '创建时间',
+                            sortable: true,
+                            width: 130
+                        }
+                    ],
+                    bbar:new Ext.PagingToolbar({
+                    	displayInfo: true,
+                        pageSize: 20,
+                        store: reportTemplateDS,
+                        displayMsg: ' 当前记录数:{0}-{1}条 &nbsp;&nbsp;总记录数: {2}条 ',
+                        emptyMsg: " 没有符合条件的记录 "
+                    })
+                }
+            ]
+        }]
+    });
+});
+</script>

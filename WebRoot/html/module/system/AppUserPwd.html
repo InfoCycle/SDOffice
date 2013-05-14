@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AppUserPwd.html</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+</head>
+
+<body>
+</body>
+</html>
+<script type="text/javascript">
+	Ext.onReady(function(){
+	Ext.QuickTips.init();
+	Ext.form.Field.prototype.msgTarget = 'side';
+	var obj=checkUserLogin();
+	if(obj){
+		updatePWD(obj.root);
+	}
+})
+function updatePWD(obj){
+	updateUI = Ext.extend(Ext.Viewport, {
+	    layout: 'border',
+	    initComponent: function() {
+	        Ext.applyIf(this, {
+	            items: [
+	                {
+	                    xtype: 'form',
+	                    id: 'updateForm',
+	                    frame: true,
+	                    height:160,
+	                    title: '',
+	                    region: 'center',
+	                    items: [
+							{
+							    xtype: 'hidden',
+							    id: 'FId'
+							},    
+	                        {
+	                            xtype: 'textfield',
+	                            id: 'pwd',
+	                            inputType: 'password',
+	                            allowBlank:false,
+                                blankText:"不能为空",
+	                            anchor: '60%',
+	                            fieldLabel: '新密码'
+	                        },
+	                        {
+	                            xtype: 'textfield',
+	                            id: 'r_pwd',
+	                            anchor: '60%',
+	                            inputType: 'password',
+	                            allowBlank:false,
+                                blankText:"不能为空",
+	                            fieldLabel: '确认密码'
+	                        }
+	                    ],
+	                    tbar: [{
+	                        	iconCls: 'save',
+	                        	text: '保存',
+	                        	handler: function(){
+	                        		var pwd = Ext.getCmp('pwd').getValue();
+	                        		var rpwd= Ext.getCmp('r_pwd').getValue();
+	                        		if(pwd!=rpwd){
+	                        			showMessage('输入的密码不一致，请重新输入！',true);
+	                        			return false;
+	                        		}
+	                        		var form = Ext.getCmp("updateForm");		                        	
+		                        	if(form.getForm().isValid()){
+		                        		Ext.Ajax.request({
+	                            			url:'/system/SvrService/AppIndex/5/',
+	                            			method : 'post',
+	                            			params : {
+	                            				FId:Ext.getCmp('FId').getValue(),
+	                            				pwd:pwd
+	                            			},
+	                            			success : function(response){
+	                            				var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+	                            				if(responseArray.success){	
+	                            					Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'密码修改成功！',
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.INFO
+	                            					});
+	                            				}else{
+	                            					Ext.MessageBox.show({
+	                            						title:'系统提示',
+	                            						msg:'密码修改失败!'+responseArray.message,
+	                            						width:300,
+	                            						buttons: Ext.Msg.OK,
+	                            						icon: Ext.MessageBox.INFO
+	                            					});
+	                            				}
+	                            			},
+	                            			failure : function(response) {
+	                            				showMessage('网络错误，保存失败！',true);
+	                            			}
+	                            		});
+		                        	}
+	                        	}
+	                         }
+	                      ]
+	                }]
+	        });
+	        updateUI.superclass.initComponent.call(this);
+	    }
+	});
+	var form =new updateUI();
+	Ext.getCmp('FId').setValue(obj.userID);
+	form.show();
+}
+</script>

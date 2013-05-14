@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DivMyHtml.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../css/papersother.css" type="text/css"></link>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+  </head>
+  
+  <body>
+    <div style="text-align:center;" id="MainDiv" >
+			<table border="0" cellpadding="3" cellspacing="0" class="pagetable" style="width:810px;margin:auto">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+							</li>
+							<li><a rel="#" id="aT_OK" style="display: none;"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aT_QSH" style="display: none;"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+							</li>
+							<li><a rel="#" id="aT_Post" style="display: none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aT_ZPPMBan" style="display: none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />任命项目经理</a>
+							</li>
+							<li><a rel="#" id="aT_Cancel" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel="#" id="aT_BACKTO" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+							</li>
+							<li><a rel="#" id="aT_ADDPLAN" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />起草计划</a>
+							</li>					
+							<li><a rel="#" id="aT_CuiBan" style="display: none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aT_BLQK"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>														
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul></td>
+				</tr>
+				<tr>
+					<td style="padding-left:2px;padding-top:45px;">
+					<div style="height:516px;width:850px;">
+						<div class="content" id="content"
+							style="height:516px;width:810px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br /><br /><br /><br />						
+							<div style="float:left;">
+								<table class="content_table1" width="780px" border="1"
+									cellpadding="0" style="position:absolute; margin:10px 0px 0px 10px;	">									
+									 <caption style="height:35px;font-size:22px;">
+									              昆明松岛工程造价咨询有限公司<label id="TitleYear"></label>年度任务书下达<br>										
+									  </caption>									  
+									<tr>
+										<th style="height:35px;font-size:10pt;" colspan="7" align="left" valign="middle" scope="col">&nbsp;&nbsp;编号：<label>
+												<input type="hidden" id="FId" name="FId" style="width:20px;" />
+																																	
+												<input type="text" id="FTaskNumbers" name="FTaskNumbers" value="" style="width:521px;"/>
+												<input type="button" id="getTaskNumbers" name="getTaskNumbers" value="生成编号"/>
+												</label>											
+										</th>
+									</tr>
+									<tr>
+										<td width="73">任务名称</td>
+										<td colspan="6"><label> 
+											<input type="text" id="FTaskName" name="FTaskName" style="width:461px;"/>																												
+										</label></td>
+									</tr>
+									<tr>
+										<td width="73">任务简称</td>
+										<td colspan="6"><label> 											 
+											<input type="text" id="FTaskShortName" name="FTaskShortName" style="width:281px;"/>																			
+										</label></td>
+									</tr>
+									<tr>
+										<td>委托单位</td>
+										<td colspan="6"><div style="height:auto;width:auto;float:left;"> <input type="hidden"
+												id="FEntrustUnitId" name="FEntrustUnitId" style="width:45px;float:left;"
+												value=""> <input type="text" id="FEntrustUnitName"
+												name="FEntrustUnitName" style="width:361px;float:left;padding-top:5px;"></div>										
+											    <span  class="btnSelect" id="aSelectEU" name="aSelectEU" onclick="javascript:SelectEntrustUnit();" href="javascript:;" title="请选择委托单位"></span>
+											             &nbsp;&nbsp;&nbsp;&nbsp;简称&nbsp;&nbsp;<input type="text" id="FEntrustUnitShortName" name="FEntrustUnitShortName" style="width:161px;padding-top:5px;"/>
+										</td>
+									</tr>
+									<tr>
+										<td>项目规模</td>
+										<td colspan="2"><label><input type="text" id="FProjectScale" name="FProjectScale" style="width:121px;"/> </label>
+												<select id="FProjectScaleUnit" name="FProjectScaleUnit" class="easyui-combobox" style="width:61px"></select>
+										</td>
+										<td width="106">结构类型</td>
+										<td colspan="3">										
+											<select id="FStructureTypeId" name="FStructureTypeId" class="easyui-combobox" style="width:260px"></select>
+											<input id="FStructureType" name="FStructureType" type="hidden"/>
+										</td>
+									</tr>
+									<tr>
+										<td>服务类别</td>
+										<td colspan="2">
+											<!-- <select style="width:181px;" id="FServiceCategory"  name="FServiceCategory" class="easyui-combotree" data-options="url:'',cascadeCheck:false,required:true"></select> -->
+											<input type="hidden" id="FServiceCategoryId" name="FServiceCategoryId" value="" style="width:61px"/>
+											<div style="border:1px solid #808080;height:23px;width:181px;margin-top:1px;">												
+												<input readonly="true" style="float:left;border:0;color: blue;font-size:100%;width:156px;height:20px;" id="FServiceCategory" name="FServiceCategory" title="请选择服务类别" type="text" />
+												<input class="select_style" id="FServiceCategoryB" tabindex="0" title="选择服务类别" type="button" value="" />
+											</div>
+										</td>
+										<td>合同预计收费</td>
+										<td colspan="3"><label> 
+											<input type="text" class="easyui-numberbox" value="0" data-options="min:0,precision:4" id="FContractYjCharge" name="FContractYjCharge"> </label>万元</td>
+									</tr>
+									<tr>
+										<td>业务类别</td>
+										<td colspan="2">
+											<!--<select style="width:181px;" class="easyui-combotree" data-options="url:'',cascadeCheck:false,required:true" id="FBusinessCategory" name="FBusinessCategory"></select>-->
+											<input type="hidden" id="FBusinessCategoryId" name="FBusinessCategoryId" value="" style="width:61px"/>
+											<div style="border:1px solid #808080;height:23px;width:181px;margin-top:1px;">												
+												<input readonly="true" style="float:left;border:0;color: blue;font-size:100%;width:156px;height:20px;" id="FBusinessCategory" name="FBusinessCategory" title="请选择业务类别" type="text" />
+												<input class="select_style" id="FBusinessCategoryB" tabindex="0" title="选择业务类别" type="button" value="" />
+											</div>
+										</td>
+										<td>行业类别</td>
+										<td colspan="3">
+											<!--<input type="hidden" id="FIndustryCategoryName" name="FIndustryCategoryName"/>
+											<select style="width:261px;" class="easyui-combotree" data-options="url:'',cascadeCheck:false,required:true" multiple id="FIndustryCategoryId" name="FIndustryCategoryId"/>-->
+											<input type="hidden" id="FIndustryCategoryId" name="FIndustryCategoryId" value="" style="width:61px"/>
+											<div style="border:1px solid #808080;height:23px;width:261px;margin-top:1px;">												
+												<input readonly="true" style="float:left;border:0;color: blue;font-size:100%;width:236px;height:20px;" id="FIndustryCategoryName" name="FIndustryCategoryName" title="请选择行业类别" type="text" />
+												<input class="select_style" id="FIndustryCategoryNameB" tabindex="0" title="选择行业类别" type="button" value="" />
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>承接部门</td>
+										<td colspan="2"><input type="hidden"  id="FDepartmentId" name="FDepartmentId"/> 
+										<input type="text" style="width:150px;float:left;" id="FDepartmentName"
+												name="FDepartmentName"/>
+										<span class="btnSelect"  id="aSelectDept" name="aSelectDept" onclick="javascript:SelectDept();" href="javascript:;" title="请选择承接部门"/>
+										</td>
+										<td>预计开始时间</td>
+										<td width="90">
+											<input id="FYjstartTime" name="FYjstartTime"  value="" style="width:91px">
+										</td>
+										<td width="92">预计完成时间</td>
+										<td width="83"><input 
+												id="FYjfinishTime" name="FYjfinishTime" value="" style="width:91px">
+										</td>
+									</tr>
+									<tr>
+										<td>下达人</td>
+										<td width="74"><label> <input type="hidden"
+												style="width:10px;" id="FGivePersonId" name="FGivePersonId">
+												<input type="text"
+												style="width:65px;" id="FGivePersonName"
+												name="FGivePersonName"> </label></td>
+										<td width="71">下达时间</td>
+										<td><input type="text"
+												style="width:73px;" id="FGiveTime" name="FGiveTime" type="text"></td>
+										<td>部门经理</td>
+										<td colspan="2"><input type="hidden"
+												style="width:45px;" id="FDeptMgrId" name="FDeptMgrId"><input
+												type="text" id="FDeptMgrName" name="FDeptMgrName">
+										</td>
+									</tr>
+									<tr>
+										<td>接收时间</td>
+										<td colspan="2"><label> <input type="text"
+												style="width:73px;" id="FReceivingTaskTime"
+												name="FReceivingTaskTime"> </label></td>
+										<td>项目经理</td>
+										<td colspan="3"><label>主：<input type="hidden"
+												style="width:25px;" id="FProjMgrName" name="FProjMgrName">
+												<input type="text" style="width:91px;" id="FProjMgrId"  class="easyui-combotree" data-options="url:''"
+												name="FProjMgrId">副：<input type="hidden"
+												style="width:25px;" id="FProjMgrViceName" name="FProjMgrViceName">
+												<input type="text" style="width:151px;" id="FProjMgrViceId" class="easyui-combotree" data-options="url:''" multiple
+												name="FProjMgrViceId"></label></td>
+									</tr>
+								</table>
+								<br />
+								<input id="output2" type="hidden" value="" />								
+							</div>							
+						</div>
+						</div>					   				
+					</td>
+				</tr>
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aB_OK" style="display: none;"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aB_QSH" style="display: none;"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+							</li>
+							<li><a rel="#" id="aB_Post" style="display: none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aB_ZPPMBan" style="display: none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />任命项目经理</a>
+							</li>
+							<li><a rel="#" id="aB_Cancel" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel="#" id="aB_BACKTO" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+							</li>
+							<li><a rel="#" id="aB_ADDPLAN" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />起草计划</a>
+							</li>					
+							<li><a rel="#" id="aB_CuiBan" style="display: none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aB_BLQK"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>														
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br />
+						<p></p>
+						<div  style="float:left;width:100%;height:251px;">
+							<table id="qkTable" name="qkTable" style="height:100%;">
+							</table>
+						</div>
+						</td>
+				</tr>
+				</br>				
+			</table>			
+		</div>
+  </body>
+</html>

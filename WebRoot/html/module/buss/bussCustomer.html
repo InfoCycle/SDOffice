@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>bussCustomer.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+    
+    <link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+ 	 <link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+   	
+    <link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	
+	 <style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 98%;
+			width: 98%;
+		}
+		</style>
+    <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+    
+    <script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+	
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>	
+	
+	<script type="text/javascript" src="../../plugin/easyui/EasyUIautoMergeCells.js"></script>
+	
+	
+	
+	<script type="text/javascript" >
+    	if($.browser.msie){
+			if($.browser.version<=8){
+				setActiveStyleSheet("papers.css");
+			}else				
+				setActiveStyleSheet("papersother.css");
+		} else if($.browser.mozilla){
+			setActiveStyleSheet("papersother.css");
+		} else{
+			setActiveStyleSheet("papersother.css");
+		}
+
+		function setActiveStyleSheet(filename) {
+			document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+		}
+    </script>
+    
+    <body>
+    <form>
+    	<input type="hidden" id="action" name="action"  value=""/>
+		<input type="hidden" id="processId" name="processId" value=""/>
+		<input type="hidden" id="activeId" name="activeId" value=""/>
+		<input type="hidden" id="formPKID" name="formPKID" value=""/>
+		<input type="hidden" id="state" name="state" value=""/>
+		<table border="0" cellpadding="3" cellspacing="0" class="pagetable"
+				style="width:810px;margin:auto">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aT_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>  
+							<li><a rel="#" id="aT_Post"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aT_Cancel"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打印</a>
+							</li>				
+							<li><a rel="#" id="aT_upfiled"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />上传</a>
+							</li>
+							<li><a rel='#' id="aT_BLQK"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>														
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br /></td>
+				</tr>
+				<tr>
+					<td style="padding-left:3px;">
+						<div class="content" id="content"
+							style="height:550px;width:810px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br />
+							<br />
+							<br />							
+							<div style="float:left;">
+								<table id="custb" class="content_table1" width="780px" border="1"
+									cellpadding="0" style="position:absolute; margin:10px 0px 0px 10px;	">
+									<caption style="height:30px;font-size:18px;">
+										<strong>昆明松岛工程造价咨询有限公司工程造价咨询服务顾客评价<br>
+										</strong>
+									</caption>
+									<tr>
+										<th colspan="6" align="left" valign="middle" scope="col">编号：<label>
+												<input type="hidden" id="FId" name="FId" style="width:20px;" />
+												<input type="text" id="FTaskNumbers" name="FTaskNumbers" value=""
+												style="width:600px;" onfocus="this.blur()"/>
+												</th>
+									</tr>
+									<tr height="30px">
+										<td width="125px" style="text-align:center;" >项目名称</td>
+										<td width="125px" style="text-align:center;" colspan="2">
+											<input  id="taskName" style="width:250px;" />
+										</td>
+										<td width="125px" style="text-align:center;">委托单位</td>
+										<td id="client" width="125px" style="text-align:center;" colspan="2"></td>
+									</tr>
+									<tr height="80px">
+										<td width="125px" style="text-align:center;" >合同号</td>
+										<td id="number" width="125px" style="text-align:center;"colspan="2">
+											<textarea id='textcon' style="height:80px;width:96%; color:blue;" onfocus="blur()"></textarea>
+										</td>
+										<td  width="125px" style="text-align:center;">咨询服务类别</td>
+										<td id="service" width="125px" style="text-align:center;"colspan="2"></td>
+									</tr>
+									<tr height="30px">
+										<td width="125px" style="text-align:center;" >项目开始时间</td>
+										<td id="start" width="125px" style="text-align:center;"></td>
+										<td width="125px" style="text-align:center;">项目完成时间</td>
+										<td id="finsh" width="125px" style="text-align:center;"></td>
+										<td width="125px" style="text-align:center;">项目投资</td>
+										<td id="scale" width="125px" style="text-align:center;"></td>
+									</tr>
+									<tr height="70px">
+										<td width="125px" style="text-align:center;" >项目经理	</td>
+										<td id="taskpm" width="125px" style="text-align:center;" colspan="2"></td>
+										<td width="125px" style="text-align:center;">项目组人员</td>
+										<td id="taskperson"width="125px" style="text-align:center;" colspan="2"></td>
+									</tr>
+								</table>
+							</div>
+							 
+						</div><br><br>
+						<div  style="float:left;width:810px;height:251px;">
+											<table id="qkTable" name="qkTable" style="height:100%;"></table>
+								</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+    </form>
+  </body>
+  	<script type="text/javascript" language="javascript">
+  		var taskId;
+  		var user=null;
+  		var IFrame='<iframe src="{0}" style="width:100%;height:100%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';
+  		//设置按钮是否显示
+  		var tasknm;
+  		var contnum="";
+  		
+  		var action = Request.QueryString("action");
+		var processId = Request.QueryString("processId");
+		var activeId = Request.QueryString("activeId");
+		var formPKID = Request.QueryString("formPKID");
+		var state = Request.QueryString("state");
+  		
+  		function setButtonState(id,state){
+			if(state)
+				$(id).show();
+			else
+				$(id).hide();
+		}
+		//提交方法
+		function ToPart(entitys){
+			$.post(
+				"/buss/customer/7",
+				{
+					processId:Request.QueryString("processId"),
+					aboveActId:Request.QueryString("activeId"),
+					uid:entitys.acceptUserId,
+					remark:entitys.remark
+					},
+				function(data){
+					$.LightBoxObject.close();
+					$.jBox.tip(data.message, 'success');
+				}
+			);
+		}
+		//查看办理情况
+		function BLQK(processId){
+			var href="../wf/HandleStatus.html?processId="+processId;
+			parent.NavigateUrl('wf_handle_'+processId,'办理情况',href);
+			return false;
+		}
+  		//数据填充
+  		function loadpag(data1){
+  			//alert(data1.success);
+			if(data1.success){
+				var cus=data1.root[0];
+				$('font').remove();
+				$.post("/GetNumber/ForNumberRule/", {
+					"Code": "PJ",
+					"Title": $("#FKTaskName").val(),
+					"isHaveSub": 0
+						}, function(data) {
+							if (data.success) {
+								$("#FTaskNumbers").attr("value",data.Number);
+								//$.messager.alert('系统提示','编号生成成功!','info');
+							}else
+							{															
+								$.messager.alert('系统提示','编号生成失败，请重试!','error');
+								return false;
+							}
+				}, "json");
+				//$('#FTaskNumbers').val("KMSD-评价-"+cus.FTaskNumbers.substring(8));
+				$('#client').append("<font color='blue'>"+cus.FEntrustUnitName+"</font>");
+				$('#taskperson').append("<font color='blue'>"+cus.taskPerson+"</font>");
+				$('#taskpm').append("<font color='blue'>"+cus.taskPm+"</font>");
+				$('#scale').append("<font color='blue'>"+cus.FProjectScale+"</font>");
+				$('#finsh').append("<font color='blue'>"+cus.FYjfinishTime+"</font>");
+				$('#start').append("<font color='blue'>"+cus.FYjstartTime+"</font>");
+				$('#service').append("<font color='blue'>"+cus.FService+"</font>");
+				$('#FId').val(cus.FId);
+				$('#textcon').val(contnum);
+				taskId=cus.FId;
+				
+				//alert(1111);
+				//$('#taskName').combobox('setValue',cus.FTaskName);
+				
+			}else{
+				$.jBox.tip('网络错误!请稍后再试..', 'failure');
+			}
+		}
+		//上传文件
+		function upfile(){
+    	  
+		   //上传文件开始
+			   var entitys={
+					   url:'/Buss/File/1',
+					   params:{TypeId:formPKID,url:'/userfiles/images/',Type:'pinjia'},
+					   size:'5 MB',
+					   type:'*.jpg;*.png;*.gif',
+					   description:Base64.encode('图像文件'),
+					   Fn:true
+				};
+			   var entityJSON= Base64.encode($.toJSON(entitys));
+			   var win = $(IFrame.format('/html/module/controls/flashFiles.html?entitys='+entityJSON));
+			   $.lightbox(win, {
+				    width   : 350,
+					height  : 350,
+					modal  : true
+			   });
+			}
+		//上传文件完成后执行
+		function FlashFiles(data){
+    		var FId=$('input[id=FId]').val();
+    		setCus();
+    	}
+    	//回填cus
+    	function setCus(){
+    		//alert(taskId);
+	    	$.jBox.tip("正在保存,请稍等..", 'loading');
+	    	$.post(
+	    		"/buss/customer/4",
+	    		{fid:formPKID},
+	    		function(data){
+	    			if(data.success){
+	    				$.jBox.tip(data.message, 'success');
+	    				getFiled(formPKID);
+	    			}else{
+	    				$.jBox.tip(data.message, 'failure');
+	    			}
+	    		});
+	    }
+	    //加载上传的文件
+	    function getFiled(fid){
+	    	if(fid!=""){
+	    	$.post(
+	    		"/buss/customer/5",
+	    		{fid:fid},
+	    		function(data){
+	    			if(data.success){
+	    				$.jBox.tip(data.message, 'success');
+	    				showFile(data.root);
+	    			}else{
+	    				
+	    			}
+	    			getuser();
+	    		});
+	    	}else{
+	    		
+	    	}
+	    }
+	    //显示文件
+	    function showFile(root){
+	    	for(var custbsize=$("#custb tr").size();custbsize>5;custbsize--){
+		    		$("#custb tr").eq(custbsize).remove();
+		    }
+		    if(root[0]){
+		    	$('#custb').append("<tr><td id='images' height='30px' colspan='6'>"
+				+"<a rel='sexylightbox[group]' href='"+root[0].FPath+"' title='"+root[0].FFileName+"'>"
+				+"<img class='img_container' alt='' src='"+root[0].FPath+"'/></td></tr>");
+			    SexyLightbox.initialize({color:'white', dir: '../../plugin/sexy/sexyimages',loading:'../../plugin/sexy/sexyimages'});
+		    }
+	    	
+	    }
+	    //修改pross表的formpkid等
+		function setProcess(cus){
+			$.post(
+	    		"/buss/customer/6",
+	    		{
+	    			proId:$('#processId').val(),
+  					formPKID:cus.root.FId,
+  					title:$('#taskName').combobox('getText')
+	    		},
+	    		function(data){
+	    			if(data.success){
+	    				$.jBox.tip(data.message, 'success');	
+	    				
+	    			}else{
+	    				$.jBox.tip(data.message, 'failure');
+	    			}
+	    		});
+		}
+		//提交事件
+		 function PostCus(user){
+	    	var entitys={
+	    		userID:user.userID,
+	    		userName:user.userName
+	    	}
+	    	var entityJSON= Base64.encode($.toJSON(entitys));
+	    	var win = $(IFrame.format('/html/module/controls/PostTask.html?entitys='+entityJSON));
+	    	$.lightbox(win, {
+				    modal  : true,
+					width   : 550,
+				    height  : 350
+				  });
+			return false;
+	    }
+	    //设置任务完成
+	    function setActiveComplet(){
+	    	$.jBox.tip("正在提交,请稍等..", 'loading');
+			$.post(
+					"/buss/customer/8",
+					{activeId:Request.QueryString("activeId")},
+					function(data){
+						if(data.success){
+							$.jBox.tip(data.message, 'success');
+						}else{
+							$.jBox.tip(data.message, 'failure');
+						}
+				});
+		}
+		//设置接收时间
+		function setActiveAcceptTime(){
+			//alert('time');
+			$.post(
+					"/buss/customer/9",
+					{
+						activeId:Request.QueryString("activeId"),
+					},
+					function(data){
+						if(data){
+							$.jBox.tip(data.message, 'success');
+						}
+						loadcombox();
+					}
+				);
+			}
+			//提交按钮
+		$("#aT_Post").click(function(){
+				if(user.userOrgID=="35"){
+					PostCus(user);
+				}else{
+					setActiveComplet();
+				}
+		});
+  		//上传按钮点击事件
+  		$('#aT_upfiled').click(function(){
+				upfile();
+			});
+		//办理情况
+		$("#aT_BLQK").click(function() {
+			BLQK($("#processId").val());
+		});
+		//打印按钮事件
+		$("#aT_Cancel").click(function(){
+			//alert('ssssss');
+			var href="../system/AppReport.html?reportId=376&ids="+$("#FId").val();
+			//alert(href);
+	    	var tabid = "report_"+$("#FId").val();
+	    	parent.NavigateUrl(tabid, "顾客评价模板打印", href); 
+		});
+		//保存按钮点击事件
+  		$("#aT_OK").click(function(){
+  			if(taskId){
+  			}else{
+  				$.jBox.info("请先选择项目","系统提示");
+	  				return false;
+  			}
+			$.jBox.confirm(
+  				"确认要保存吗?",
+  				"系统提示",
+  				function(v, h, f){
+  					if(v=="ok"){
+  						setButtonState('#aT_OK',false);
+  						setButtonState('#aT_Post',true);
+  						$.post(
+  							"/buss/customer/2",
+  							{	
+  								fid:formPKID,
+  								taskId:taskId,
+  								numbers:$('#FTaskNumbers').val(),
+  							},
+  							function(data){
+  								if(data.success){
+  									setProcess(data);
+  									setButtonState('aT_Post',true);
+  								}else{
+  									$.jBox.tip(data.message, 'failure');
+  								}
+  							}
+  						);
+  					}
+				}
+			);
+		});
+		//读取用户信息
+		function getuser(){
+			$.post("/system/SvrService/AppIndex/4/", {}, 
+			 	function(data) {
+			 		if(data.success){
+			 			user=data.root;
+			 			kongzhibut();
+			 		}
+	    			$.jBox.tip('加载完毕', 'success');	
+			 	});
+		}
+		//按钮控制
+		function kongzhibut(){
+			//alert(action);
+			if(action==0){
+				setButtonState('#aT_Post,#aT_CuiBan,#aT_upfiled,#aT_BLQKm,#aT_Cancel,#aT_OK',false);
+			}else if(action==1){
+				if(formPKID==0){
+					//alert(1);
+					setButtonState('#aT_Post,#aT_CuiBan,#aT_upfiled,#aT_BLQKm,#aT_Cancel,#aT_OK',false);
+				}else{
+					setActiveAcceptTime();
+					if(state==0){
+						//alert('state=0');
+						setButtonState('#aT_Post',true);
+					 	setButtonState('#aT_OK,#aT_upfiled,#aT_CuiBan,#aT_BLQKm,#aT_Cancel',false);
+					}else{
+						//alert('state');
+			 			setButtonState('#aT_OK',false);
+					 	setButtonState('#aT_CuiBan,#aT_BLQKm',true);
+					}
+				}
+			}else if(action==2){
+				loadcombox();
+				setButtonState('#aT_OK,#aT_Post,#aT_upfiled,#aT_CuiBan,#aT_BLQKm,#aT_Cancel',false);
+			}
+		}
+		//选择任务
+		function selectTask(record){
+			
+			if($('#taskName').combobox("getValue")!=-1){
+				taskId=$('#taskName').combobox("getValue");
+				setButtonState('#aT_OK',true);
+				setButtonState('#aT_Post',false);
+				$.post(
+					"/buss/customer/1",
+					{cid:taskId},
+					function(data){
+						loadpag(data);
+						 $.post(
+						 	"/buss/customer/3",
+						 	{"cid":taskId},
+						 	function(data){
+								if(data.root){
+										$('#textcon').val(data.root);
+								}
+							});
+					}
+				);
+			}else{
+				setButtonState('#aT_OK',false);
+				setButtonState('#aT_Post',false);
+				$('#FTaskNumbers').val("");
+				$('font').remove();
+			}
+		}
+		//任务列表成功加载后
+		function loadTask(){
+			if(formPKID!=0){ 
+				//loadpag(tasknm);
+				$('#taskName').combobox('select',tasknm.root[0].FTaskName);
+				loadpag(tasknm);
+				//$('#taskName').combobox('setValue',tasknm);
+				
+			}else{
+				getuser();
+			}
+			if(state!=0){
+				$('#taskName').combobox('disable',true);
+			}
+			//alert($("#formPKID").val());
+			/*if($("#formPKID").val()!=""){
+				$.post(
+					"/buss/customer/10",
+					{cid:$("#formPKID").val()},
+					function(data){
+						//loadpag(data);
+						//if()
+						//alert(data.root[0].get('FTaskName'));
+						var tasknm=data.root[0].FTaskName;
+						$('#taskName').combobox('setValue',tasknm);
+						//$('#taskName').combobox('disable',true);		
+					}
+				);
+			}else{
+				$('#taskName').combobox('enable',true);
+			}*/
+		}
+		function loadcombox(){
+			$('#taskName').combobox({								
+					url: "/buss/customer/0",
+					valueField:'id',
+					textField:'text',
+					onSelect:selectTask,
+					onLoadSuccess:loadTask
+				});
+		}
+		//主方法
+		$(document).ready(function() {
+			
+			$.jBox.tip('数据正在加载，请稍等..','loading');
+			$('#FTaskNumbers').val("");
+			//$(document).bind("contextmenu", function(e) {return true;});
+			
+			$("#action").attr("value",action);
+			$("#processId").attr("value",processId);
+			$("#activeId").attr("value",activeId);
+			$("#formPKID").attr("value",formPKID);
+			$("#state").attr("value",state);
+			if(action!=0){
+				$("#qkTable").datagrid({ 
+					title:'办理情况(近4次)', 
+					width: '98%', 
+					showHeader:false, 
+					//height: 221, 
+					columns:[ [
+						{/*title:'类型',*/field:'FStyle',width:80,align:'center', formatter: function(value,row,index){
+							if(value=="1") 
+								return "办理情况"; 
+							else if(value=="2") 
+								return "催办情况"; 
+							else if(value=="3") 
+								return "打回情况"; 
+							else if(value=="-1") 
+								return ""; 
+							else if(value=="-2") 
+								return ""; 
+								else if(value=="-3") 
+									return ""; 
+							} }, 
+						{/*title:'发送人员',*/field:'sendUser',width:80,hidden:false}, 
+						{/*title:'发送时间',*/field:'FSendTime',width:141,align:'center'}, 
+						{/*title:'接收人员',*/field:'acceptUser',width:80,align:'center'}, 
+						{/*title:'接收时间',*/field:'FAcceptTime',width:141,align:'center'}, 
+						{/*title:'办理状态',*/field:'FStateText',width:81,align:'center'}, 
+						{/*title:'完成时间',*/field:'completeTime',width:141,align:'center'}, 
+						{/*title:'备注',*/field:'FRemark',width:151,align:'center'}						]], 
+						url: '/Buss/CommonOpinionService/6/?processId='+processId+"&toprecord="+4, 
+						rownumbers:false,fit:true,singleSelect:true, //pagination:true, 
+						onSelect: function(index,row){
+						$("#FId").attr("value",row.FId); 
+						$("#FContentT").text(row.FContent); 
+					}, 
+					onLoadSuccess:function(){ 
+					//所有列进行合并操作 //$(this).datagrid("autoMergeCells"); //指定列进行合并操作 
+					$(this).datagrid("autoMergeCells",['FStyle','sendUser','FStateText']); 
+					mergeCellsByField(
+						"qkTable",
+						"FAcceptTime",
+						"FStateText",
+						"FStateText",
+						"complleteTime",
+						"FRemark"
+					); 
+					}, 
+					rowStyler:function(index,row){ 
+						if(row.FStyle=="-1" || row.FStyle=="-2" || row.FStyle=="-3") 
+						return 'background-color: #fafafa;'
+						+ 'background: -webkit-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+						+ 'background: -moz-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+						+ 'background: -o-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+						+ 'background: linear-gradient(to bottom,#fdfdfd 0,#f5f5f5 100%);'
+						+ 'background-repeat: repeat-x;'
+						+ 'filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#fdfdfd,endColorrstr=#f5f5f5,GradientType=0);'
+						+ 'color:blue;font-weight:bold;'; 
+					} 
+				}); 		
+			}
+			
+			$('#FTaskNumbers').val("");
+			if(formPKID!=0){
+			$.post(
+					"/buss/customer/10",
+					{cid:formPKID},
+					function(data){
+						//loadpag(data);
+						//alert(data.root[0].get('FTaskName'));
+						//$('#taskName').combobox('setValue',tasknm);
+						//$('#taskName').combobox('disable',true);
+						if(data.root[0]){
+							tasknm=data;
+							taskId=data.root[0].FId;
+						}else{
+							tasknm=[];
+						}
+						 $.post("/buss/customer/3",{"cid":taskId},function(data){
+						 		//alert(data.root);
+								if(data.root){
+									contnum="";
+									contnum=data.root;
+								}
+								getFiled(formPKID);
+							});
+					}
+				);
+			}else{
+				loadcombox();
+			}
+			
+		});
+		
+  	</script>
+

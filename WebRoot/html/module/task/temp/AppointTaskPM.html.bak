@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>指派项目经理</title>
+
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css"
+	type="text/css"></link>
+<link rel="stylesheet" href="../../css/treenodeicon.css" type="text/css"></link>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/ux/TreeCheckNodeUI.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+<script type="text/javascript">
+	Ext.BLANK_IMAGE_URL = '../../ext/resources/images/default/s.gif';
+	var clientid = "", clientname = "";
+	var dialogas = window.dialogArguments;
+	function choose(cid, cname) {
+		//dialogas.document.getElementById("FEntrustUnitId").value = cid;
+		//dialogas.document.getElementById("FEntrustUnitName").value = cname;
+		window.close();
+	}
+</script>
+<script type="text/javascript" src="../publicExtjs/SelectPM.js"></script>
+<style type="text/css">
+	body {
+		background: #f5f5f5;
+		height: 98%;
+		width: 98%;
+	}
+</style>
+</head>
+
+</head>
+
+<body>	
+</body>
+</html>

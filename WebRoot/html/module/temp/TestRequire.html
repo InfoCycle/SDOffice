@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE>加载测试</TITLE>
+	 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+ 	<script type="text/javascript" src="jquery-require/require.js"></script> 
+	
+ </HEAD>
+	
+ <BODY>
+ <textarea id="textarea" rows="23" style="width:80%;"></textarea><br />
+  <input type="button" id="execBtn" value="执行代(可以用firebug查看加载瀑布图)" style='margin-top:10px;' />
+  <script type="text/javascript" id="codejs">
+require(["../../plugin/js/jquery.js", "../../ext/adapter/ext/ext-base.js"], function($) {
+    //the jquery.alpha.js and jquery.beta.js plugins have been loaded.
+    $(function() {
+        $('body').alpha().beta();
+    });
+});
+
+ //加载 ../../plugin/js/jquery.js
+/*var d = new Date();
+document.getElementById("textarea").value += "[分：" + d.getMinutes() + ":秒" + d.getSeconds() + ".毫秒" + d.getMilliseconds() + "]" + " 开始加载 JS 文件：" + "\n";
+require(["../../plugin/js/jquery.js","../../ext/adapter/ext/ext-base.js"],function($){
+	var d = new Date();
+	document.getElementById("textarea").value += "[" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds() + "]" + "jquery.js and ext-base.js " + "\n";
+	require("../../ext/ext-all.js",function(){
+		var d = new Date();
+		document.getElementById("textarea").value += "[" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds() + "]" + "ext-all.js " + "\n";
+	});
+	//myFunctionA();
+	//myFunctionB();
+});
+*/
+
+
+//加载 test.js test2.js 加载完毕test.js 后才加载test2.js 然后回调
+//require("test.js","test2.js",funciton(){...});
+//同时加载 test.js test2.js 全部加载完毕后执行回调
+//require(["test.js","test2.js"],funciton(){...});
+//先加载 test0.js 再同时加载 test.js test2.js 然后回调
+//require("test0.js",["test.js","test.js","test.js","test2.js"],funciton(){...});
+//先加载 test4.js ./表示require.js所在目录 即test4.js和require.js在同一个目录
+//这个用于写库文件是使用
+//require("./test0.js",funciton(){...});
+
+	//打印Script实例的log函数
+function requireLog(str){
+	var d = new Date();
+	document.getElementById("textarea").value += "[" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds() + "]" + str + "\n";
+}
+
+window.onload = function(){
+	//清空textarea的残渣
+	//document.getElementById("textarea").value = "";
+};
+		//异步加载脚本会自动加入到 按钮事件，请点击按钮
+document.getElementById("execBtn").onclick = function(){
+	this.style.display = "none";
+	
+	//序列加载 a.js [b.js c.js] d.js
+	//其中 b.js 中使用require 加载e.js f.js (e f为无须加载)
+	//e.js 中使用require 加载g.js
+	requireLog("=====================================require Log============");
+	requireLog("a.js b.js c.js d.js require OK");
+	//"testjs/b.js","testjs/b.js","testjs/b.js" 测试在写错的情况下，是否能修正
+	require("../../plugin/js/jquery.js",["../../js/jquery.loader4.js","../../plugin/js/jquery.json-2.4.js","../../plugin/easyui/jquery.easyui.min.js",
+		"../../plugin/easyui/easyui-lang-zh_CN.js"],"../../js/jquery.form.js",function(){
+		requireLog("a.js b.js c.js d.js callBack OK");
+		//华丽分割线 3个随机异步，全部完成后统一回调
+		requireLog("=====================================bale Log============");
+		var t1 = Math.round(Math.random()*5000), t2 = Math.round(Math.random()*5000), t3 = Math.round(Math.random()*5000);
+		requireLog("Start=>t1:" + t1 + "==t2:" + t2 + "==t3:" + t3);
+		require.bale(
+			//第一个异步
+			function(fn,ex){
+				setTimeout(function(){
+					//设置cakkBack的this指向的object中的值
+					ex.$1 = t1;
+					//告诉函数，我的异步执行完毕 可以把这个fn直接设置为异步的回调函数
+					fn();
+					requireLog("t1:End");
+				},t1);
+				return 1;
+			},
+			//第二个异步
+			function(fn,ex){
+				setTimeout(function(){
+					ex.$2 = t2;
+					fn();
+					requireLog("t2:End");
+				},t2);
+				return 2;
+			},
+			//第三个异步
+			function(fn,ex){
+				setTimeout(function(){
+					ex.$3 = t3;
+					fn();
+					requireLog("t3:End");
+				},t3);
+				return 3;
+			},
+			//最后一个为执行完所有的异步的回调
+			function($1,$2,$3){
+				requireLog("AllEnd");
+				requireLog("argument=>$1:" + $1 + "==$2:" + $2 + "==$3:" + $3);
+				requireLog("this=>$1:" + this.$1 + "==$2:" + this.$2 + "==$3:" + this.$3);
+			}
+		);
+	});
+};
+	</script>
+ </BODY>
+</HTML>

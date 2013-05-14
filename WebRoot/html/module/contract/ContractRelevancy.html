@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>合同-项目关联</title>
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../plugin/easyui/themes/default/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+    <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript">  
+		var contractid = null;
+    	$(document).ready(function() {
+    		$('#tg').treegrid({
+    			onClickRow:function(row){
+					if(row.isTask == 0){
+						topCenter('当前选中的不是项目,请重新选中！');
+						$('#tg').treegrid('unselect',row.id); 
+					}
+    			},
+    			onCheck:function(row){
+    				if(row.isTask == 0){
+    					topCenter('当前选中的不是项目,请重新选中！');
+						$('#tg').treegrid('unselect',row.id); 
+    				}
+    			},
+    			onBeforeLoad:function(){
+	        		$('.datagrid-header-check').empty();
+	        	},
+	        	onLoadSuccess:function(){
+	        		$('#tg').treegrid('collapseAll');
+	        	}
+    		});
+    		
+    		$('#tt').tree({
+    			onClick:function(node){
+    				if(node.attributes == 1){
+    					contractid = node.id;
+	                	$.post("/Buss/ContractRelevanceTaskService/3", {
+	               			"contractid" : contractid
+	               			}, function(data) {
+	               				if(data.success){
+	               					$('#tg').treegrid('unselectAll'); 
+	               					for(var i=0;i<data.totalProperty;i++){
+	               			            $('#tg').treegrid('expandTo',data.root[i].FTaskId).treegrid('select',data.root[i].FTaskId); 
+	               					}
+	               					//$.messager.alert('系统提示!','关联成功!','info');
+	               				}else{
+	               					$('#tg').treegrid('unselectAll'); 
+	               					topCenter('此合同尚未关联任何项目！');
+	               				}
+	               			}, "json");
+    				}else{
+    					contractid = null;
+    					$('#tg').treegrid('unselectAll'); 
+    					topCenter('当前选中的不是合同！');
+    				}
+    			}
+    		});
+    		
+    	});
+    	
+    	 function topCenter(msg){  
+             $.messager.show({  
+                 title:'系统提示!',  
+                 msg:msg,  
+                 timeout:2000,
+                 iconCls: 'icon-tip',
+                 showType:'slide',  
+                 style:{  
+                     right:'',  
+                     top:document.body.scrollTop+document.documentElement.scrollTop,  
+                     bottom:''  
+                 }  
+             });  
+         }  
+
+        function collapseAll(){  
+            $('#tg').treegrid('collapseAll');  
+        }  
+        function expandAll(){  
+            $('#tg').treegrid('expandAll');  
+        }  
+        function Relevancy(){ 
+        	if(!contractid){
+        		$.messager.alert('系统提示!','请选择合同之后再进行关联!','info');
+        		return false;
+        	}
+        	var selectes = $('#tg').treegrid('getSelections');
+			if(selectes!=null && selectes!=''){
+				$.messager.confirm('关联项目!', '确定关联项目吗?', function(r){  
+					var ids = new Array;
+	                if (r){  
+	                	for(var i=0;i<selectes.length;i++){
+							ids.push(selectes[i].id);
+						} 
+	                	$.post("/Buss/ContractRelevanceTaskService/1", {
+	               			"contractid" : contractid,
+	               			"taskids":ids.toString()
+	               			}, function(data) {
+	               				if(data.success){
+	               					$.messager.alert('系统提示!','关联成功!','info');
+	               				}else{
+	               					$.messager.alert('系统提示!','关联失败,请检查网络是否正常!','error');
+	               				}
+	               			}, "json");
+	                }  
+	            });  
+			}else{
+				$.messager.alert('系统提示!','当前没有选择任何项目,不能进行关联,请选择项目之后进行关联!','info'); 
+				return false;
+			}
+        }  
+
+    </script>  
+  </head>
+  <body>
+    <div class="easyui-layout" data-options="fit:true" style="width:'100%';height:530px;">  
+        <div data-options="region:'west',split:true" title="合同信息" style="width:250px;">
+        	<ul id="tt" data-options="url:'/GetTree/ContractAllTree/0',animate:true,fit:true"></ul>
+        </div>  
+       	<div data-options="region:'center',split:true,fit:true" title="项目信息" >
+       		<div id="tool" style="margin:10px 5px;">  
+        		<a href="javascript:void(0)" class="easyui-linkbutton" onclick="collapseAll()">收缩</a>  
+        		<a href="javascript:void(0)" class="easyui-linkbutton" onclick="expandAll()">展开</a>  
+        		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" onclick="Relevancy()">关联项目</a>
+    		</div>  
+   			<table id="tg" title="项目详细信息" style="width:830;height:530px"  
+            	data-options="iconCls: 'icon-tip', 
+            	toolbar:tool, 
+                rownumbers: true,  
+                animate: true, 
+    			onlyLeafCheck : true,
+                collapsible: true, 
+                singleSelect:false,
+                url: '/Buss/ContractRelevanceTaskService/2',  
+                idField: 'id',  
+                treeField: 'name'">  
+	        	<thead>  
+	            <tr>  
+	            	<th data-options="field:'ch',width:10,align:'left',checkbox:true">名称</th>
+	                <th data-options="field:'id',width:10,hidden:true">编号</th>  
+	                <th data-options="field:'taskid',width:10,hidden:true">项目编号</th>  
+	                <th data-options="field:'_parentId',width:10,hidden:true">父类编号</th>  
+	                <th data-options="field:'isTask',width:10,hidden:true">是否是项目</th>  
+	                <th data-options="field:'name',width:250,align:'left'">项目名称</th>
+	                <th data-options="field:'FTaskNumbers',width:250">项目编号</th>
+	                <!-- <th data-options="field:'FContractYjCharge'">合同预计收费</th> -->
+	               <!--  <th data-options="field:'FIndustryCategoryName',width:200">行业类别</th> -->
+	                <th data-options="field:'FDepartmentName',width:80">承接部门</th>
+	                <th data-options="field:'FYjstartTime',width:120">预计开始时间</th>
+	                <th data-options="field:'FYjfinishTime',width:120">预计结束时间</th>
+	                <!-- <th data-options="field:'FProjMgrName',width:80">项目经理(主)</th>
+	                <th data-options="field:'FProjMgrViceName',width:150">项目经理(副)</th> -->
+	            </tr>  
+        		</thead>  
+    		</table>  
+       	</div>  
+    </div>  
+  </body>
+</html>
+

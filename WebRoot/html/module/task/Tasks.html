@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>任务书下达</title>
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+
+<link rel="stylesheet" href="../../css/validationEngine.jquery.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+
+<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+
+<script type="text/javascript" src="../../js/jquery.form.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.validationEngine-zh.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.validationEngine.js"></script>
+<script type="text/javascript" src="../../js/publciUtil.js"></script>
+<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+
+<style type="text/css">
+	body {
+		background: #f5f5f5;
+		height: 98%;
+		width: 98%;
+	}	
+</style>
+</link>
+</head>
+<body>
+	<form id="formtask" action="/Buss/TaskService/2" method="post">
+		<input type="hidden" id="action" name="action"  value=""/>
+		<input type="hidden" id="processId" name="processId" value=""/>
+		<input type="hidden" id="activeId" name="activeId" value=""/>
+		<input type="hidden" id="formPKID" name="formPKID" value=""/>
+		<input type="hidden" id="state" name="state" value=""/></br>
+		<input id="userID" name="userID" type="hidden"/>
+		<input id="userName" name="userName" type="hidden"/>
+		<input id="userOrgID" name="userOrgID" type="hidden"/>
+		<div style="text-align:center">
+			<table border="0" cellpadding="3" cellspacing="0"
+				style="width:810px;margin:auto">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aT_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aT_Post"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aT_Cancel"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel="#" id="aT_Return"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+							</li>
+							<li><a rel="#" id="aT_CuiBan"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aT_BLQK"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>
+							<li><a rel="#" id="aT_ZPPMBan"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />指派项目经理</a>
+							</li>							
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br /></td>
+				</tr>
+				<tr>
+					<td>
+						<div class="content" id="content"
+							style="height:421px;width:810px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br />
+							<br />
+							<br />							
+							<div style="float:left;">
+								<table class="content_table1" width="780px" border="1"
+									cellpadding="0" style="position:absolute;">
+									<caption style="height:30px;font-size:18px;">
+										<strong>昆明松岛工程造价咨询有限公司<label id="TitleYear"></label>年度任务书下达<br>
+										</strong>
+									</caption>
+									<tr>
+										<th colspan="7" align="left" valign="middle" scope="col">编号：<label>
+												<input type="hidden" id="FId" name="FId" style="width:20px;" />
+												<!--<label id="TaskH">KMSD-任务-</label>-->
+												<input type="text" id="FTaskNumbers" name="FTaskNumbers" value=""
+												style="width:361px;" class="validate[required,minSize[5],maxSize[50]]">
+												<!--<input type="text" id="FTaskNumbers" name="FTaskNumbers" value="">
+												<label id="TaskYear"></label>-->
+												</label></th>
+									</tr>
+									<tr>
+										<td width="73">任务名称</td>
+										<td colspan="6"><label> <input type="text"
+												id="FTaskName" name="FTaskName" style="width:461px;"
+												class="validate[required,minSize[5],maxSize[100]]">
+										</label></td>
+									</tr>
+									<tr>
+										<td>委托单位</td>
+										<td colspan="6"><div style="height:auto;width:auto;float:left;"> <input type="hidden"
+												id="FEntrustUnitId" name="FEntrustUnitId" style="width:45px;float:left;"
+												value=""> <input type="text" id="FEntrustUnitName"
+												name="FEntrustUnitName" style="width:461px;float:left;" class="validate[required]"></div>																						
+											    <a class="s-select" onclick="javascript:SelectEntrustUnit();" href="javascript:;" title="请选择委托单位"></a>
+										</td>
+									</tr>
+									<tr>
+										<td>项目规模</td>
+										<td colspan="2"><label> <input type="text"
+												class="validate[required]" id="FProjectScale"
+												name="FProjectScale"> </label>
+										</td>
+										<td width="106">结构类型</td>
+										<td colspan="3"><select style="width:300px;"
+												id="FStructureType" name="FStructureType">
+												<option value=""></option>
+												</select></td>
+									</tr>
+									<tr>
+										<td>服务类别</td>
+										<td colspan="2"><select style="width:181px;" id="FServiceCategory" name="FServiceCategory"></select>
+										</td>
+										<td>合同预计收费</td>
+										<td colspan="3"><label> <input type="text"
+												class="validate[required]" id="FContractYjCharge"
+												name="FContractYjCharge"> </label></td>
+									</tr>
+									<tr>
+										<td>承接部门</td>
+										<td colspan="2"><input type="hidden"  id="FDepartmentId" name="FDepartmentId"/> 
+										<input type="text" style="20px;" id="FDepartmentName"
+												name="FDepartmentName">
+										</td>
+										<td>预计开始时间</td>
+										<td width="90">
+											<input class="easyui-datetimebox validate[required]" id="FYjstartTime" name="FYjstartTime" data-options="required:true" value="2012-12-25 12:3:56" style="width:120px">
+										</td>
+										<td width="92">预计完成时间</td>
+										<td width="83"><input class="easyui-datetimebox validate[required]"
+												id="FYjfinishTime" name="FYjfinishTime"  data-options="required:true" value="2012-12-25 12:3:56" style="width:120px">
+										</td>
+									</tr>
+									<tr>
+										<td>下达人</td>
+										<td width="74"><label> <input type="hidden"
+												style="width:10px;" id="FGivePersonId" name="FGivePersonId">
+												<input type="text"
+												style="width:65px;" id="FGivePersonName"
+												name="FGivePersonName"> </label></td>
+										<td width="71">下达时间</td>
+										<td><input type="text"
+												style="width:90px;" id="FGiveTime" name="FGiveTime" type="text"></td>
+										<td>部门经理</td>
+										<td colspan="2"><input type="hidden"
+												style="width:45px;" id="FDeptMgrId" name="FDeptMgrId"><input
+												type="text" id="FDeptMgrName" name="FDeptMgrName">
+										</td>
+									</tr>
+									<tr>
+										<td>接收时间</td>
+										<td colspan="2"><label> <input type="text"
+												style="width:150px;" id="FReceivingTaskTime"
+												name="FReceivingTaskTime"> </label></td>
+										<td>项目经理</td>
+										<td colspan="3"><label>主：<input type="hidden"
+												style="width:25px;" id="FProjMgrId" name="FProjMgrId">
+												<input type="text" style="width:121px;" id="FProjMgrName"
+												name="FProjMgrName">副：<input type="hidden"
+												style="width:25px;" id="FProjMgrViceId" name="FProjMgrViceId">
+												<input type="text" style="width:121px;" id="FProjMgrViceName"
+												name="FProjMgrViceName"></label></td>
+									</tr>
+								</table>
+								<br />
+								<br />
+								<input id="output2" type="hidden" value="" />
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aB_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aB_Post"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>							
+							<li><a rel="#" id="aB_Cancel"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel="#" id="aB_Return"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+							</li>
+							<li><a rel="#" id="aB_CuiBan"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aB_BLQK"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>
+							<li><a rel="#" id="aB_ZPPMBan"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />指派项目经理</a>
+							</li>							
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br /></td>
+				</tr>
+			</table>
+		</div>
+	</form>
+	<script type="text/javascript" src="../../plugin/chosen/chosen.jquery.min.js"></script>   
+	<script type="text/javascript" language="javascript">
+	if (window.navigator.userAgent.indexOf("Firefox") >= 1) {
+		//如果浏览器为Firefox
+		setActiveStyleSheet("papersother.css");
+	} else {
+		//如果浏览器为其它
+		setActiveStyleSheet("papers.css");
+	}
+	function setActiveStyleSheet(filename) {
+		document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+	}
+	//
+	function closeJBox(){
+			$.jBox.close(true);
+		}
+	function SelectEntrustUnit() {         
+		$.jBox.open("iframe:/html/module/task/SelectEntrustUnit.html", "委托单位选择", 510, 321, { buttons: { '关闭': true} });
+		return false;
+	}
+	function PostTask(id) {
+		//window.showModalDialog("PostTask.html?ID=" + id,window,"dialogLeft:300px;dialogTop:300px;dialogWidth:510px;dialogHeight:301px;scroll:no;status:no");
+		$.jBox.open("iframe:/html/module/task/PostTask.html?ID=" + id, "提交", 510, 391, { buttons: { '关闭': true} });
+		return false;
+	}
+	function SelectPM(id) {
+		//window.showModalDialog("AppointTaskPM.html?ID=" + id,window,"dialogLeft:300px;dialogTop:300px;dialogWidth:510px;dialogHeight:301px;scroll:no;status:no");
+		$.jBox.open("iframe:/html/module/task/AppointTaskPM.html?ID=" + id, "选择项目经理", 610, 431, { buttons: { '关闭': true} });
+		return false;
+	}
+	function BLQK(processId){
+		var href="../wf/HandleStatus.html?processId="+processId;
+		parent.NavigateUrl('wf_handle_'+processId,'办理情况',href);
+		return false;
+	}
+	$(document).ready(function() {
+							$(document).bind("contextmenu", function(e) {
+								return true;
+							})
+							$("#formtask").validationEngine('attach');
+							$("#formtask").validationEngine({
+								validationEventTriggers:"blur",  //触发的事
+								inlineValidation: false,
+								promptPosition: "topRight",
+								ajaxFormValidation : true
+							});							
+							$.post("/system/SvrService/AppIndex/4/", {}, function(data) {
+								if (data.success) {			
+									$("#userID").attr("value",data.root.userID);
+									$("#userName").attr("value",data.root.userName);
+									$("#userOrgID").attr("value",data.root.userOrgID);
+								}else
+								{
+									userobj=null;									
+									$.jBox.error('用户未登录，请检查网络或联系系统管理员！', '温馨提示');
+									return false;
+								}
+							}, "json");
+							var today = new Date();
+							//$("#TaskYear").text("-" + today.getFullYear());
+							$("#TitleYear").text(today.getFullYear());
+							$("#FEntrustUnitName").attr({
+								readonly : 'true'
+							});
+							$("#FTaskName").blur(function() {
+								$("#FTaskNumbers").attr("value", 'KMSD-任务-'+ $(this).val()+"-" + today.getFullYear());								
+							});							
+							$("#FStructureType").attr({
+								readonly : 'true'
+							});
+							$("#FYjstartTime").attr({
+								readonly : 'true'
+							});
+							$("#FYjfinishTime").attr({
+								readonly : 'true'
+							});
+							$("#FGiveTime").attr({
+								readonly : 'true'
+							});
+							$("#FDeptMgrName").attr({
+								readonly : 'true'
+							});
+							$("#FProjMgrName").attr({
+								readonly : 'true'
+							});
+							$("#FDepartmentName").attr({
+								readonly : 'true'
+							});
+							$("#FGivePersonName").attr({
+								readonly : 'true'
+							});							
+							$("#FReceivingTaskTime").attr({
+								readonly : 'true'
+							});						
+							var action = Request.QueryString("action");
+							var processId = Request.QueryString("processId");
+							var activeId = Request.QueryString("activeId");
+							var formPKID = Request.QueryString("formPKID");
+							var state = Request.QueryString("state");
+							$("#action").attr("value",action);
+							$("#processId").attr("value",processId);
+							$("#activeId").attr("value",activeId);
+							$("#formPKID").attr("value",formPKID);
+							$("#state").attr("value",state);
+							if (action == 0) {
+								$.post("/Buss/TaskService/3", {
+									"ID" : formPKID
+								}, function(data) {
+									SetFormValue(data, "New");
+								}, "json");
+							} else if (action = 1) {
+								$.post("/Buss/TaskService/1", {
+									"ID" :  formPKID,
+									"activeId":  activeId
+								}, function(data) {
+									if (data.success) {
+										SetFormValue(data, "Edit");
+									} else {										
+										$.jBox.error('任务获取失败，请检查网络或联系系统管理员！', '温馨提示');
+										return false;
+									}
+								}, "json");
+							} else if (action = "View") {
+								SetFormValue(data, "View");
+							}
+
+							function SetFormValue(data, type) {								
+								$("#FId").attr("value", data.root[0].FId);
+								//设置表单值
+								$("#FTaskNumbers").attr("value",data.root[0].FTaskNumbers);
+								$("#FTaskName").attr("value",data.root[0].FTaskName);
+								$("#FEntrustUnitId").attr("value",data.root[0].FEntrustUnitId);
+								$("#FEntrustUnitName").attr("value",data.root[0].FEntrustUnitName);
+								$("#FProjectScale").attr("value",data.root[0].FProjectScale);
+								$("#FContractYjCharge").attr("value",data.root[0].FContractYjCharge);
+								$("#FGivePersonId").attr("value",data.root[0].FGivePersonId);
+								$("#FGivePersonName").attr("value",data.root[0].FGivePersonName);
+								$("#FDeptMgrId").attr("value",data.root[0].FDeptMgrId);
+								$("#FDeptMgrName").attr("value",data.root[0].FDeptMgrName);
+								$("#FProjMgrName").attr("value",data.root[0].FProjMgrName);
+								$("#FProjMgrId").attr("value",data.root[0].FProjMgrId);
+								$("#FProjMgrName").attr("value",data.root[0].FProjMgrName);
+								$("#FProjMgrViceId").attr("value",data.root[0].FProjMgrViceId);
+								$("#FProjMgrViceName").attr("value",data.root[0].FProjMgrViceName);
+
+								$("#FDepartmentId").val(data.root[0].FDepartmentId);
+								$("#FDepartmentName").val(data.root[0].FDepartmentName);
+								
+								//$("#FStructureType").val(data.root[0].FStructureType);								
+								//$("#FServiceCategory").val(data.root[0].FServiceCategory);
+
+								var params={"action" : "getAppCode","CodeTypeId" : 314,"State" : 1};
+								GetDropData(false, "#FStructureType", "/GetCode/Query/",params, "FId", "FCodeText",data.root[0].FStructureType);
+								params={"action" : "getAppCode","CodeTypeId" : 319,"State" : 1};
+								GetDropData(false, "#FServiceCategory", "/GetCode/Query/",params, "FId", "FCodeText",data.root[0].FServiceCategory);								 								
+								//$(".chzn-select").chosen(); 
+								$("#FReceivingTaskTime").val(data.root[0].FReceivingTaskTime);
+								$("#FYjfinishTime").val(data.root[0].FYjfinishTime);
+								$("#FGiveTime").val(data.root[0].FGiveTime);
+								$("#FYjstartTime").val(data.root[0].FYjstartTime);
+								$("#FYjfinishTime").val(data.root[0].FYjfinishTime);								
+							}
+							//form post code
+							var options = {
+								target : '#output2',
+								beforeSubmit : showRequest,
+								success : showResponse,
+								url : '/Buss/TaskService/2',
+								type : 'post',
+								dataType : 'json'
+							};
+							function showRequest(formData, jqForm, options) {
+								if (!$("#formtask").validationEngine('validate')) {
+									return false;
+								}
+							}
+							// post-submit callback 
+							function showResponse(responseText, statusText,
+									xhr, $form) {
+								if (statusText == "success") {
+									if (responseText.success) {
+										$("#FId").attr("value", responseText.Id);										
+										$.jBox.tip('任务保存成功。', 'success');									
+									} else										
+										$.jBox.error('任务保存失败，请检查网络或联系系统管理员！', '温馨提示');
+								}
+							}
+							function FUN_Save() {
+								var submit = function(v, h, f) {
+									if (v == 'ok') {
+										$.jBox.tip("正在保存任务，请稍等...", 'loading');
+										var Id = $('input[name=FId]').fieldValue();
+										if (Id == "" || Id != null) {									
+											var form = $("#formtask");
+											form.ajaxSubmit(options);
+											//return false;
+										}
+										$.jBox.tip('任务保存成功。', 'success');										 					            
+									} else if (v == 'cancel') {
+										// 取消
+									}
+									return true;
+									//window.location.reload();
+								};
+								$.jBox.confirm("确定要保存该任务吗？", "重要提示", submit);								
+							}
+							function FUN_Post() {
+								PostTask($('input[name=FId]').fieldValue());
+							}
+							$("#aT_OK").click(function() {
+								FUN_Save();
+							});
+							$("#aB_OK").click(function() {
+								FUN_Save();
+							});
+							$("#aT_Post").click(function() {
+								FUN_Post();
+							});
+							$("#aB_Post").click(function() {
+								FUN_Post();
+							});
+							function FUN_Cancel() {
+								var submit = function(v, h, f) {
+									if (v == 'ok') {
+										$.jBox.tip("正在撤销任务，请稍等...", 'loading');
+										var Id = $("#FId").val();
+										$.post("/Buss/TaskService/4", {
+											"ID" : Id
+										}, function(data) {
+										}, "json");
+										$.jBox.tip('任务撤销成功。', 'success');										 					            
+									} else if (v == 'cancel') {
+										// 取消
+									}
+									return true;
+									window.location.reload();
+								};
+
+								$.jBox.confirm("确定要撤销该任务吗？", "重要提示", submit);
+							}
+							$("#aT_Cancel").click(function() {
+								FUN_Cancel();
+							});
+							$("#aB_Cancel").click(function() {
+								FUN_Cancel();
+							});
+							function FUN_ZPPM() {
+								SelectPM($('input[name=FId]').fieldValue());
+							}
+							$("#aT_ZPPMBan").click(function() {
+								FUN_ZPPM();
+							});
+							$("#aB_ZPPMBan").click(function() {
+								FUN_ZPPM();
+							});
+							function FUN_RETURN(){
+								var html = '<div style="padding:5px;">打回意见：<textarea  cols="35" rows="3" id="OpinionMessage" name="OpinionMessage"></textarea></div>' ;
+								var submit = function (v, h, f) {
+									if (f.OpinionMessage == '') {
+										$.jBox.tip("请输入打回意见。", 'error', { focusId: "OpinionMessage" }); 
+										return false;
+									}
+									$.post("/Buss/TaskService/6", {
+											"AboveActId" : $("#activeId").val(),
+											"Remark" :  f.OpinionMessage
+										}, function(data) {
+											$.jBox.tip('任务打回成功。', 'success');
+									}, "json");																		
+									return true;
+								};
+								$.jBox(html, { title: "打回操作", submit: submit });
+							}
+							$("#aT_Return").click(function() {
+								FUN_RETURN();
+							});
+							$("#aB_Return").click(function() {
+								FUN_RETURN();
+							});							
+							$("#aT_BLQK").click(function() {
+								BLQK($("#processId").val());
+							});
+							$("#aB_BLQK").click(function() {
+								BLQK($("#processId").val());
+							});
+							
+			 });			 			 
+</script>
+</body>
+</html>

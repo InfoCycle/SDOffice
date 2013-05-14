@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>报表</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+
+<script type="text/javascript">
+//获取地址中的参数，如xx.html?reportId=123&ids=123
+//Request.QueryString('reportId')
+var reportId = Request.QueryString('reportId');
+var ids = Request.QueryString('ids');
+var bypagesize = Request.QueryString("__bypagesize__");
+Ext.onReady(function(){	
+	Ext.QuickTips.init();
+	var obj=checkUserLogin();	
+	if(obj){
+		if(!reportId){
+			showMessage("报表模板无效！",true);
+			return false;
+		}
+		if(!ids){
+			ids = "";
+		}
+		if(bypagesize!=undefined||bypagesize!=null){
+			bypagesize =bypagesize;
+		}else{
+			Ext.fly("__bypagesize__").remove();
+		}
+		initReport(reportId);
+	}else{
+		return;
+	}	    
+});
+function initReport(id){
+	Ext.MessageBox.show({
+        msg: '正在加载页面数据, 请稍等...',
+        progressText: '加载页面...',
+        width:300,
+        wait:true,
+        waitConfig: {interval:200},
+        icon:'mb-download'
+    });
+	var url = "/system/SvrService/ReportService/"+id;
+	var ReportDomain="";
+	var Reportlet="";
+	var ReportServlet="/ReportServer";
+	var ReportUrl="";
+	Ext.Ajax.request({
+        url: url,       
+        method: 'GET',
+        success: function (response) {
+            var responseArray = Ext.util.JSON.decode(response.responseText);
+            if (responseArray.success === true) {
+            	ReportDomain =responseArray.reportDomain;
+            	Reportlet = responseArray.reportlet;
+            	//不具备多域名条件
+				//ReportUrl = ReportDomain+ReportServlet
+				//使用虚拟路径转发
+				ReportUrl = ReportServlet
+            	var form = Ext.getDom("reportForm");
+            	form.action=ReportUrl;
+            	Ext.getDom("reportlet").value=Reportlet;
+            	if(bypagesize!=undefined){
+					Ext.getDom("__bypagesize__").value=bypagesize;
+            	}
+            	Ext.getDom("ids").value=ids;
+            	
+            	form.submit();
+            } else {
+            	showMessage('报表初始化失败！',true);
+            	return false;
+            }
+        },
+        failure: function (response) {
+        	showMessage('系统异常,请求数据失败！',true);
+        }
+    }); 
+}
+</script>
+</head>
+<body>
+<form action="" method="post" id="reportForm" name="reportForm">
+<input id="reportlet" name="reportlet" type =hidden value=""/>
+<input id="ids" name="ids" type =hidden value=""/>
+<input id="__bypagesize__" name="__bypagesize__" type=hidden value=""/>
+
+<!--
+<input id="format" name="format" type =hidden value="pdf"/>
+<input id="__embed__" name="__embed__" type =hidden value="true"/>
+-->
+</form>
+</body>
+</html>

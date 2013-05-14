@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>历史项目</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+ 	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+ 	
+ 	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+ 	
+ 	<script type="text/javascript" src="../../js/utils.js"></script>
+ 	
+ 	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	
+	
+
+  </head>
+  <script type="text/javascript" src="../../js/myEasymg.js" ></script>
+  <script>
+  	var Myid;
+  	var typepage=['TaskPlan.html','HistoryProjectProcess.html',
+  	              'HistoryProjectCheck.html','HistoryMajorMattersReport.html',
+  	              'HistoryProjCheckReview.html','HistoryPCheckReview.html',
+  	              'HistoryEfficiencyWagePage.html'];
+  	var mydata;
+
+  	//grid工具栏
+  	var toolbarp=[{
+  		text:'新增',
+  		iconCls:"insertbut-easytb",
+  		handler:add_fun
+  	},{
+  		text:'查看',
+  		iconCls:'save-easytb',
+  		handler:updata_fun
+  	},{
+  		text:'查询',
+  		iconCls:'query-esaytb',
+  		handler:select_fun
+  	}];
+  	var toolbarwin=[{
+  		text:'查询',
+  		iconCls:'query-esaytb',
+  		handler:select_win
+  	},{
+  		text:'清空条件',
+  		iconCls:'query1-esaytb',
+  		handler:client_win
+  	},{
+  		text:'关闭',
+  		iconCls:'delete-easytb',
+  		handler:close_win
+  	}]
+  	//添加方法
+  	function add_fun(){
+  		$.loadmg('温馨提示','正在跳转..');
+  		for(var i=0;i<mydata.length;i++){
+  			if(Myid==mydata[i].id){
+  				window.location.href=typepage[i];
+  			}
+  		}
+  	}
+  	//查看方法
+  	function updata_fun(){
+  		var rec=$('#tablegrid').datagrid('getSelected');
+  		if(!rec){
+  			$.messager.alert('温馨提示','请选择所要查看的任务','info');
+  			return false;
+  		}
+  		$.loadmg('温馨提示','正在跳转..');
+  		for(var i=0;i<mydata.length;i++){
+  			if(Myid==mydata[i].id){
+  				window.location.href=typepage[i]+'?id='+rec.FFormPkid;
+  			}
+  		}
+  	}
+  	//grid查询按钮点击事件
+  	function select_fun(){
+  		$('#divselect').dialog('open');
+  		$('#divselect').dialog('center');
+  	}
+  	//窗口清除条件按钮点击事件
+  	 function client_win(){
+  	 	$('input').val('');
+  	 }
+  	//窗口查询按钮点击事件
+  	function select_win(){
+  		$('#tablegrid').datagrid('reload');
+  	}
+  	//弹出窗口关闭事件
+  	function close_win(){
+  		$('#divselect').dialog('close');
+  	}
+  	//主方法
+  	$(document).ready(function() {
+  		$.loadmg('温馨提示','正在加载..');
+  		var titl;
+  		Myid=Request.QueryString('id');
+  		$.post('/buss/history/1',{},function(data){
+  			if(data){
+  				mydata=data;
+  				for(var i=0;i<data.length;i++){
+  					if(Myid==data[i].id){
+  						titl="历史"+data[i].text;
+  					}
+  				}
+  				$('#tablegrid').datagrid({
+  					url:'/buss/history/0',
+  					title:titl,
+  					singleSelect:true,
+  					rownumbers:true,
+  					fit:true,
+  					toolbar:toolbarp,
+  					fitColumns:true,
+  					pagination:true,
+  					columns:[[
+  						{field:'FTitle',title:'名称',width:250,align:'reight'},
+  						{field:'FTypeId',title:'类型',width:150,align:'center',formatter:function(value,row,index){
+  							for(var i=0;i<mydata.length;i++){
+   								if(mydata[i].id==Myid){
+  									return mydata[i].text;
+  								}
+  							}
+  							return '未知';
+  						}},
+  						{field:'FCreateTime',title:'创建时间',width:100,align:'center'}
+  					]],
+  					queryParams:{
+  						typeId:Myid,
+  						name:$('#tname').val(),
+  						entrustUnit:$('#tclient').val(),
+  						Industry:$('#tindustry').val(),
+  						department:$('#tdname').val(),
+  						giveperson:$('#tgname').val(),
+  						projmgr:$('#pmname').val()
+  					},
+  					onLoadSuccess:function(data){
+  						$.tipmg('温馨提示','加载成功','success');
+  					},
+  					onLoadError:function(data){
+  						$.tipmg('温馨提示','数据加载失败','error');
+  					}
+  				});
+  			}else{
+  				$.tipmg('温馨提示','网络错误请稍后再试或与管理员联系','warning')
+  			}
+  		});
+  		$('#divselect').dialog({
+  			width:400,
+  			title:'查询条件',
+  			iconCls:'',
+  			modal:true,
+  			closed:true,
+  			closable:true,
+  			shadow:true,
+  			buttons:toolbarwin
+  		});
+  	});
+  </script>
+  
+  <body>
+    <table id='tablegrid'></table>
+    <div id='divselect'>
+    	<table width='100%'>
+    		<tr>
+    			<td width='20%' align='right'>
+    				<label for="tname">名称:</label>
+    			</td>
+    			<td width='80%'>
+    				<input id='tname' class="easyui-validatebox" name='tname' style="width:98%;">
+    			</td>
+    		</tr>
+    		<tr>
+    			<td align='right'>
+    				<label for="tclient" >委托单位:</label>
+    			</td>
+    			<td>
+    				<input id='tclient' class="easyui-validatebox" name='tclient' style="width:98%;">
+    			</td>
+    		</tr>	
+    		<tr>
+    			<td align='right'>
+    				<label for="pmname" >项目经理:</label>
+    			</td>
+    			<td>
+    				<input id='pmname' class="easyui-validatebox" name='pmname' style="width:98%;">
+    			</td>
+    		</tr>
+    		<tr>
+    			<td align='right'>
+    				<label for="tindustry" >行业类别:</label>
+    			</td>
+    			<td>
+    				<input id='tindustry' class="easyui-validatebox" name='tindustry' style="width:98%;">
+    			</td>
+    		</tr>
+    		<tr>
+    			<td align='right'>
+    				<label for="tgname" >下达人:</label>
+    			</td>
+    			<td>
+    				<input id='tgname' class="easyui-validatebox" name='tgname' style="width:98%;">
+    			</td>
+    		</tr>
+    		<tr>
+    			<td align='right'>
+    				<label for="tdname" >承接部门:</label>
+    			</td>
+    			<td>
+    				<input id='tdname' class="easyui-validatebox" name='tdname' style="width:98%;">
+    			</td>
+    		</tr>
+    	</table>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+	<table name="View_ClientTree" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="rowid" type="int" />
+		</primary-key>
+	</table>
+	<table name="View_ImplementPlan" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="F_ID" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_App_Org_Tree" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="rowid" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_TaskTree" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="rowid" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_Task" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="rowid" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_MMReport" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="F_ID" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_GroupUser" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="F_ID" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_CodeTree" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="rowid" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_GroupUserAll" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="F_ID" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_Dept_Users" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="rowid" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_ContractTree" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="rowid" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="View_wf_Active_All" schema="dbo" catalog="SDOffice">
+		<primary-key>
+			<key-column name="rowid" type="Integer" />
+		</primary-key>
+	</table>
+	<table name="T_Project_ResultsFile" schema="dbo"
+		catalog="SDOffice">
+		<column name="F_File" type="Byte[]"></column>
+	</table>
+	<table name="T_Accessories" schema="dbo" catalog="SDOffice">
+		<column name="F_Accessories" type="byte[]"></column>
+	</table>
+<table name="View_ImplementPlanChange" schema="dbo"
+	catalog="SDOffice">
+	<primary-key>
+		<key-column name="rowid" type="Integer"/>
+	</primary-key>
+</table>
+</hibernate-reverse-engineering>

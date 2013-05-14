@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>成果文件上传管理</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="../../plugin/swfupload/css/default.css" type="text/css"></link>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+    <script type="text/javascript" src="../../plugin/swfupload/js/swfupload.js"></script>
+	<script type="text/javascript" src="../../plugin/swfupload/js/swfupload.queue.js"></script>
+	<script type="text/javascript" src="../../plugin/swfupload/js/fileprogress.js"></script>
+	<script type="text/javascript" src="swfupload/handlers.js"></script>
+<script tyoe="text/javascript">
+	var swfu;
+	$(document).ready(function(){
+		$.ajax({
+			url:'/Buss/File/2',
+			type: 'POST',
+			dataType: 'json',
+			async :  false,
+			success:function(data) {
+				if(data.success){
+					CreateSwfFile(data.root);
+				}else
+					{
+						alert("没有登录系统！请先登录系统。");
+					}
+			}
+		});
+	});
+	function startUploadFile(){
+		swfu.startUpload();
+	}
+	function CreateSwfFile(data){
+		swfu = new SWFUpload({
+			upload_url: "http://localhost:8080/Buss/ResultsLoadFileService/1;jsessionid="+data,
+			post_params: {"hello" : "jibinbin"},					
+			// File Upload Settings
+			file_size_limit : "500 MB",	// 1000MB
+			file_types : "*.*",
+			file_types_description : "所有文件",
+			file_upload_limit : "0",
+		    file_post_name: "file",					
+			file_queue_error_handler : fileQueueError,
+			file_dialog_complete_handler : fileDialogComplete,//选择好文件后提交
+			file_queued_handler : fileQueued,
+			upload_progress_handler : uploadProgress,
+			upload_error_handler : uploadError,
+			upload_success_handler : uploadSuccess,
+			upload_complete_handler : uploadComplete,
+
+			// Button Settings
+			button_image_url : "../../plugin/swfupload/images/selects.png",
+			button_placeholder_id : "spanButtonPlaceholder",
+			button_width: 88,
+			button_height: 22,
+			button_text : '<span class="button"></span>',
+			button_text_style : '.button { font-family: Helvetica, Arial, sans-serif; font-size: 12pt; } .buttonSmall { font-size: 10pt; }',
+			button_text_top_padding: 0,
+			button_text_left_padding: 18,
+			button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+			button_cursor: SWFUpload.CURSOR.HAND,
+			
+			// Flash Settings
+			flash_url : "../../plugin/swfupload/swfupload.swf",
+
+			custom_settings : {
+				upload_target : "divFileProgressContainer",
+				cancelButtonId : "btnCancel"
+			},
+			// Debug Settings
+			debug: false  //是否显示调试窗口
+		});
+	}
+	/*
+			window.onload = function () {
+				swfu = new SWFUpload({
+					upload_url: "http://localhost:8080/Buss/ResultsLoadFileService/1",
+					post_params: {"hello" : "jibinbin"},					
+					// File Upload Settings
+					file_size_limit : "500 MB",	// 1000MB
+					file_types : "*.*",
+					file_types_description : "所有文件",
+					file_upload_limit : "0",
+				    file_post_name: "file",					
+					file_queue_error_handler : fileQueueError,
+					file_dialog_complete_handler : fileDialogComplete,//选择好文件后提交
+					file_queued_handler : fileQueued,
+					upload_progress_handler : uploadProgress,
+					upload_error_handler : uploadError,
+					upload_success_handler : uploadSuccess,
+					upload_complete_handler : uploadComplete,
+	
+					// Button Settings
+					button_image_url : "../../plugin/swfupload/images/selects.png",
+					button_placeholder_id : "spanButtonPlaceholder",
+					button_width: 88,
+					button_height: 22,
+					button_text : '<span class="button"></span>',
+					button_text_style : '.button { font-family: Helvetica, Arial, sans-serif; font-size: 12pt; } .buttonSmall { font-size: 10pt; }',
+					button_text_top_padding: 0,
+					button_text_left_padding: 18,
+					button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+					button_cursor: SWFUpload.CURSOR.HAND,
+					
+					// Flash Settings
+					flash_url : "../../plugin/swfupload/swfupload.swf",
+	
+					custom_settings : {
+						upload_target : "divFileProgressContainer",
+						cancelButtonId : "btnCancel"
+					},
+					// Debug Settings
+					debug: false  //是否显示调试窗口
+				});
+			};
+			function startUploadFile(){
+				swfu.startUpload();
+			}
+			*/
+		</script>
+</head>
+<body style="background-color: #C0D1E3; padding: 2px;">
+<div id="content">
+<form>
+<div
+	style="display: inline; border: solid 1px #7FAAFF; background-color: #C5D9FF; padding: 2px;">
+<span id="spanButtonPlaceholder"></span> <input id="btnUpload"
+	type="button" value="上  传" onclick="startUploadFile();"
+	class="btn3_mouseout" onMouseUp="this.className='btn3_mouseup'"
+	onmousedown="this.className='btn3_mousedown'"
+	onMouseOver="this.className='btn3_mouseover'"
+	onmouseout="this.className='btn3_mouseout'" /> <input id="btnCancel"
+	type="button" value="取消所有上传" onclick="cancelUpload();"
+	disabled="disabled" class="btn3_mouseout"
+	onMouseUp="this.className='btn3_mouseup'"
+	onmousedown="this.className='btn3_mousedown'"
+	onMouseOver="this.className='btn3_mouseover'"
+	onmouseout="this.className='btn3_mouseout'" /></div>
+</form>
+<div id="divFileProgressContainer"></div>
+<div id="thumbnails">
+<table id="infoTable" border="0" width="530"
+	style="display: inline; border: solid 1px #7FAAFF; background-color: #C5D9FF; padding: 2px; margin-top: 8px;">
+</table>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+.combo .head {
+	border: 1px solid #CCC; background-color: #FFF; overflow: hidden;
+}
+.combo .head input {
+	background-color: transparent; border:none; width: 100%;
+}
+.combo .head .btn { position: relative; float: right; border-left: 1px #CCC solid; }
+
+.combo>.body {
+	border-right: 1px solid #CCCCCC; float: left; z-index: 99999;
+	position: absolute; background: #FFF; overflow-y: auto; overflow-x: hidden;
+}
+.combo .tr { white-space: nowrap; display: inline-block; width: 100%; }
+.combo .td {
+	white-space: nowrap; display: inline-block;
+	cursor: default; overflow: hidden; background-color: #FFF;
+	height: 24px; line-height: 24px; vertical-align: middle;
+	border-right: 1px solid #FFF;
+	border-bottom: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+	border-top: none;
+}
+.combo .tr.hover .td { background-color: #FBCC88; }
+.combo .tr.selected .td { background-color: #FBEC88; }

@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<TITLE>意见</TITLE>
+	<style type="text/css" media="screen">			
+			@import "../../plugin/jdTables/css/demo_page.css";
+			@import "../../plugin/jdTables/css/demo_table_jui.css";
+			@import "../../plugin/jdTables/syntax/css/shCore.css";						
+	</style>
+	<link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script src="../../plugin/jdTables/js/jquery.dataTables.min.js" type="text/javascript"></script>	
+	<script type="text/javascript" language="javascript" src="../../plugin/jdTables/syntax/js/shCore.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+	<style type="text/css">
+		body { 
+			background: #ccc;
+			padding: 1px 1px 1px 1px;			
+			overflow-x:hidden;
+            overflow-y:hidden;
+            width:100%;
+            height:100%;
+			margin-left: 0;
+			margin-top: 0;
+		}		
+        div.jHtmlArea { border: solid 0px #ccc; }
+		table{
+			margin:0px;
+			border-collapse:collapse;
+			border:none;
+			border:solid #000 0px;
+			padding: 0px;
+		}
+		table td{
+			border: solid #000 1px;
+		}
+		.popWindow{
+			width:638px;height:334px;border:#909090 1px solid;background:#fff;color:#333;
+			filter:progid:DXImageTransform.Microsoft.Shadow(color=#909090,direction=120,strength=4);
+			-moz-box-shadow: 2px 2px 2px #909090;
+			-webkit-box-shadow: 2px 2px 2px #909090;
+			}
+			.popWindow .popHead{width:100%;height:23px; background:#E1E1E1;border-bottom:#909090 1px solid;}
+			.popWindow .popHead .hTitle{float:left;padding-left:10px;line-height:30px;color:#434343;font-size:13px;font-weight:bold;}
+			.popWindow .popHead .hClose{float:right;padding-right:12px;line-height:30px;color:#004080;font-size:13px; text-decoration:underline;}
+			.popWindow .popBody{width:100%;height:auto;padding:1px 0;border-bottom:#C6C6C6 1px solid;}
+			.popWindow .popFoot{width:100%;height:38px;background:#E1E1E1;}
+			.popWindow .popFoot .btnDiv{float:right;padding-right:15px;margin:2px 0;height:27px;}
+			.popWindow .popFoot .btnDiv .btnOneRu{width:76px;height:27px;border:0; background:url(../../images/button/btnOneRu.jpg) no-repeat;margin-right:27px;olor:#333;text-align:center;cursor:pointer;}
+			.popWindow .popFoot .btnDiv .btnOneDu{width:76px;height:27px;border:0; background:url(../../images/button/btnOneDu.jpg) no-repeat;margin-right:27px;olor:#333;text-align:center;cursor:pointer;}		   
+			#dhtmltooltip {
+				FONT-SIZE: 9pt; Z-INDEX: 100; filter:progid:DXImageTransform.Microsoft.Shadow(color=gray,direction=120); PADDING: 4px; BORDER: gray 1px solid; WIDTH: 150px; BACKGROUND-COLOR: #cccccc
+			}
+			.tdtopcss{				
+				background:url(../../images/button/blue.png)no-repeat;
+			}
+			.btnOneRuT{width:76px;height:27px;border:0; background:url(../../images/button/btnOneRu.jpg)
+	</style>
+	<script type="text/javascript">
+		var oTableON=null;
+		var formid =  Request.QueryString("formid");
+		var tablename =  Request.QueryString("tablename");
+		var updatefield =  Request.QueryString("updatefield");
+		var userid =  Request.QueryString("userid");
+		$(document).ready(function() {
+			//$("textarea").htmlarea();
+			oTableON=$('#tableOpinion').dataTable( {				
+				"sScrollY": "231px",
+				"bPaginate": false,
+				"bProcessing": true,  //是否启用进度显示
+				"bScrollCollapse": true,
+				"bLengthChange": false,  //每页显示的记录数
+				"bFilter": false, //搜索栏
+				"bSort": false, //是否支持排序功能
+				"bInfo": false, //页脚信息
+				"bDestory": true,
+				"bRetrieve": true,
+				"bAutoWidth": false,  //自适应宽度
+				"sPaginationType": "full_numbers",//two_button or full_numbers
+				"bStateSave": true, 
+				"bServerSide": true,  //是否启用服务器处理数据源
+				"sServerMethod": "POST",
+				"sAjaxSource": "/Buss/CommonOpinionService/search/"+userid,
+				"bDeferRender": true,
+				"aoColumns": [							
+					{ "mData": "FId","bVisible": true,"fnRender":function(oObj){
+						return oObj.aData.FId;//+'<a rel="#" id="deletePerson">'+"删除"+'</a>';
+					}},
+					{ "mData": "FUserId","sWidth":"6px","bVisible": false},
+					{ "mData": "FContent","bVisible": true}
+				],
+			    "bJQueryUI": false
+		   });
+			$('#tableOpinion tbody tr').live('click', function (e) {
+				var nTds = $('td', this);				
+				if ( $(this).hasClass('row_selected') ) {
+					$(this).removeClass('row_selected');
+				}
+				else {
+					oTableON.$('tr.row_selected').removeClass('row_selected');
+					$(this).addClass('row_selected');
+				}
+				var aData = oTableON.fnGetData(this);
+				if (null != aData)  // null if we clicked on title row
+                {		
+                    var record = aData;
+					$("#FId").attr("value",record.FId);
+					//$('#FContent').htmlarea('html', record.FContent);
+					$('#FContent').attr('value', record.FContent);
+                }					
+			} );
+			
+			$("#butDelete").click(function(){				
+				var anSelected = fnGetSelected( oTableON );								
+				if ( anSelected.length !== 0 ) {
+					$.post("/Buss/CommonOpinionService/2", {						 
+							"FId" : $("#FId").val()
+				       }, function(data) {
+							 if (data.success) {
+								  $("#FId").attr("value",0);
+								  oTableON.fnDraw();
+								  $.jBox.info('常用意见删除成功。');								 
+							 } else {
+								 $.jBox.info('常用意见删除失败，请检查网络或联系系统管理员！');
+								 return false;
+							 }
+				}, "json");
+				}else
+					$.jBox.info('温馨提示！请选择要删除的常用意见记录。');
+			});
+			$("#butPost").click(function(){				 
+				$.post("/Buss/CommonOpinionService/3", {						 
+							"FormID" : formid,
+							"Table" : tablename,
+							"Field" : updatefield,
+							"OPinion" : $('#FContent').val()//; $('#FContent').htmlarea('html')
+				       }, function(data) {
+							 if (data.success) {
+								  //oTableON.fnDraw();
+								  $.jBox.info('意见保存成功。');								 
+								 //SetFormValue(data, "Edit");
+							 } else {
+								 $.jBox.info('意见保存失败，请检查网络或联系系统管理员！');
+								 return false;
+							 }
+				}, "json");
+			});
+			$("#butAdd").click(function(){
+				var conMessage= $('#FContent').val();//$('#FContent').htmlarea('html');				
+				$.post("/Buss/CommonOpinionService/1", {						  
+							"FId" : 0,
+							"FContent" : conMessage
+				       }, function(data) {
+							 if (data.success) {
+								  oTableON.fnDraw();
+								  $.jBox.info('常用意见添加成功。');								 
+								 //SetFormValue(data, "Edit");
+							 } else {
+								 $.jBox.info('常用意见添加失败，请检查网络或联系系统管理员！');
+								 return false;
+							 }
+				}, "json");				
+			});			
+		});
+    	/* Get the rows which are currently selected */
+		 function fnGetSelected( oTableLocal )
+		 {
+			 return oTableLocal.$('tr.row_selected');
+		 }
+    </script>
+ </HEAD>
+
+ <BODY>
+ <input type="hidden" value=0 id="FId" name="FId"/>
+ <div class="popWindow">   
+    <div class="popBody">
+		  <table width="100%" height="293px" border="0" style="margin:auto;valign:top;margin-top:0px;margin-left:2px;">
+			  <tr>
+				<td width="310px" class="tdtopcss">&nbsp;&nbsp;常用意见</td>
+				<td width="10px" rowspan="3" bgcolor="#CCCCCC">&nbsp;</td>
+				<td width="305px" class="tdtopcss">&nbsp;&nbsp;填写意见</td>
+			  </tr>
+			  <tr>
+				<td width="98%" valign=top height="100%" style="padding:2px 5px 2px 5px;">
+					<table cellpadding="0" cellspacing="0" border="1" class="display" id="tableOpinion">		 
+						 <thead>
+							 <tr>														
+								 <th width="36px">序号</th>
+								 <th width="60px">用户编号</th>
+								 <th>内容</th>														
+							 </tr>
+					     </thead>
+						 <tbody>													
+						 </tbody>										
+				     </table>					 
+				</td>
+				<td>
+					<textarea id="FContent" cols="40" rows="12"></textarea></td>
+			  </tr>			 
+			</table>
+    </div>
+    <div class="popFoot">
+		<div style="float:left;padding: 2px 2px;"><input id="butDelete" name="butDelete" type="button" value="删除意见" class="btnOneRuT" /></div>
+        <div class="btnDiv">		    
+			<input id="butPost" name="butPost" type="button" value="提   交" class="btnOneRu" />
+            <input id="butAdd" name="butAdd" type="button" value="加入常用" class="btnOneRu" />            
+        </div>
+    </div>
+</div>    
+ </BODY>
+</HTML>

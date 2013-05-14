@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>造价资料查看</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../plugin/easyui/themes/default/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+	<link rel="stylesheet" type="text/css" href="../../css/layout.css" />
+
+    <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	    <script type="text/javascript">
+    	//等待加载提示框
+  		var _m1;
+		$.loadmg=function (titled,message){
+			if(_m1){
+				_m1.dialog("close");
+				$("#divload").remove();
+			}
+			//this.attr("align","centrt");
+			$("body").append("<div id='divload' align='centert'><table id='123' valign='Center'><tr><td><img id='imgLoad' height='30px' width='30px' src='../../images/large-loading.gif'/>"
+					+"</td><td>"+message+"</td></tr></table></div>");
+			var wid=60;
+			//如果信息长度超过10则固定框体大小为200
+			if(message.length<10){
+				wid+=11*message.length;
+			}else{
+				wid=200;
+			}
+			$("#divload").dialog({
+				width:wid,
+				title:titled,
+				iconCls:'checkfile-esaytb',
+				modal:true,
+				closed:true,
+				closable:false,
+				shadow:false
+			});
+			_m1=$("#divload");
+			_m1.dialog("open");
+		}
+		//消息提示框
+		$.tipmg=function(titled,message,type,_speed){
+			if(_m1){
+				_m1.dialog("close");
+				$("#divmessage").remove();
+			}
+			var _wid=60;
+			if(message.length<10){
+				_wid+=11*message.length;
+			}else{
+				_wid=200;
+			}
+			if(!_speed){
+				_speed=1000;
+			}
+			if(type=="success"){
+				$("body").append("<div id='divmessage' align='centert'><table id='123' valign='Center'><tr><td><img id='imgLoad' height='30px' width='30px' src='../../images/submitsuccess.png'/>"
+						+"</td><td><font>"+message+"</font></td></tr></table></div>");
+			}else if(type=="error"){
+				$("body").append("<div id='divmessage' align='centert'><table id='123' valign='Center'><tr><td><img id='imgLoad' height='30px' width='30px' src='../../images/wrong.gif'/>"
+						+"</td><td><font>"+message+"</font></td></tr></table></div>");
+			}else if(type=="warning"){
+				$("body").append("<div id='divmessage' align='centert'><table id='123' valign='Center'><tr><td><img id='imgLoad' height='30px' width='30px' src='../../images/error_128.png'/>"
+						+"</td><td><font>"+message+"</font></td></tr></table></div>");
+			}
+			$("#divmessage").dialog({
+				width:_wid,
+				title:titled,
+				modal:true,
+				closed:true,
+				closable:false,
+				shadow:false
+			});
+			//this.dialog("open");
+			$("#divmessage").dialog("open");
+			var diap=$("#divmessage").parent();
+			setTimeout(function(){
+				//diap.fadeOut(speed,function(){
+					$("#divmessage").dialog("close");
+				//});
+			},_speed);
+		}
+		$.loadmg.close=function(){
+			$("#divload").dialog("close");
+		}
+		</script>
+
+
+	<style type="text/css">
+		.txta{width:99%; height:100px; color:#0000FF; font-size:1em; overflow:auto;}
+		.txta_focus{color:#333; border:2px solid #C93;}
+	</style>
+	<script type="text/javascript"> 
+	$(document).ready(function() {
+		if(!checkUserLogin){
+			return false;
+		}
+		var fid = Request.QueryString('FId');
+		function ForDight(Dight,How){  
+			Dight = Math.round(Dight*Math.pow(10,How))/Math.pow(10,How);  
+			return Dight;  
+		}
+		function formatFileSize(_v) {
+			var fileSize;
+			var strfileSize="";
+			if(_v<=1024*1024){
+				fileSize=ForDight(_v/1024,3);
+				strfileSize=fileSize+"KB";
+			}
+			else{
+				fileSize=ForDight(_v/1024/1024,3);				
+				strfileSize=fileSize+"MB";
+			}
+			return strfileSize;
+		}
+		$("#ResultsFileGrid").datagrid({
+			title:'',
+			width: '70%',
+			height: '98%',
+			columns:[
+				[{title:'编号',field:'FId',width:60,hidden:true},
+				 {title:'fkId',field:'fkId',hidden:true,width:60},
+				 {title:'文件名称',field:'FFileName',width:250,align:'center'},
+				 {title:'文件类型',field:'FFileType',width:100,align:'center'},
+				 {title:'文件大小',field:'FFileSize',width:100,align:'center',
+					formatter : function(value,row,index){
+						return formatFileSize(value);
+					}
+				 },
+				 {title:'上传日期',field:'FLoadDate',width:120,align:'center'},
+				 {
+						field : 'action',
+						title : '下载',
+						align:'center',
+						width : 60,
+						formatter : function(value, row, index) {
+							if(nodeid!=106){
+								return '<a href="/Buss/ConstructionFileService/LoadFile/'+row.FId+'" id="aDownload" name="aDownload" >下载</a>'; 
+							}else{
+								return '<a href="'+row.FFilePath+'" id="aDownload" name="aDownload" >下载</a>'; 
+							}
+						}
+				}
+				]],
+			url: '',
+			rownumbers:true,fit:true,singleSelect:true,
+			toolbar:'#tb',
+			pagination:false,
+			onSelect: function(index,row){		
+
+			}
+		});	
+		
+		FUN_setReadOnly();
+		FUN_getConstructionByID(fid);
+		
+	});
+	
+	function checkUserLogin(){	
+		var CurrentUser;
+		$.ajax({
+		    url: "/system/SvrService/AppIndex/4/",       
+		    method: 'GET',
+		    async :  false,//同步请求
+		    success: function (data) {
+		    	if(data.success){
+		    		CurrentUser=data.root;
+		        }else{
+		        	window.location.href='/html/module/system/loginApp.html';
+		        }
+		    }
+		}); 
+		return CurrentUser;
+	}
+	
+	function FUN_getConstructionByID(id){
+		if(id){
+			$.post("/Buss/ConstructionService/2", {
+	   			"FId" : id
+	   			}, function(data) {
+	   				if(data.success){
+	   					FUN_setValues(data.root);
+	   					FUN_GetFiles(id,1,10);
+	   				}else{
+	   					FUN_clearValues();
+	   					$.messager.alert('系统提示!','操作失败,请检查网络是否正常!','error');
+	   				}
+	   		}, "json");
+		}else{
+			FUN_clearValues();
+			$.messager.alert('系统提示!','操作失败,请检查网络是否正常!','error');
+		}
+	}
+	
+	function FUN_GetFiles(fkId,page,rows){
+		$("#ResultsFileGrid").datagrid({ 
+			   url:'/Buss/ConstructionFileService/3', 
+			   queryParams:{ 
+				    fkId:fkId,
+			 	  	page:page,
+			 	  	rows:rows
+			   } 
+		}); 
+	}
+	function FUN_setValues(rowData){
+		 if(rowData){
+				$("#FId").val(rowData.FId);
+				$("#FTitle").val(rowData.FTitle);
+				$("#FContent").val(rowData.FContent);
+				$("#FPersonId").val(rowData.FPersonId);
+				$("#FPersonName").val(rowData.FPersonName); 
+				$("#FDate").val(rowData.FDate);
+				$("#FType").val(rowData.FType);
+				$("#FTypeName").val(rowData.FTypeName);
+				$("#FPublicType").combobox("setValue",rowData.FPublicType);
+		   }
+	}
+	
+	function FUN_clearValues(){
+		$("#FId").val(null);
+		$("#FTitle").val(null);
+		$("#FContent").val(null);
+		$("#FPersonId").val(null);
+		$("#FPersonName").val(null); 
+		$("#FDate").val(null);
+		$("#FType").val(null);
+		$("#FTypeName").val(null);
+		$("#FPublicType").combobox("setValue",null);		
+	}
+	
+	function FUN_setReadOnly(){
+		$("#FPersonName").attr("readonly",true);
+		$("#FDate").attr("readonly",true);	 
+		$("#FTitle").attr("readonly",true);
+		$("#FContent").attr("readonly",true);
+		$("#FTypeName").attr("readonly",true);	
+		$("#FPublicType").combobox('disable');	
+	}
+	
+	</script>
+  </head>
+  <body>
+	<div class="easyui-layout" data-options="fit:true" style="width:'100%';height:530px;">
+		<div data-options="region:'north',split:true" title="造价资料基本信息" style="height:260px;">
+			<div style="margin:5px 5px;">
+				<table class="content_table1" width="70%" border="1" cellpadding="0"
+					style="position:absolute;">
+					<tr>
+						<td width="120px" nowrap>标题：*</td>
+						<td colspan="3"><input type="hidden" style="width:25px;"
+							id="FId" name="FId" /> <input type="text" style="width:610px;"
+							id="FTitle" name="FTitle" empty="true" /></td>
+					</tr>
+					<tr>
+						<td>摘要：*</td>
+						<td colspan="3">
+							<div class="test_x" style="width:734px;">
+								<textarea id="FContent" name="FContent" class="txta mt5"
+									style="resize:none;" type="textarea" empty="true"></textarea>
+							</div></td>
+					</tr>
+					<tr>
+						<td width="120px" nowrap>发布人：</td>
+						<td><label> <input type="hidden" style="width:25px;"
+								id="FPersonId" name="FPersonId" /> <input type="text"
+								style="width:200px;" id="FPersonName" name="FPersonName"
+								empty="true">
+						</label></td>
+						<td nowrap>发布日期：</td>
+						<td><label> <input type="text" style="width:200px;"
+								id="FDate" name="FDate" empty="true">
+						</label></td>
+					</tr>
+					<tr>
+						<td>类别：</td>
+						<td><label> <input type="hidden" style="width:25px;"
+								id="FType" name="FType" /> <input type="text"
+								style="width:200px;" id="FTypeName" name="FTypeName"
+								empty="true">
+						</label></td>
+						<td nowrap>公开类型：</td>
+						<td><label> <input style="width:203px;"
+								id="FPublicType" name="FPublicType" class="easyui-combobox"
+								data-options="url:'/GetCode/Query/?action=getAppCode&CodeTypeId=409&State=1',valueField:'FCode',
+													textField:'FCodeText',multiple:false,panelHeight:'auto'">
+						</label></td>
+					</tr>
+				</table>
+			</div>  
+		</div>
+		<div data-options="region:'center',fit:true,split:true" title="造价资料附件信息">
+			<table id="ResultsFileGrid" style="width:800px;"></table>  	
+		</div>
+	</div>
+  </body>
+</html>

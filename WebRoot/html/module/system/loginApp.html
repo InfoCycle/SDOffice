@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>登录</title>
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link href="../../css/style.css" rel="stylesheet" />
+<link rel="stylesheet" href="../../plugin/showLoading/css/showLoading.css" type="text/css"></link>
+<link href="../../plugin/tooltip/tip-darkgray/tip-darkgray.css"
+	rel="stylesheet" />
+<link rel="stylesheet" href="../../plugin/jQuery.msgBox/styles/msgBoxLight.css" type="text/css" />
+<script src="../../plugin/js/jquery.js"></script>
+<script src="../../plugin/tooltip/jquery.poshytip.js"></script>
+<script type="text/javascript" src="../../plugin/jQuery.msgBox/scripts/jquery.msgBox.js"></script>
+<script type="text/javascript" src="../../plugin/showLoading/js/jquery.showLoading.min.js"></script>
+<script src="../../js/Modernizr.js"></script>	
+<style type="text/css">
+html,body {
+	font-size: 13px;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+</style>
+</head>
+<body id="loginMain">
+	<div id="bg" style="width:100%;height:100%">
+		<img src="../../images/login_bg.jpg"
+			style="width:100%;height:100%;z-index:-111;">
+	</div>
+	<div id="content">
+		<div id="win">
+			<div id="title">
+				<img src="../../images/login_logo.gif"
+					style="width:488px;height:68px" />
+			</div>
+			<div id="form">
+				<div id="left">
+					<table cellspacing="0" cellpadding="0" style="margin-left:60px;">
+						<tr>
+							<td style="height: 40px;">用户名：</td>
+							<td colspan="2">
+								<input type="text" id="usercode"
+								name="usercode" class="username"
+								onFocus="this.style.borderColor='#239fe3'"
+								onblur="this.style.borderColor='#dcdcdc'" />
+							</td>
+						</tr>
+						<tr>
+							<td style="height: 40px;">密<span style="margin-left:15px;"></span>码：</td>
+							<td colspan="2">
+								<input type="password" id="userpwd" class="password"
+								onFocus="this.style.borderColor='#239fe3'"
+								onblur="this.style.borderColor='#dcdcdc'" />
+							</td>
+						</tr>
+						<tr>
+							<td style="height: 40px;">验证码：</td>
+							<td>
+								<input type="text" value=""
+								id="checkcode" name="checkcode" class="username"
+								onFocus="this.style.borderColor='#239fe3'"
+								onblur="this.style.borderColor='#dcdcdc'" style="width: 136px;" />
+							</td>
+							<td>
+								<img src="/user/login/captcha/" border="0" height="34px"
+								onclick="refresh(this);"
+								style="float:left;margin-top:0px;margin-left: 3px;align:middle;cursor:pointer;"
+								title="看不清楚，点击换一张新图片"/>
+							</td>
+						</tr>
+					</table>										
+					<div id="right">
+						<input type="image" name="submitButton" id="submitButton"
+							src="../../images/login_btn.jpg" width="104" height="40"
+							border="0" />
+					</div>
+				</div>
+				<div style="clear:both;"></div>
+				<div id="info">
+					<ol>
+						<li>输入管理账号和密码后进入系统</li>
+						<li>为了避免使用过程中不兼容，建议使用IE8.0及以上版本的浏览器</li>
+						<li id="info_msg"></li>
+					</ol>
+				</div>
+			</div>
+		</div>
+</body>
+</html>
+<script type="text/javascript">
+if (Modernizr.boxshadow && Modernizr.borderradius && Modernizr.cssanimations){
+		$('#info_msg').html('当前浏览器可以正常支持圆角、阴影和动画效果.');
+	} else {	   
+		$('#info_msg').html('当前浏览器不支持圆角、阴影和动画效果！是否需要安装<a href="http://www.google.com/chromeframe?quickenable=true">Google Chrome IE插件</a>？');
+	}
+<!--
+
+	function refresh(obj) {
+		//var rand = Math.floor(Math.random() * 1000);
+		var rand = Math.random();
+		obj.src = "/user/login/captcha/?rand=" + rand;
+	}
+
+	function checkForm() {
+		if (!$("#usercode").val()) {
+			$.msgBox({
+                title: "系统提示",
+                content: "用户名不能为空！",
+                type:"info"
+            });
+			$("#usercode").triggerHandler("focus");
+			return false;
+		}
+		if (!$("#userpwd").val()) {
+			$.msgBox({
+                title: "系统提示",
+                content: "登录密码不能为空！",
+                type:"info"
+            });
+			$("#userpwd").triggerHandler("focus");
+			return false;
+		}
+		if (!$("#checkcode").val()) {
+			$.msgBox({
+                title: "系统提示",
+                content: "验证码不能为空！",
+                type:"info"
+            });
+			$("#checkcode").triggerHandler("focus");
+			return false;
+		}
+		return true;
+	}
+	function userLogin() {		
+		if (checkForm()) {
+			$('#loginMain').showLoading();
+			$.post("/user/login/", {
+				Action : "POST",
+				usercode : $("#usercode").val(),
+				userpwd : $("#userpwd").val(),
+				checkcode : $("#checkcode").val()
+			}, function(data) {				
+				if (data.success)
+					window.location.href = 'AppIndex.html';
+				else {
+					$('#loginMain').hideLoading();
+					$.msgBox({
+		                title: "系统提示",
+		                content: data.message
+		            });
+					return false;
+				}
+			}, "json");
+		}
+	}
+	$(document).ready(function() {		
+		//登录
+		$("#submitButton").click(function() {			
+			userLogin();			
+		});
+
+		$("#usercode").poshytip({
+			content : '请输入用户名',
+			className : 'tip-darkgray',
+			showOn : 'focus',
+			alignTo : 'target',
+			alignX : 'right',
+			alignY : 'center',
+			offsetX : 5,
+			offsetY : 5,
+			allowTipHover : false
+		});
+		$("#userpwd").poshytip({
+			content : '请输入密码',
+			className : 'tip-darkgray',
+			showOn : 'focus',
+			alignTo : 'target',
+			alignX : 'right',
+			alignY : 'center',
+			offsetX : 5,
+			offsetY : 5,
+			allowTipHover : false
+		});
+		$("#checkcode").poshytip({
+			content : '请输入验证码，看不清，点击图片刷新',
+			className : 'tip-darkgray',
+			showOn : 'focus',
+			alignTo : 'target',
+			alignX : 'inner-left',
+			alignY : 'top',
+			offsetX : 20,
+			offsetY : 5
+		});
+
+		$("#usercode").keydown(function(event) {
+			if (event.keyCode == 13) {
+				event.preventDefault();
+				if (!$("#usercode").val()) {
+					$.msgBox({
+		                title: "系统提示",
+		                content: "用户名不能为空！",
+		                type:"info"
+		            });
+					return false;
+				}
+				$("#userpwd").trigger("focus");
+			}
+		});
+		$("#userpwd").keydown(function(event) {
+			if (event.keyCode == 13) {
+				event.preventDefault();
+				if (!$("#userpwd").val()) {
+					$.msgBox({
+		                title: "系统提示",
+		                content: "密码不能为空！",
+		                type:"info"
+		            });
+					return false;
+				}
+				$("#checkcode").trigger("focus");
+			}
+		});
+		$("#checkcode").keydown(function(event) {
+			if (event.keyCode == 13) {
+				event.preventDefault();
+				if (!$("#checkcode").val()) {
+					$.msgBox({
+		                title: "系统提示",
+		                content: "验证码不能为空！",
+		                type:"info"
+		            });
+					return false;
+				}
+				$("#submitButton").trigger("click");
+			}
+		});
+	});
+//-->
+
+function keydown(e) {
+	var isie = (document.all) ? true : false;
+	var key;
+	var ev;
+	if (isie) { // IE和谷歌浏览器
+		key = window.event.keyCode;
+		ev = window.event;
+	} else {// 火狐浏览器
+		key = e.which;
+		ev = e;
+	}
+	if (key == 13) {// IE和谷歌浏览器
+		if (isie) {
+			if (document.activeElement.readOnly == undefined
+					|| document.activeElement.readOnly == true) {
+				$("#submitButton").trigger("click");
+			}
+		} else {// 火狐浏览器
+			if (document.activeElement.readOnly == undefined
+					|| document.activeElement.readOnly == true) {
+				ev.which = 0;
+				ev.preventDefault();
+				$("#submitButton").trigger("click");
+			}
+		}
+	}
+}
+document.onkeydown = keydown;
+</script>

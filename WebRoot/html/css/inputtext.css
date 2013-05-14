@@ -1,0 +1,32 @@
+/* CSS Document */
+input[type="text"] {
+	border-bottom: 1px solid black;
+    color: blue;
+	height: 20px;
+	background-color: expression((this.readOnly && this.readOnly==true)?"#f5f5f5":"#f5f5f5"));
+	vertical-align:middle;  
+    line-height:20px;  
+	padding:1px;
+    border-left-style: none;
+    border-left-color: inherit;
+    border-left-width: 1px;
+    border-right-style: none;
+    border-right-color: inherit;
+    border-right-width: 1px;
+    border-top-style: none;
+    border-top-color: inherit;
+    border-top-width: 1px;
+}
+
+input[type="text"]:hover,input[type="text"]:focus {
+	background: #f5f5f5;
+	border-color: #0099CC;
+	border-top: #ffffff 0px solid;
+	border-style: none;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-bottom-color: black;
+	vertical-align:middle;  
+    line-height:20px;
+    outline-width:0;   
+}

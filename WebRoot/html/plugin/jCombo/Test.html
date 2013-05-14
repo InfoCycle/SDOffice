@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+    <TITLE> New Document </TITLE>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="default.css" type="text/css" rel="stylesheet" />
+	<link href="css/default.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="../js/jquery.js"></script>
+	<script type="text/javascript" src="lang/cn.js"></script>
+	<script type="text/javascript" src="js/core.js"></script>
+	<script type="text/javascript" src="js/combo.js"></script>
+  <script type="text/javascript">
+$(function(){
+	var cfg = {
+			keyField: 'FCode',
+			displayField: 'FCodeText',
+			multiSelect: false,
+			width: 200,
+			boxWidth: 200,
+			maxHeight: 100, 
+			cols : [{
+				field: 'FCodeText', width: 198
+			}],
+			loader: {
+				url: '/GetCode/Query/',
+				params: { "action" : "getAppCodeNew",
+					"CodeTypeId" : 314,
+					"State" : 1 },
+				autoLoad: true
+			}
+		};
+	var cfg1 = $.extend({}, cfg);
+	var cb1 = $('#combo1').mac('combo', cfg1);
+	$('#get1').click(function(){
+		alert(cb1.selected);
+	});
+	$('#set1').click(function(){
+		cb1.select('2');
+	});
+
+
+
+	var dd = [];
+	for(var i=1;i<=5; i++)
+		dd.push({ code: i + '', name: 'Employee ' + i });
+	alert(dd);
+	var cfg2 = {
+		keyField: 'code',
+		displayField: 'name',
+		multiSelect: false,
+		width: 200,
+		boxWidth: 200,
+		cols : [{
+			field: 'code', width: '30%'
+		},{
+			field: 'name', width: '70%'
+		}],
+		data: dd
+	};
+	var cfg2 = $.extend({}, cfg2);
+	var cb2 = $('#combo2').mac('combo', cfg2);
+	 
+	var cfg3 = $.extend({}, cfg2);
+	cfg3.multiSelect = true;
+	var cb3 = $('#combo3').mac('combo', cfg2);
+	 
+});
+</script>
+ </HEAD>
+ <BODY>
+ <style stype="text/css">
+#head { height: 60px; background-color: #333; }
+#head img { float: left; border: none; }
+#head .right { float: right; height: 60px; color: #FFF; text-align: right; }
+#head .right a { color: #CCC; font-size: 16px; color: #FFF; }
+#head .title {
+	color: #F93; float: left; height: 60px; line-height: 60px;
+	font-size: 40px; font-family: Impact, 'Comic Sans MS';
+}
+#head a { color: #F93; text-decoration: underline; }
+.hr { height: 12px; background: transparent url(css/nm-b.png) repeat-x; }
+</style>
+  <div id="combo1" class="combo"></div><br>
+&nbsp;&nbsp;<button id="get1">get1</button>&nbsp;<button id="set1">set1</button>
+<span>
+http://www.boarsoft.com/cn/javascript/combo/remote.html
+<br/>
+{"success":true,"data":{"list":[{"no":"1","summary":"Summary of row 001","subject":"Subject 001","debit":36.97,"credit":43.79},{"no":"2","summary":"Summary of row 002","subject":"Subject 002","debit":68.84,"credit":14.4},{"no":"3","summary":"Summary of row 003","subject":"Subject 003","debit":9.76,"credit":35.49},{"no":"4","summary":"Summary of row 004","subject":"Subject 004","debit":10.21,"credit":89.03},{"no":"5","summary":"Summary of row 005","subject":"Subject 005","debit":49.67,"credit":43.81},{"no":"6","summary":"Summary of row 006","subject":"Subject 006","debit":83.3,"credit":61.57},{"no":"7","summary":"Summary of row 007","subject":"Subject 007","debit":71.36,"credit":68.53},{"no":"8","summary":"Summary of row 008","subject":"Subject 008","debit":16.99,"credit":31.02},{"no":"9","summary":"Summary of row 009","subject":"Subject 009","debit":42.34,"credit":63.42},{"no":"10","summary":"Summary of row 010","subject":"Subject 010","debit":20.14,"credit":13.64}],"pageNo":1,"pageSize":10,"pageCount":16,"total":156}}</span>
+<hr/>
+<h3>multiSelect = false</h3>
+<div id="combo3" class="combo"></div><br>
+&nbsp;&nbsp;<button id="get1">get1</button>&nbsp;<button id="set1">set1</button>
+<h3>multiSelect = true</h3>
+<div id="combo4" class="combo"></div><br>
+&nbsp;&nbsp;<button id="get2">get2</button>&nbsp;<button id="set2">set2</button>
+ </BODY>
+</HTML>

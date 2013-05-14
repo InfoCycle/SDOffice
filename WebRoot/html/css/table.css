@@ -1,0 +1,13 @@
+/* CSS Document */
+    .content_table1 {
+        border-collapse:collapse;border:none;
+	    border:solid #000 0px;	    
+    }
+    .content_table1 td {
+        font-size:13px;	
+	    height:31px;
+	    font-family:"宋体";
+	    padding-left:3px;
+	    padding-top:2px;
+	    border: solid #000 1px;	    
+    }     

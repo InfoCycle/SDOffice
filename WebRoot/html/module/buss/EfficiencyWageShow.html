@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EfficiencyWageShow.html</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link href="../../plugin/from/emptyPattern.css" rel="stylesheet" />
+    <link href="../../plugin/tooltip/tip-yellowsimple/tip-yellowsimple.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+    <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+    <script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+    <script src="../../plugin/tooltip/jquery.poshytip.js"></script>
+    <script type="text/javascript" src="../../plugin/from/emptyPattern.js"></script>
+    <script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+    <script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+    
+    <style type="text/css">
+    body{
+    	font-size:12px;
+    	font-family:微软雅黑;
+    }
+    
+    
+    .grid{
+    	background-image:url('/html/images/grid.png');
+    	border:1px gray solid;
+    	font-weight:bold;
+    	height:31px;
+    }
+        
+       input[type=button]
+        {
+            width: 50px;
+            font-size: 12px;
+            font-family: 微软雅黑;
+            margin-left: 40%;
+        }
+        input[type=text],input[type=textarea]
+        {
+            font-size: 12px;
+            font-family: 微软雅黑;
+            width: 300px;
+        }
+        ul
+        {
+            list-style-type: none;
+        }
+        li
+        {
+            line-height: 60px;
+            border-bottom: 1px dashed #cccccc;
+            border-top: 1px dashed #FFFFFF;
+        }
+    </style>
+    <script type="text/javascript">
+    var entitys=new Array();
+    entitys.push({FId:1,FNumbers:'云南化工机械建筑有限公司'});
+    entitys.push({FId:2,FNumbers:'昆明周行信息技术有限公司'});
+    entitys.push({FId:3,FNumbers:'云南恩裕信息技术有限公司'});
+    var param= $.param(entitys,true);
+    var str=decodeURIComponent(param);
+    var en=$.param({widtd:20,height:30});
+    var entity=decodeURIComponent($.param({entity:{widtd:20,height:30}}));
+    
+    var data={entity:[{FId:1,FNumbers:'云南化工机械建筑有限公司'},{FId:2,FNumbers:'昆明周行信息技术有限公司'}]};
+    var parse=$(data).serialize();
+    var dr=decodeURIComponent($.param(parse,true));
+    $(document).ready(function(){
+    	$('input[id=btnSelectPlan]').click(function(){
+    		$.jBox.open('iframe:../report/SelectTask.html', '任务选择', 510, 321, { buttons: { '关闭': true} });
+    		return false;
+    	});
+    	 $('input[id=a]').click(function() {
+             var err=$('[empty]').emptyAll({
+            	 parentID:true
+             });
+             err&=$('input[exp]').PatternAll();
+            
+         });
+    	 
+    	 /*
+    	var entityJSON=$.toJSON(entitys);
+    	$.ajax({
+			url:'/Buss/Wage/2',
+			type: 'POST',
+			data:{entitys:entityJSON}, 
+			dataType: 'json',
+			async :  false,
+			success:function(data) {
+				if(data.success){
+				   
+				}
+			}
+		});*/
+		
+		var en=[{name:'杨军',post:'2008-09-09 11:45',user:'李文选',get:'2012-07-05 12:15',result:'2012-09-05 12:15'},
+		        {name:'苏伟',post:'2008-09-09 11:45',user:'郑成功',get:'2012-07-05 12:15',result:'2012-09-05 12:15'}];
+		var dr=new Array();
+		var ds=new Array();
+		$.each(en,function(i,entity){
+			dr.push('<tr style="background-color: white;height:25px"><td>'+entity.name+'</td><td>'+entity.post+'</td><td>'+entity.user+'</td><td>'+entity.get+'</td><td>'+entity.result+'</td></tr>');
+			ds.push('<tr style="background-color: white;height:25px"><td>'+entity.name+'</td><td>'+entity.post+'</td><td>'+entity.user+'</td></tr>');
+		});
+		//$('#grid1').empty().append(dr.join(new String()));
+		//$('#grid2').empty().append(ds.join(new String()));
+		//$('#grid3').empty().append(ds.join(new String()));
+		$('#grid').empty().append(dr.join(new String()));
+		
+    });
+    
+    function closeJBox(){
+    	var param=$('input[id=FKTaskName]').val();
+    	if($.trim(param)){
+    		$('input[id=FTaskName]').val(param);
+    	}
+    	
+    	$.jBox.close(true);
+    }
+    </script>
+  </head>
+  
+  <body>
+<input id="fkTaskId" type="hidden">
+<input id="FKTaskName" type="hidden">
+  <div style="width: 450px">
+        <ul>
+        <li><span>项目名称：</span> 
+            <input type="text" id="FTaskName" name="FTaskName"  readonly="readonly" empty="true"/>
+			<input id="btnSelectPlan" type="button" value="选择"/>	</li>
+            <li><span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</span><input type="text"
+                id="userName" empty="true" exp="number" /></li>
+            <li><span>工作单位：</span><input type="text" id="workName" exp="percentage" /></li>
+            <li><span>手机号码：</span><input type="text" id="phone"  empty="true"/></li>
+             <li><span>属&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;地：</span>
+             <select type="select" empty="true"  style="width:300px;font-family:微软雅黑">
+             <option value ="">请选择属地</option>
+			  <option value ="volvo">昆明市</option>
+			  <option value ="saab">楚雄州</option>
+			</select>
+			</li>
+            <li><span>信息描述：</span><textarea type="textarea" id="remark"  empty="true" style="width:300px"></textarea></li>
+            <li>
+                <input type="button" id="a" value="保存" /></li>
+        </ul>
+    </div>
+    <table border="0" cellpadding="0" cellspacing="0" style="width:820px;margin:auto;padding:0px;">
+		<tr>
+			<td style="width:100%;text-align:left">
+				<table border="0" cellpadding="0" cellspacing="1" style="text-align:center;background-color: #cccccc">
+				<tr class="grid">
+				<td style="width:100px">发送人员</td>
+				<td style="width:150px">发送时间</td>
+				<td style="width:100px">接收人员</td>
+				<td style="width:150px">办理时间</td>
+				<td style="width:150px">完成时间</td>
+				</tr>
+				<tbody id="grid"></tbody>
+				
+				</table>
+			</td>
+		</tr>
+		</table>
+	<!-- <table border="0" cellpadding="0" cellspacing="0" style="width:820px;margin:auto;padding:0px;">
+		<tr>
+			<td style="width:100%;text-align:left">
+				<table border="0" cellpadding="0" cellspacing="1" style="text-align:center;background-color: #cccccc">
+				<tr class="grid">
+				<td style="width:100px">发送人员</td>
+				<td style="width:150px">发送时间</td>
+				<td style="width:100px">接收人员</td>
+				<td style="width:150px">办理时间</td>
+				<td style="width:150px">完成时间</td>
+				</tr>
+				<tbody id="grid1"></tbody>
+				</table>
+			</td>
+		</tr>
+		<tr>
+		<td style="width:100%;text-align:left">
+			<table border="0" cellpadding="0" cellspacing="1" style="margin-top:5px;text-align:center;background-color: #cccccc">
+				<tr class="grid">
+				<td style="width:100px">催办人员</td>
+				<td style="width:150px">催办时间</td>
+				<td style="width:100px">办理人员</td>
+				</tr>
+				<tbody id="grid2"></tbody>
+				</table>
+			</td>
+		</tr>
+		<tr>
+		<td style="width:100%;text-align:left">
+			<table border="0" cellpadding="0" cellspacing="1" style="margin-top:5px;text-align:center;background-color: #cccccc">
+				<tr class="grid">
+				<td style="width:100px">提交人员</td>
+				<td style="width:150px">打回时间</td>
+				<td style="width:100px">办理人员</td>
+				</tr>
+				<tbody id="grid3"></tbody>
+				</table>
+			</td>
+		</tr>
+	</table>
+	 -->
+</body>
+</html>

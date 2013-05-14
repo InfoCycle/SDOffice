@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>业务中心</title>
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/datagrid-groupview.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+
+<style type="text/css">
+html body{
+	width:100%;
+	height:100%;
+}
+.icon-expand-all {
+	background-image: url(../../images/expand-all.gif) !important;
+}
+
+.icon-collapse-all {
+	background-image: url(../../images/collapse-all.gif) !important;
+}
+
+.x-tree-node-expanded  .root {
+	background-image: url(../../images/root.png)
+}
+
+.x-tree-node-collapsed  .root {
+	background-image: url(../../images/root.png)
+}
+
+.x-tree-node-expanded  .type {
+	background-image: url(../../images/type.png)
+}
+
+.x-tree-node-collapsed  .type {
+	background-image: url(../../images/type.png)
+}
+
+.x-tree-node-expanded  .dept {
+	background-image: url(../../images/dept.png)
+}
+
+.x-tree-node-collapsed  .dept {
+	background-image: url(../../images/dept.png)
+}
+.x-tree-node-expanded  .year {
+	background-image: url(../../images/year.png)
+}
+
+.x-tree-node-collapsed  .year {
+	background-image: url(../../images/year.png)
+}
+.x-tree-node-leaf  .type {
+	background-image: url(../../images/type.png)
+}
+
+.process-type {
+	background-image: url(../../images/type.png)
+}
+
+.x-tree-node-leaf  .dept {
+	background-image: url(../../images/dept.png)
+}
+
+.x-tree-node-collapsed .task {
+	background-image: url(../../images/task.png)
+}
+
+.x-tree-node-leaf  .task {
+	background-image: url(../../images/task.png)
+}
+
+.x-tree-node-expanded  .task {
+	background-image: url(../../images/task.png)
+}
+
+.x-tree-node-collapsed .package {
+	background-image: url(../../images/package.png)
+}
+.x-tree-node-expanded  .package {
+	background-image: url(../../images/package.png)
+}
+.x-tree-node-leaf  .package {
+	background-image: url(../../images/package.png)
+}
+
+.x-tree-node {
+	font-size: 14px;
+}
+
+.x-tree-node-el {
+	height: 20px;
+	vertical-align: middle;
+	line-height: 20px;
+}
+
+.x-tree-node-anchor {
+	height: 20px;
+	vertical-align: middle;
+	line-height: 20px;
+}
+
+.bc_detail {
+	width: 780px;
+	margin-right: auto;
+	margin-left: auto;
+	border-collapse: collapse;
+	border: none;
+	margin-top: 40px;
+}
+
+.bc_detail td {
+	height: 28px;
+	border: solid #000 1px;
+	font-size: 13px;
+	text-align: center;
+}
+
+#unitName {
+	color: #0000FF;
+}
+
+#unitPerson tr td {
+	color: #0000FF;
+}
+
+#unitTask tr td {
+	color: #0000FF;
+}
+
+.taskFiles {
+	width: 740px;
+	margin-right: auto;
+	margin-left: auto;
+	border-collapse: collapse;
+	border: none;
+	margin-top: 40px;
+}
+
+.taskFiles td {
+	height: 36px;
+	border: solid #FFEBCD 1px;
+	font-size: 13px;
+}
+
+.date {
+	padding-left: 5px;
+	color: #0000FF;
+}
+.filesList {
+	list-style: none;
+	color: #0000FF;
+}
+
+.filesList li {
+	cursor: pointer;
+	width :100%;
+}
+.liTable{
+	width :100%;
+}
+.tdTitle{
+	width :60%;
+}
+.tdother{
+	width :10%;
+}
+.tddate{
+	width :20%;
+	text-align:center;
+}
+#taskFilesPanel{
+	overflow-y:auto;
+}
+</style>
+<script type="text/javascript">
+	var IFrame = "<iframe name='{0}' id='{1}' src='{2}' height='100%' width='100%' frameBorder='0' style='border-width: 0px;overflow-x:hidden;overflow-y:auto'/>";
+	var nav;
+	var isCanTuneup = Request.QueryString('isCanTuneup');
+	if (isCanTuneup) {
+		isCanTuneup = true;
+	}else{
+		isCanTuneup = false;
+	}
+	function checkProcess(id) {
+		return parent.checkProcess(id);
+	}
+	function NavigateUrl(id, text, href) {
+		parent.NavigateUrl(id, text, href);
+	}
+	function hasChild(n, re) {
+		var str = false;
+		n.cascade(function(n1) {
+			if (n1.isLeaf() && re.test(n1.text)) {
+				str = true;
+				return;
+			}
+		});
+		return str;
+	}
+	function getUnitPersonAndTask(unitId) {
+		Ext.getBody().mask("数据加载中，请稍等...");
+		$('#unitPerson')
+				.empty()
+				.append(
+						"<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>");
+		//单位联系人
+		Ext.Ajax
+				.request({
+					url : '/wf/bcService/2/',
+					method : 'POST',
+					params : {
+						unitId : unitId
+					},
+					success : function(response) {
+						var responseArray = Ext.util.JSON
+								.decode(response.responseText);
+						if (responseArray.success) {
+							var root = responseArray.root;
+							var personTR = [];
+							for ( var i = 0; i < root.length; i++) {
+								personTR.push("<tr><td>" + root[i].FName
+										+ "</td><td>" + root[i].FPosition
+										+ "</td><td>" + root[i].FTel
+										+ "</td><td>" + root[i].FPhone
+										+ "</td><td>" + root[i].FEmail
+										+ "</td><td>" + root[i].FName
+										+ "</td></tr>");
+							}
+							$('#unitPerson').empty().append(
+									personTR.join(new String()));
+						}
+					},
+					failure : function() {
+						showMessage("网络连接错误！", true);
+					}
+				});
+		//项目
+		$('#unitTask')
+				.empty()
+				.append(
+						'<tr><td></td><td colspan="2"></td><td colspan="2"></td><td></td></tr>');
+		Ext.Ajax
+				.request({
+					url : '/wf/bcService/3/',
+					method : 'POST',
+					params : {
+						unitId : unitId
+					},
+					success : function(response) {
+						var responseArray = Ext.util.JSON
+								.decode(response.responseText);
+						if (responseArray.success) {
+							var root = responseArray.root;
+							var taskHtml = [];
+							var i = 0;
+							for (i = 0; i < root.length; i++) {
+								taskHtml
+										.push('<tr><td>'
+												+ (i + 1)
+												+ '</td><td colspan="2" style="text-align:left">'
+												+ root[i].FTitle
+												+ '</td><td colspan="2">'
+												+ root[i].FBusinessCategory
+												+ '</td><td>'
+												+ root[i].FArchiveTime
+												+ '</td></tr>');
+							}
+							$('#unitTask').empty().append(
+									taskHtml.join(new String()));
+						}
+						Ext.getBody().unmask();
+					},
+					failure : function() {
+						Ext.getBody().unmask();
+						showMessage("网络连接错误！", true);
+					}
+				});
+	}
+	function getTaskItem(taskId) {
+		Ext.getBody().mask("数据加载中，请稍等...");
+		Ext.Ajax
+				.request({
+					url : '/wf/buCenter/taskItem/',
+					method : 'POST',
+					params : {
+						taskId : taskId
+					},
+					success : function(response) {
+						var responseArray = Ext.util.JSON
+								.decode(response.responseText);
+						if (responseArray.success) {
+							var obj = responseArray.root;
+							//时间
+							$('#beginDateTask').empty().append(obj.beginDateTask);
+							$('#task').empty().append(obj.task);
+							$('#ImplementPlan').empty().append(
+									obj.ImplementPlan);
+							$('#ProjectProcess').empty().append(
+									obj.ProjectProcess);
+							$('#ProjectCheck').empty().append(obj.ProjectCheck);
+							$('#MajorMattersReport').empty().append(
+									obj.MajorMattersReport);
+							$('#CheckReview').empty().append(obj.CheckReview);
+							//成果文件
+							$("#YesLoadResultsFileGrid").datagrid({								
+								url: '/Buss/ResultsLoadFileService/5/?TaskId='+taskId,
+								onLoadSuccess:function(data){
+									if(data.rows.length>0){
+										var height=data.rows.length*160;
+										alert(height);
+										$("#fileListTR").show();
+										$("#fileListTR").attr("height",height>280?280:height);
+										$("#YesLoadResultsFileGrid").datagrid('resize');
+									}else{
+										$("#fileListTR").hide();
+									}
+								}
+							});
+							//$('#CheckReviewFile').empty().append(obj.CheckReviewFile);
+							//提交项目成果时间 确认无需显示
+							//$('#endDateTask').empty().append(obj.endDateTask);
+							
+							$('#CustomerEvaluation').empty().append(
+									obj.CustomerEvaluation);
+							$('#ProjectAppraisalScoure').empty().append(
+									obj.ProjectAppraisalScoure);
+							$('#EfficiencyWage').empty().append(
+									obj.EfficiencyWage);
+							$('#taskBill').empty().append(
+									obj.taskBill);							
+						}
+						Ext.getBody().unmask();
+					},
+					failure : function() {
+						Ext.getBody().unmask();
+						showMessage("网络连接错误！", true);
+					}
+				});
+	}
+	function showTaskItem(action,processId,formPKID,activeId,state,href,name) {
+		href += "?action="+action+"&processId=" + processId
+		+ "&activeId=" + activeId
+		+ "&formPKID="+formPKID+"&state="+state;		
+		var tabid = processId + "_" + formPKID;
+		parent.NavigateUrl(tabid, name, href);
+	}
+	//弹出功能菜单对应的目标节点
+	var packageTargetNode;
+	var taskPackageMenu = new Ext.menu.Menu({ 
+		id: 'taskPackageMenu', 
+		items: [
+	       { id:'item_new',text: '新增任务包', handler: onItemClick } , 
+	       { id:'item_edit',text: '修改任务包', handler: onItemClick } , 
+	       { id:'item_delete',text: '删除任务包', handler: onItemClick }
+	    ]
+	});
+	//新增、修改任务包
+	function showPackage(id,type){
+		var title =type=="new"?"新增任务包":"修改任务包";
+		var action = type=="new"?1:2;
+		var form = new Ext.FormPanel({
+			frame : true,
+			height: 280,
+			bodyStyle : 'padding:5px 5px 0',
+			layout : 'form',
+			items: [
+					{
+						xtype : 'hidden',  
+						id : 'fId',  
+						value:id
+					},
+			        {
+			        	xtype : 'textfield',  
+			        	id : 'packageName',  
+			            fieldLabel : '任务包名称',
+			            allowBlank: false,
+                        blankText: '任务包名称不能为空',
+			            anchor : '90%'
+			        },{
+			        	xtype : 'datefield',  
+			        	id : 'date',
+			        	fieldLabel : '建立时间',
+			        	allowBlank: false,
+                        blankText: '建立时间不能为空',
+			        	format: 'Y-m-d'			            
+			        }
+			],
+			buttonAlign: 'center',  
+		      buttons : [  
+			        {  
+				          text : '保存',
+				          handler : function() {
+				        	  if(form.getForm().isValid()){
+				        		    var packageName = form.getForm().findField('packageName').getValue();  
+						            var fId 		= form.getForm().findField('fId').getValue();
+						            var dateTime 	= form.getForm().findField('date').getValue();
+						            Ext.Ajax.request({
+                            			url:'/wf/taskpackage/',
+                            			method : 'post',
+                            			params : {
+                            				action : action,
+                            				fId    : fId,
+                            				packageName : packageName,
+                            				dateTime 	: dateTime.Format('yyyy-MM-dd')
+                            			},
+                            			success : function(response){
+                            				var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+                            				if(responseArray.success){	
+                            					nav.root.reload();
+                            				}else{
+                            					showMessage('处理任务包数据失败！',true);
+                            				}
+                            			},
+                            			failure : function(response) {
+                            				showMessage('网络错误，操作任务包失败！',true);
+                            			}
+                            		});
+						            alert(dateTime.Format('yyyy-MM-dd'));
+				        	  }				              
+				          }
+			        }, {  
+				          text : '取消',  
+				          handler : function() {  
+				            	win.close(this);  
+				          }  
+			        }  
+		      ]
+		});
+		if(type=="edit"){
+			Ext.Ajax.request({
+    			url:'/wf/taskpackage/',
+    			method : 'post',
+    			params : {
+    				action : 4,
+    				fId    : id
+    			},
+    			success : function(response){
+    				var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+    				if(responseArray.success){	
+    					var obj = responseArray.root;
+    					form.getForm().findField('packageName').setValue(obj.FTaskName);  
+			            form.getForm().findField('date').setValue(obj.FGiveTime);
+    				}else{
+    					showMessage('提取任务包数据失败！',true);
+    				}
+    			},
+    			failure : function(response) {
+    				showMessage('网络错误，操作任务包失败！',true);
+    			}
+    		});
+		}
+		var win = new Ext.Window({
+			title:title,
+			closeable : true,
+			modal : true,
+			width : 460,
+			items : [form]
+		});
+		win.show(this);
+	}
+	//删除任务包
+	function deletePackage(id,text){
+		Ext.Msg.confirm('系统提示','确定删除'+text+'任务包吗？', function (btn) {
+            if (btn == "yes") {
+				Ext.Ajax.request({
+					url:'/wf/taskpackage/',
+					method : 'post',
+					params : {
+						action : 3,
+						fId    : id
+					},
+					success : function(response){
+						var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+						if(responseArray.success){	
+							nav.root.reload();
+						}else{
+							showMessage('删除任务包数据失败！',true);
+						}
+					},
+					failure : function(response) {
+						showMessage('网络错误，操作任务包失败！',true);
+					}
+				});
+            }
+        })
+	}
+	function onItemClick(item){
+		//alert(packageTargetNode.id);
+		//alert(item.id);
+		if(item.id=="item_new"){
+			if(packageTargetNode.attributes.dataType!="unit"){
+				showMessage("只能在单位下面新增任务包！请选择要新增任务包的单位");
+				return;
+			}
+			showPackage(packageTargetNode.id,'new');
+		}
+		if(item.id=="item_edit"){
+			if(packageTargetNode.attributes.dataType!="package"){
+				showMessage("只能修改任务包！请选择要修改的任务包");
+				return;
+			}
+			showPackage(packageTargetNode.id,'edit');
+		}
+		if(item.id=="item_delete"){
+			if(packageTargetNode.attributes.dataType!="package"){
+				showMessage("只能删除任务包！请选择要删除的任务包");
+				return;
+			}
+			deletePackage(packageTargetNode.id,packageTargetNode.text);
+		}
+	}
+	function taskPackage(node,e){
+		e.stopEvent();
+		packageTargetNode=node;
+		if(isCanTuneup
+				&&(node.attributes.dataType == "unit"||node.attributes.dataType=="package")){
+			//taskPackageMenu.show(node.getUI().wrap);
+			taskPackageMenu.showAt(e.getXY());
+		}
+	}
+	TreeNav = function() {
+		TreeNav.superclass.constructor.call(this, {
+			id : 'treeNav',
+			title : ' ',
+			region : 'west',
+			split : true,
+			useArrows : true,
+			header : true,
+			width : 240,
+			minSize : 240,
+			maxSize : 350,
+			collapsible : true,
+			margins : '0 0 5 5',
+			cmargins : '0 0 0 0',
+			rootVisible : false,
+			lines : false,
+			autoScroll : true,
+			animCollapse : false,
+			animate : false,
+			enableDD : isCanTuneup,
+			containerScroll : true,
+			loader : new Ext.tree.TreeLoader({
+				dataUrl : '/wf/bcService/1/'
+			}),
+			root : {
+				text : "全部业主类别",
+				id : 'root',
+				dataType : "type",
+				iconCls : 'root',
+				singleClickExpand : false,
+				expanded : true
+			},
+			rootVisible : false,
+			listeners : {
+				click : function(node, e) {
+					if (node.attributes.dataType == "type") {
+						Ext.getCmp('BusinessCenter').activate('ProcessIndex');
+					}
+					if (node.attributes.dataType == "unit") {
+						Ext.getCmp('BusinessCenter').activate('bcDetail');
+						$('#unitName').empty().append(node.text);
+						var unitId = node.id;
+						//设置单位联系人、项目
+						getUnitPersonAndTask(unitId);
+					}
+					if (node.attributes.dataType == "package") {
+						//Ext.getCmp('BusinessCenter').activate('TaskListPanel');
+						var taskId = node.id;
+						alert(node.text);
+						//$('#taskname').text(node.text);
+						//设置项目各项文件
+						//getTaskItem(taskId);
+					}
+					if (node.attributes.dataType == "task") {
+						Ext.getCmp('BusinessCenter').activate('TaskListPanel');
+						var taskId = node.id;
+						$('#taskname').text(node.text);
+						//设置项目各项文件
+						getTaskItem(taskId);
+					}
+				},
+				nodedragover : function(dropEvent) {
+					var target = dropEvent.target;
+					var source = dropEvent.dropNode;
+					if (source.attributes.dataType != "task") {
+						source.allowDrag = false;
+						dropEvent.cancel = true;
+						dropEvent.dropStatus = true;
+					}
+					if (target.attributes.dataType == "package") {
+						target.leaf = false;						
+					} else {
+						target.allowDrop = false;
+						dropEvent.cancel = true;
+						dropEvent.dropStatus = true;
+					}
+				},
+				beforenodedrop :function(dropEvent) {
+					if(dropEvent.target.attributes.dataType == "package"){
+						if (dropEvent.point == 'append') {
+							if(!confirm("是否要将【"
+									+ dropEvent.dropNode.text + "】调整为【"
+									+ dropEvent.target.text + "】的子任务吗 ！")){
+								dropEvent.cancel = true;
+							}
+						}
+					}					
+				},
+				nodedrop : function(dropEvent) {
+					var target = dropEvent.target;
+					var source = dropEvent.dropNode;
+					var taskId = source.id;
+					var parentTaskId;
+					if (dropEvent.point == 'append') {
+						parentTaskId= target.id;
+					}else{
+						parentTaskId= -1;
+					}				
+					Ext.Ajax.request({
+						url : '/wf/bcService/4/',
+						method : 'POST',
+						params : {
+							taskId : taskId,
+							parentTaskId : parentTaskId
+						},
+						success : function(response) {
+							var responseArray = Ext.util.JSON
+									.decode(response.responseText);
+							if (responseArray.success) {
+								if(dropEvent.point == 'append')
+									target.appendChild(source);
+							} else {
+								showMessage("子任务调整失败！", true);
+							}
+						},
+						failure : function() {
+							showMessage("网络连接错误！", true);
+						}
+					});
+				},
+				render : {
+                    fn : function() {                            
+                        Ext.getBody().on("contextmenu", Ext.emptyFn, null, {preventDefault: true});
+                    }
+                },      
+				contextmenu : {
+					fn:function(node, evtObj){
+						taskPackage(node,evtObj)
+					}
+				}
+			}
+		});
+	};
+
+	Ext.extend(TreeNav, Ext.tree.TreePanel, {
+		initComponent : function() {
+			this.hiddenPkgs = [];
+			Ext.apply(this, {
+				tbar : [ ' ', new Ext.form.TextField({
+					width : 130,
+					emptyText : '任务查找...',
+					enableKeyEvents : true,
+					listeners : {
+						render : function(f) {
+							this.filter = new Ext.tree.TreeFilter(this, {
+								clearBlank : true,
+								autoClear : true
+							});
+						},
+						keyup : {
+							fn : this.filterTree,
+							buffer : 350,
+							scope : this
+						},
+						scope : this
+					}
+				}), ' ', ' ', {
+					iconCls : 'icon-expand-all',
+					tooltip : '全部展开',
+					handler : function() {
+						this.root.expand(true);
+					},
+					scope : this
+				}, '-', {
+					iconCls : 'icon-collapse-all',
+					tooltip : '全部折叠',
+					handler : function() {
+						this.root.collapse(true);
+					},
+					scope : this
+				}, '-', {
+					iconCls : 'process-type',
+					tooltip : '业务办理',
+					handler : function() {
+						Ext.getCmp('BusinessCenter').activate('ProcessIndex');
+					},
+					scope : this
+				} ]
+			})
+			TreeNav.superclass.initComponent.call(this);
+		},
+		filterTree : function(t, e) {
+			var text = t.getValue();
+			Ext.each(this.hiddenPkgs, function(n) {
+				n.ui.show();
+			});
+			if (!text) {
+				this.filter.clear();
+				return;
+			}
+			this.expandAll();
+			var re = new RegExp(Ext.escapeRe(text), 'i');
+
+			this.filter.filterBy(function(n) {
+				return !n.isLeaf() || re.test(n.text);
+			});
+			// hide empty packages that weren't filtered
+			this.hiddenPkgs = [];
+			this.root.cascade(function(n) {
+				if (!n.isLeaf() && n.ui.ctNode.offsetHeight < 3
+						&& !re.test(n.text)) {
+					n.ui.hide();
+					this.hiddenPkgs.push(n);
+				}
+				if (n.id != 'root') {
+					if (!n.isLeaf() && n.ui.ctNode.offsetHeight >= 3
+							&& hasChild(n, re) == false && !re.test(n.text)) {
+						n.ui.hide();
+						this.hiddenPkgs.push(n);
+					}
+				}
+			});
+		}
+	});
+	function ForDight(Dight,How){  
+		Dight = Math.round(Dight*Math.pow(10,How))/Math.pow(10,How);  
+		return Dight;  
+	}
+	function formatFileSize(_v) {
+		var fileSize;
+		var strfileSize="";
+		if(_v<=1024*1024){
+			fileSize=ForDight(_v/1024,3);
+			strfileSize=fileSize+"KB";
+		}
+		else{
+			fileSize=ForDight(_v/1024/1024,3);				
+			strfileSize=fileSize+"MB";
+		}
+		return strfileSize;
+	}
+	function creatFileGrid(){
+		$("#YesLoadResultsFileGrid").datagrid({
+			nowrap:false,//false设置数据自动换行
+			columns:[
+				[{title:'材料类型',field:'FResultsFileType',width:150,halign:'center',align:'left',sortable:true},
+				{title:'文件名称',field:'FFileName',width:250,halign:'center',align:'left',sortable:true},
+				{title:'文件类型',field:'FFileType',width:60,align:'center',sortable:true},
+				{title:'文件大小',field:'FSize',width:50,align:'center',sortable:true,
+					formatter : function(value,row,index){
+						return formatFileSize(value);
+					}
+				},{
+					field : 'action',
+					title : '动作',
+					width:50,
+					align:'center',
+					formatter : function(value, row, index) {
+							return '<a href="/Buss/ResultsLoadFileService/LoadFile/'+row.FId+'" id="aDownload" name="aDownload" >下载</a>';
+					}
+				}]],
+				groupField:'FResultsFileType',
+				view: groupview, 
+				groupFormatter:function(value, rows){ 
+					return value + ' - [' + rows.length + '] 份';       
+				}, 
+			
+			rownumbers:true,fit:true,singleSelect:true
+		});
+	}
+	Ext.onReady(function() {
+		Ext.QuickTips.init();
+		Ext.form.Field.prototype.msgTarget = 'side';
+		nav = new TreeNav();
+		if(isCanTuneup)
+			nav.width=360;
+		creatFileGrid();
+		var viewport = new Ext.Viewport({
+			layout : 'border',
+			items : [
+					nav,
+					{
+						xtype : 'tabpanel',
+						id : 'BusinessCenter',
+						region : 'center',
+						headerStyle : 'display:none;',
+						activeTab : 0,
+						items : [
+								{
+									xtype : 'panel',
+									id : 'bcDetail',
+									autoScroll : true,
+									bodyStyle : 'background: #f5f5f5;',
+									contentEl : 'bc_detail'
+								},
+								{
+									xtype : 'panel',
+									id : 'ProcessIndex',
+									html : IFrame.format('ProcessItem-panel',
+											'ProcessItem-panel',
+											'ProcessIndex.html'),
+								}, {
+									xtype : 'panel',
+									id : 'TaskListPanel',
+									bodyStyle : 'background: #f5f5f5;',
+									autoScroll : true,
+									contentEl : 'taskFilesPanel'
+								} ]
+					} ]
+		});
+		viewport.doLayout();
+		Ext.getCmp('BusinessCenter').activate('ProcessIndex');
+	});
+</script>
+</head>
+<body>
+	<div id="bc_detail" style="width:100%;" class="x-hidden">
+		<table class="bc_detail">
+			<tr>
+				<td style="width: 80px">委托单位</td>
+				<td colspan="5" style="text-align: left"><span id="unitName"></span>
+				</td>
+			</tr>
+			<tr>
+				<td rowspan="2">姓名</td>
+				<td rowspan="2" style="width: 150px">职务</td>
+				<td colspan="2">联系方式</td>
+				<td rowspan="2" style="width: 160px">邮箱</td>
+				<td rowspan="2" style="width: 140px">信息来源</td>
+			</tr>
+			<tr>
+				<td style="width: 160px">办公室</td>
+				<td style="width: 90px">手机</td>
+			</tr>
+
+			<tbody id="unitPerson">
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+			<tr>
+				<td colspan="6" style="font-size: 16px; font-weight: bold">近三年项目一览</td>
+			</tr>
+			<tr>
+				<td>序号</td>
+				<td colspan="2">项目名称</td>
+				<td colspan="2">业务类型</td>
+				<td>完成时间</td>
+			</tr>
+			<tbody id="unitTask">
+				<tr>
+					<td></td>
+					<td colspan="2"></td>
+					<td colspan="2"></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div id="taskFilesPanel" style="width:100%;" class="x-hidden">
+		<table class="taskFiles">
+			<caption style="text-align:center;font-size:18px;">
+				<span id="taskname"></span>
+			</caption>
+			<!-- dd -->
+			<tr>
+				<td style="width:120px;text-align:right"></td>
+				<td style="width:620px;text-align:left">
+					<table class="liTable"><tr><td class="tdTitle">标题</td><td class="tdother">办理状态</td><td class="tddate">建立时间</td><td class="tdother">办理人</td></tr></table>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:120px;text-align:right">任务预计开始时间</td>
+				<td style="width:620px;text-align:left">
+					<span id="beginDateTask" class="date"></span>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:120px;text-align:right">项目任务书</td>
+				<td style="width:620px;text-align:left">
+					<ul id="task" class="filesList">
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align:right">项目实施计划</td>
+				<td style="text-align:left">
+					<ul id="ImplementPlan" class="filesList">
+					</ul>					
+				</td>
+			</tr>
+			<tr>
+				<td style="width:120px;text-align:right">项目过程情况记录</td>
+				<td style="width:620px;text-align:left">
+					<ul id="ProjectProcess" class="filesList">
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:120px;text-align:right">项目检查记录</td>
+				<td style="width:620px;text-align:left">
+					<ul id="ProjectCheck" class="filesList">
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:120px;text-align:right">项目重大事项报告</td>
+				<td style="width:620px;text-align:left">
+					<ul id="MajorMattersReport" class="filesList">
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:120px;text-align:right">检查复核申报表</td>
+				<td style="width:620px;text-align:left">
+					<ul id="CheckReview" class="filesList">
+					</ul>
+				</td>
+			</tr>
+			<tr id="fileListTR">
+				<td style="width:120px;text-align:right">项目成果文件</td>
+				<td style="width:620px;text-align:left;clear: both;">			           	 	 
+					<table id="YesLoadResultsFileGrid" name="YesLoadResultsFileGrid">		
+					</table>
+					<!--  
+					<ul id="CheckReviewFile" class="filesList">
+					</ul>
+					-->
+				</td>
+			</tr>
+			<!-- deleted by liwx 
+				 @Description : 王臻确认无需成果提交时间
+			<tr>
+				<td style="width:120px;text-align:right">成果提交时间</td>
+				<td style="width:620px;text-align:left">
+					<span id="endDateTask" class="date"></span>
+				</td>
+			</tr>
+			 -->
+			<tr>
+				<td style="width:120px;text-align:right">顾客评价表</td>
+				<td style="width:620px;text-align:left">
+					<ul id="CustomerEvaluation" class="filesList">
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:120px;text-align:right">项目考评打分</td>
+				<td style="width:620px;text-align:left">
+					<ul id="ProjectAppraisalScoure" class="filesList">
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:120px;text-align:right">效益工资提取表</td>
+				<td style="width:620px;text-align:left">
+					<ul id="EfficiencyWage" class="filesList">
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:120px;text-align:right">项目收费</td>
+				<td style="width:620px;text-align:left">
+					<ul id="taskBill" class="date">
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2"></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>行业管理</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+   <link rel="stylesheet" href="../../css/treenodeicon.css" type="text/css"></link>
+     <link rel="stylesheet" href="../../plugin/styles/kendo.common.css" type="text/css" />
+     <link rel="stylesheet" href="../../plugin/styles/kendo.default.css" type="text/css" />
+	 <link rel="stylesheet" type="text/css" href="../../css/menu.css" /> 
+	 <link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	 <link rel="stylesheet" type="text/css" href="../../ext/resources/css/ext-all.css" />		
+	  
+	  <style type="text/css">
+	  	.save-img{
+	  		background-image:url("../../images/oa/pass_new.png")!important;
+	  	}
+	  </style>
+	 
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	
+	<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+	<script type="text/javascript" src="../../ext/ext-all.js"></script>
+	<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript">
+	Ext.onReady(function(){
+		Ext.QuickTips.init();
+		Ext.form.Field.prototype.msgTarget='qtip';
+		var root = new Ext.tree.AsyncTreeNode({
+			id:"0",
+			draggable:false,
+			expanded:true,
+			text:'业主类别'
+		});
+		var root1 = new Ext.tree.AsyncTreeNode({
+			id:"0",
+			draggable:false,
+			expanded:true,
+			text:'业主类别'
+		});
+		var treeloader =new Ext.tree.TreeLoader({
+			dataUrl:'/industry/0',
+			baseAttrs: { uiProvider: Ext.ux.TreeCheckNodeUI } //添加 uiProvider 属性
+		});
+		var treeloader1 =new Ext.tree.TreeLoader({
+			dataUrl:'/industry/0',
+			baseAttrs: { uiProvider: Ext.ux.TreeCheckNodeUI } //添加 uiProvider 属性
+		});
+		var eutree = new Ext.tree.TreePanel({
+				height:200,
+				width:180,
+				border : true,
+				autoScroll : true,
+				containerScroll: true, 
+				region:'west',
+				root :root,
+				loader: treeloader,
+				//renderer: dataren,
+				listeners : {
+					expandnode: function(node,e){
+						this.expandAll();
+					},
+					click:function(node,e){
+						node.select();
+						$.post(
+						"/industry/4",
+						{"id":node.id},
+						function(data){
+							if(data){
+								if(node.parentNode){
+									var industrys=data.root[0];
+									Ext.getCmp('fFParentName').enable();
+									Ext.getCmp("fFName").enable();
+									Ext.getCmp("fFSort").enable();
+									Ext.getCmp("fFNote").enable();
+									enbut();
+									Ext.getCmp("fFName").setValue(node.text);
+									Ext.getCmp("fFId").setValue(node.id);
+									Ext.getCmp('fFParentId').setValue(node.parentNode.id);
+									Ext.getCmp('fFParentName').setValue(node.parentNode.text);
+									Ext.getCmp("fFNote").setValue(industrys[4]);
+									Ext.getCmp("fFSort").setValue(industrys[5]);
+									Ext.getCmp("fFCord").setValue(industrys[3]);
+									
+								}else{
+									Ext.getCmp('fFParentName').disable();
+									Ext.getCmp("fFName").disable();
+									Ext.getCmp("fFSort").disable();
+									Ext.getCmp("fFNote").disable();
+									Ext.getCmp('baoc').disable();
+									Ext.getCmp('shanc').disable();
+									Ext.getCmp('tianj').enable();
+									Ext.getCmp("fFName").setValue(node.text);
+									Ext.getCmp('fFParentId').setValue(-1);
+									Ext.getCmp("fFId").setValue(0);
+									Ext.getCmp('fFParentName').setValue(node.text);
+									Ext.getCmp("fFNote").setValue();
+									Ext.getCmp("fFSort").setValue();
+									Ext.getCmp("fFCord").setValue();
+								}
+								
+								myPanel.layout.setActiveItem('f1');
+							}else{
+								showMessage("网络错误！请稍后再试");
+							}	
+						}
+					);
+					}
+				}
+			});
+		var cbtree = new Ext.tree.TreePanel({
+				height:200,
+				border : true,			
+				autoScroll : true,
+				rootVisible:false,
+				containerScroll: true, 
+				region:'west',
+				root:root1,
+				loader: treeloader1,
+				
+				listeners : {
+					beforeload:function(node,e){
+						var eunode = eutree.getSelectionModel().getSelectedNode();
+						this.loader.dataUrl='/industry/cb/'+eunode.id;
+					},
+					click:function(node,e){
+						e.stopEvent();
+						var comboWithTooltip=Ext.getCmp('fFParentName');
+						Ext.getCmp('fFParentId').setValue(node.id);
+						comboWithTooltip.setValue(node.text);
+	                	comboWithTooltip.collapse(); 
+                	}
+				}
+			});
+		var myform=new Ext.form.FormPanel({
+			id:'f1',
+			labelWidth:100,
+			labelAlign:"right",
+			layout:"form",
+			width:400,
+			height:250,
+			bodyStyle:"padding:10px;",
+			//padding:"10px",
+			items:[
+				{
+					xtype:'hidden',
+					id:'fFCord'
+				},{
+					xtype:'hidden',
+					id:'fFParentId'
+				},{
+					xtype:'hidden',
+					id:'fFId'
+				},{
+					xtype:"combo",
+					id:'fFParentName',
+					fieldLabel:"上级分类",
+					editable:false,
+					disabled:true,
+					width:230,
+					store:new Ext.data.SimpleStore({fields:[],data:[[]]}), 
+            				mode: 'local', 
+            				triggerAction:'all', 
+            				maxHeight: 200, 
+            				tpl: '<div ><div id="tree"></div></div>', 
+            				selectedClass:'', 
+            				onSelect:Ext.emptyFn,
+            				emptyText:'请选择...',
+            				listeners : {
+            					expand:function(){
+            						cbtree.render('tree');
+            						root1.reload();
+            						cbtree.expandAll(); 
+            					}
+            				},
+					allowBlank:false
+				},{
+					xtype:"textfield",
+					id:'fFName',
+					fieldLabel:"分类名称",
+					allowBlank:false,
+					width:230
+				},{
+					id:"fFSort",
+					xtype:"textfield",
+					fieldLabel:"排序",
+					allowBlank:false,
+					xtype:'numberfield',
+					regex:/^[0-9]{1,7}$/,
+					regexText:'只能输入数字！',
+					maxLength:8,
+					maxLengthText:'文本长度过大',
+					width:230
+				},{
+					xtype:"textarea",
+					id:'fFNote',
+					fieldLabel:"备注",
+					maxLength:300,
+					maxLengthText:'文本长度过大',
+					width:230
+				}
+			],
+			tbar:[{
+				xtype:"button",
+				id:'baoc',
+				iconCls:'icon-updateS',
+				width:60,
+				text:'<font size=2pt >保存</font>',
+				handler:function(){
+					if(Ext.getCmp('f1').getForm().isValid()){
+						Ext.Msg.confirm('系统提示','确认要保存['+Ext.getCmp("fFName").getValue()+']修改后的信息吗？',function(btn){
+				       		if(btn=="yes"){
+				       			$.post(
+										"/industry/2",
+										{"FName":Ext.getCmp("fFName").getValue(),
+											"FParentId":Ext.getCmp('fFParentId').getValue(),
+											"FNote":Ext.getCmp("fFNote").getValue(),
+											"FSort":Ext.getCmp("fFSort").getValue(),
+											"FCode":Ext.getCmp("fFCord").getValue(),
+											"FId":Ext.getCmp("fFId").getValue()},
+									function(data){
+										if(data.success){
+											root.reload();
+											//alert(Ext.getCmp("fFId").getValue());
+											//alert(eutree.getNodeById(Ext.getCmp("fFId").getValue()));
+											//eutree.getNodeById(Ext.getCmp("fF").getValue()).select();
+											}
+										});
+				       			}
+				        });
+				      }else{
+							showMessage("请选择要保存的分类！");
+						}
+				}
+			},{
+				xtype:"button",
+				iconCls:'insertbut-extb',
+				id:'tianj',
+				width:60,
+				text:'<font size=2pt >添加分类</font>',
+				handler:function(){
+					Ext.getCmp('FParentName').disable();
+					Ext.getCmp("FName").setValue();
+					Ext.getCmp("FId").setValue();
+					Ext.getCmp('FParentId').setValue(Ext.getCmp('fFId').getValue());
+					Ext.getCmp('FParentName').setValue(Ext.getCmp('fFName').getValue());
+					Ext.getCmp("FNote").setValue();
+					Ext.getCmp("FSort").setValue();
+					Ext.getCmp("FCode").setValue();
+					myPanel.layout.setActiveItem('f2');
+				}
+			},{
+				xtype:"button",
+				id:'shanc',
+				iconCls:'delete-extb',
+				width:60,
+				text:'<font size=2pt >删除分类</font>',
+				handler:function(){
+					if(eutree.getSelectionModel().getSelectedNode()==null){
+						showMessage("请选择分类后进行操作");
+					}else{
+						if(eutree.getSelectionModel().getSelectedNode().id==0){
+							showMessage("根节点不能删除！");
+						}else{
+							Ext.Msg.confirm('系统提示',"确认要删除[<font color='blue>'"+Ext.getCmp("fFName").getValue()+"</font>]吗？",function(btn){
+				        		if(btn=="yes"){
+				        			$.post(
+										"/industry/5",
+										{
+											"FName":Ext.getCmp("fFName").getValue(),
+											"FParentId":Ext.getCmp('fFParentId').getValue(),
+											"FNote":Ext.getCmp("fFNote").getValue(),
+											"FSort":Ext.getCmp("fFSort").getValue(),
+											"FCode":Ext.getCmp("fFCord").getValue(),
+											"FId":Ext.getCmp("fFId").getValue()
+										},
+										function(data){
+											if(data){
+												if(data.success){
+													showMessage(data.message);
+													root.reload();
+													Ext.getCmp('fFParentName').disable();
+													Ext.getCmp("fFName").setValue();
+													Ext.getCmp("fFId").setValue();
+													Ext.getCmp('fFParentId').setValue();
+													Ext.getCmp('fFParentName').setValue();
+													Ext.getCmp("fFNote").setValue();
+													Ext.getCmp("fFSort").setValue();
+													Ext.getCmp("fFCord").setValue();
+													myPanel.layout.setActiveItem('f1');
+												}else{
+													showMessage(data.message);
+												}
+											}else{
+												showMssage("网络错误！请稍后再试");
+											}
+										});
+									}
+								});
+							}
+						}
+					}
+			}]
+		});
+		
+		var myform1=new Ext.form.FormPanel({
+			id:'f2',
+			labelWidth:100,
+			labelAlign:"right",
+			layout:"form",
+			width:400,
+			height:250,
+			padding:"10px",
+			border : true,
+			items:[
+				{
+					xtype:'hidden',
+					id:'FCode'
+				},{
+					xtype:'hidden',
+					id:'FParentId'
+				},{
+					xtype:'hidden',
+					id:'FId'
+				},{
+					xtype:"combo",
+					id:'FParentName',
+					fieldLabel:"上级分类",
+					editable:false,
+					width:160,
+					store:new Ext.data.SimpleStore({fields:[],data:[[]]}), 
+            				mode: 'local', 
+            				triggerAction:'all', 
+            				maxHeight: 200, 
+            				tpl: '<div ><div id="tree"></div></div>', 
+            				selectedClass:'', 
+            				onSelect:Ext.emptyFn,
+            				emptyText:'请选择...',
+            				listeners : {
+            					expand:function(){
+            						cbtree.render('tree');
+            						root1.reload();
+            						cbtree.expandAll(); 
+            					}
+            				},
+					allowBlank:false
+				},{
+					xtype:"textfield",
+					id:'FName',
+					fieldLabel:"分类名称",
+					allowBlank:false,
+					width:160
+				},{
+					xtype:"textfield",
+					id:'FNote',
+					fieldLabel:"备注",
+					width:160
+				},{
+					id:"FSort",
+					xtype:"textfield",
+					fieldLabel:"排序",
+					allowBlank:false,
+					xtype:'numberfield',
+					//regex:/^/\d{n}$/,
+					//regexText:'只能输入数字！',
+					width:160
+				}
+			],
+			tbar:[{
+				iconCls: 'ok-extb',
+				xtype:'button',
+				text:'<font size=2pt >保存</font>',
+				handler:function(){
+					if(Ext.getCmp('f2').getForm().isValid()){
+						$.post(
+			        		"/industry/1",
+			        		{"FName":Ext.getCmp("FName").getValue(),
+								"FParentId":Ext.getCmp('FParentId').getValue(),
+								"FNote":Ext.getCmp("FNote").getValue(),
+								"FSort":Ext.getCmp("FSort").getValue(),
+								"FCode":Ext.getCmp("FCode").getValue(),
+								"FId":Ext.getCmp("FId").getValue()},
+			        		function(data){
+			        			if(data){
+			        				if(data.success){
+			        					showMessage(data.message);
+			        					myPanel.layout.setActiveItem('f1');
+			        					root.reload();
+			        				}else{
+			        					showMessage(data.message);
+			        				}
+			        			}else{
+			        				showMessage("网络错误！请稍后再试...");
+			        			}
+			        		},
+			       		"JSON"
+			     		);
+					}else{
+			        	showMessage("请输入必填项！");
+			        }
+				}
+			},{
+				iconCls:'quite-extb',
+			    xtype:'button',
+			    text:'<font size=2pt >返回</font>',
+			    handler:function(){
+			    	myPanel.layout.setActiveItem('f1');
+			    }
+			}]
+	});
+	function dataren(){
+		return '<font size=2>'+node.text+'</font>'
+	}
+	function disbut(){
+		Ext.getCmp('tianj').disable();
+		Ext.getCmp('baoc').disable();
+		Ext.getCmp('shanc').disable();
+	}
+	function enbut(){
+		Ext.getCmp('tianj').enable();
+		Ext.getCmp('baoc').enable();
+		Ext.getCmp('shanc').enable();
+	}
+		Ext.getCmp('FParentName').disable();
+		var myPanel=new Ext.Panel({
+			//title:"委托单位分类管理",
+			frame:true,
+			layout:'card',   
+	        activeItem:0,//设置默认显示第一个子面
+	        region:'center',
+	        //bodyPadding:5,
+	      	items:[myform,myform1]
+	      });
+	   disbut();
+	   var mainViewport = new Ext.Viewport({
+			id : 'mainViewport',
+			layout : 'fit',
+			border : false,
+			items : [ {
+				xtype : 'panel',
+				id : 'EUPanel',
+				layout : 'border',
+				border : true,
+				items : [eutree,myPanel]
+			} ]
+		});	
+		
+	});
+	</script>
+
+  </head>
+  
+  <body>
+  </body>
+</html>

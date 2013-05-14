@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>成果文件上传管理</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/datagrid-groupview.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>	
+	
+	<script tyoe="text/javascript">
+		/**
+		 * JQuery扩展方法，用户对JQuery EasyUI的DataGrid控件进行操作。
+		 */
+		$.fn.extend({
+			 /**
+			  * 修改DataGrid对象的默认大小，以适应页面宽度。
+			  * 
+			  * @param heightMargin
+			  *            高度对页内边距的距离。
+			  * @param widthMargin
+			  *            宽度对页内边距的距离。
+			  * @param minHeight
+			  *            最小高度。
+			  * @param minWidth
+			  *            最小宽度。
+			  * 
+			  */
+			 resizeDataGrid : function(heightMargin, widthMargin, minHeight, minWidth) {
+				  var height = $(document.body).height() - heightMargin;
+				  var width = $(document.body).width() - widthMargin;				
+				  height = height < minHeight ? minHeight : height;
+				  width = width < minWidth ? minWidth : width;				
+				  $(this).datagrid('resize', {
+				   height : height,
+				   width : width
+				  });
+			 }
+		});
+		function ForDight(Dight,How){  
+			Dight = Math.round(Dight*Math.pow(10,How))/Math.pow(10,How);  
+			return Dight;  
+		}
+		function formatFileSize(_v) {
+			var fileSize;
+			var strfileSize="";
+			if(_v<=1024*1024){
+				fileSize=ForDight(_v/1024,3);
+				strfileSize=fileSize+"KB";
+			}
+			else{
+				fileSize=ForDight(_v/1024/1024,3);				
+				strfileSize=fileSize+"MB";
+			}
+			return strfileSize;
+		}
+		function formatFileState(n){//文件状态			
+			switch(parseInt(n)){
+				case -1 : return '未上传';
+				break;
+				case -2 : return '正在上传';
+				break;
+				case -3 : return '<div style="color:red;">上传失败</div>';
+				break;
+				case -4 : return '上传成功';
+				break;
+				case -5 : return '取消上传';
+				break;
+				default: return n;
+			}			
+		} 		
+		function DownloadFile(id){
+			$.post("/Buss/ResultsLoadFileService/LoadFile/"+id, {					 
+			       }, function(data) {
+						 if (data.success) {							  
+						 } else {								
+							 $.messager.alert('系统提示','文件下载失败，请检查网络或联系系统管理员！','error');  
+							 return false;
+						 }
+			});
+		}
+		function Reload(){
+			$('#YesLoadResultsFileGrid').datagrid("reload");
+		}
+		function DeleteFile(id){
+			$.post("/Buss/ResultsLoadFileService/DeleteFile/"+id,{}, function(data) {
+				if (data.success) {												
+					 //$.messager.alert('系统提示','文件删除成功，','info'); 
+					$("#YesLoadResultsFileGrid").datagrid("reload");
+				}else
+				{									
+					$.messager.alert('系统提示','文件删除失败，请检查网络重试或联系系统管理员！','error'); 
+					return false;
+				}
+			}, "json");
+		}
+		$(function() {			
+			$("#YesLoadResultsFileGrid").datagrid({
+				title:'',
+				width: '98%',
+				height: '98%',
+				nowrap:false,//false设置数据自动换行
+				columns:[
+					[{title:'编号',field:'FId',width:60,hidden:true},
+					 {title:'fkCheckReviewId',field:'fkCheckReviewId',width:60,hidden:true},
+					{title:'材料类型',field:'FResultsFileType',width:150,align:'center',sortable:true},
+					{title:'文件名称',field:'FFileName',width:230,align:'left',sortable:true},
+					{title:'文件类型',field:'FFileType',width:80,align:'center',sortable:true},
+					{title:'文件大小',field:'FSize',width:80,align:'center',sortable:true,
+						formatter : function(value,row,index){
+							return formatFileSize(value);
+						}
+					},					
+					{title:'上传状态',field:'FState',width:66,align:'center',hidden:true,
+						formatter : function(value,row,index){
+							return formatFileState(value);
+						}
+					},{
+						field : 'action',
+						title : '动作',
+						align:'center',
+						width : 120,
+						formatter : function(value, row, index) {
+							if(Request.QueryString("isView").toString()=="1"){
+								return '<a href="/Buss/ResultsLoadFileService/LoadFile/'+row.FId+'" id="aDownload" name="aDownload" >下载</a>';
+							}else								
+								return '<a href="#" id="aDelete" name="aDelete" onClick="javascript:DeleteFile('+row.FId+');">删除</a>'+'&nbsp;&nbsp;&nbsp;'+
+								   '<a href="/Buss/ResultsLoadFileService/LoadFile/'+row.FId+'" id="aDownload" name="aDownload" >下载</a>'; 
+						}
+					}
+					]],
+					groupField:'FResultsFileType',
+					view: groupview, 
+					groupFormatter:function(value, rows){ 
+						return value + ' - [' + rows.length + '] 份';       
+					}, 
+				url: '/Buss/ResultsLoadFileService/3/?fkCheckReviewId='+Request.QueryString("fkCheckReviewId"),
+				rownumbers:true,fit:true,singleSelect:true,
+				toolbar:'#tbtools',
+				pagination:false,
+				onSelect: function(index,row){				
+					//$("#FId").attr("value",row.FId);						
+				}
+			});						
+		});		
+	</script>
+  
+    </head>
+  <body class="easyui-layout">
+  	<input type="hidden" id="ufkCheckReviewId" name="ufkCheckReviewId"  value=""/>	
+	<div data-options="region:'center',title:'已上传成果文件列表'">
+		<div class="easyui-layout" fit="true"> 			
+            <div region="center" border="false">
+            		<div id="tbtools" style="height:25px;margin-top:0px;">									
+						<a href="javascript:void(0)" style="height:22px;" class="easyui-linkbutton" data-options="iconCls:'icon-reload',plain:true" onclick="Reload();">刷新</a> 						
+					</div>				           	 	 
+					<table id="YesLoadResultsFileGrid" name="YesLoadResultsFileGrid" title="文件列表">			
+				</table> 				
+            </div>             
+        </div>
+	</div>
+	
+  </body>
+</html>

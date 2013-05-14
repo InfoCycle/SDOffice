@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>造价资料文件上传管理</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<link rel="stylesheet" href="../../plugin/swfupload/css/default.css" type="text/css"></link>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script type="text/javascript" src="../../plugin/swfupload/js/swfupload.js"></script>
+	<script type="text/javascript" src="../../plugin/swfupload/js/swfupload.queue.js"></script>
+	<script type="text/javascript" src="../../plugin/swfupload/js/fileprogress.js"></script>
+	<script type="text/javascript" src="../../plugin/swfupload/js/handlers.js" charset="utf-8"></script>
+	<!--<script type="text/javascript" src="swfupload/handlers.js"></script>-->
+	
+	<script tyoe="text/javascript">
+		/**
+		 * JQuery扩展方法，用户对JQuery EasyUI的DataGrid控件进行操作。
+
+
+		 */
+		 
+		$.fn.extend({
+			 /**
+			  * 修改DataGrid对象的默认大小，以适应页面宽度。
+
+
+			  * 
+			  * @param heightMargin
+			  *            高度对页内边距的距离。
+
+
+			  * @param widthMargin
+			  *            宽度对页内边距的距离。
+
+
+			  * @param minHeight
+			  *            最小高度。
+
+
+			  * @param minWidth
+			  *            最小宽度。
+
+
+			  * 
+			  */
+			 resizeDataGrid : function(heightMargin, widthMargin, minHeight, minWidth) {
+				  var height = $(document.body).height() - heightMargin;
+				  var width = $(document.body).width() - widthMargin;				
+				  height = height < minHeight ? minHeight : height;
+				  width = width < minWidth ? minWidth : width;				
+				  $(this).datagrid('resize', {
+				   height : height,
+				   width : width
+				  });
+			 }
+		});
+		String.prototype.format = function(args) {
+			var result = this;
+			if (arguments.length > 0) {    
+				if (arguments.length == 1 && typeof (args) == "object") {
+					for (var key in args) {
+						if(args[key]!=undefined){
+							var reg = new RegExp("({" + key + "})", "g");
+							result = result.replace(reg, args[key]);
+						}
+					}
+				}
+				else {
+					for (var i = 0; i < arguments.length; i++) {
+						if (arguments[i] != undefined) {
+							var reg = new RegExp("({[" + i + "]})", "g");
+							result = result.replace(reg, arguments[i]);
+						}
+					}
+				}
+			}
+			return result;
+		}
+
+		var swfUpload;
+		var uploadUrl=""
+		var flashUrl="../../plugin/swfupload/swfupload.swf";
+		var fileSize=1024*1024*100;
+		var filePostName="file";
+		var fileTypes="*.*";
+		var postParams={savePath:'upload\\'};
+		var settings;
+		function CreateSwfFile(data){
+			  uploadUrl="/Buss/ConstructionFileService/1;jsessionid="+data;
+			   settings= {					
+					upload_url : uploadUrl, 
+					flash_url : flashUrl,
+					file_size_limit : fileSize ,//上传文件体积上限，单位MB
+					file_post_name : filePostName,
+					file_types : fileTypes||"*.*",  //允许上传的文件类型 
+					file_types_description : "All Files",  //文件类型描述
+					file_upload_limit : "0",  //限定用户一次性最多上传多少个文件，在上传过程中，该数字会累加，如果设置为“0”，则表示没有限制 
+					//file_queue_limit : "10",//上传队列数量限制，该项通常不需设置，会根据file_upload_limit自动赋值              
+					//post_params : postParams||{savePath:'upload\\'},
+					 
+					use_query_string : true,
+					debug : false,
+					button_cursor : SWFUpload.CURSOR.HAND,
+					button_window_mode : SWFUpload.WINDOW_MODE.TRANSPARENT,
+					button_image_url: "../../plugin/swfupload/images/selectsxt2.png",					 
+					button_width: "88",
+					button_height: "22",
+					button_placeholder_id: "addFile",
+					button_text: '<span class="theFont"></span>',
+					button_text_style: ".theFont { font-size: 12;}",					
+					button_text_left_padding: 1,
+					button_text_top_padding: 0,					
+					custom_settings : {//自定义参数
+
+
+						scope_handler : this
+						//upload_target : "divFileProgressContainer"						
+					},
+					file_queued_handler : this.onFileQueued,
+					swfupload_loaded_handler : function(){},// 当Flash控件成功加载后触发的事件处理函数
+					file_dialog_start_handler : function(){},// 当文件选取对话框弹出前出发的事件处理函数
+
+
+					file_dialog_complete_handler : this.onDiaogComplete,//当文件选取对话框关闭后触发的事件处理
+
+
+					upload_start_handler : this.onUploadStart,// 开始上传文件前触发的事件处理函数
+
+
+					upload_success_handler : this.onUploadSuccess,// 文件上传成功后触发的事件处理函数 
+					swfupload_loaded_handler : function(){},// 当Flash控件成功加载后触发的事件处理函数  
+					upload_progress_handler : this.uploadProgress,
+					upload_complete_handler : this.onUploadComplete,
+					upload_error_handler : this.onUploadError,
+					file_queue_error_handler : this.onFileError
+			}
+			//自定义属性，是否停止上传			
+			swfUpload = new SWFUpload(settings);
+			swfUpload.stopped = false;
+		}	 
+		function onFileQueued(file) {
+				//var me = this.customSettings.scope_handler;					
+				$("#ResultsFileGrid").datagrid('appendRow',
+					{
+						FId: 0,
+						id: file.id,
+						fkId: $("#ufkId").val(), 
+						FFileName: file.name,
+						FFileType: file.type,
+						FSize: file.size,
+						FProgress: 0,
+						FState: file.filestatus						
+					}
+				 );
+			}
+			function onDiaogComplete(){		
+				//var me = this.customSettings.scope_handler;
+				//me.linkBtnEvent();
+			}
+			function onUploadStart(file) {  
+			    var post_params = swfUpload.settings.post_params; 
+			    jQuery.extend(post_params,{
+					fileName : encodeURIComponent(file.name),
+					FId: 0,
+					id: file.id,
+					fkId: $("#ufkId").val(),
+					FFileName: encodeURIComponent(file.name),
+					FFileType:	file.type,
+					FSize: file.size,
+					FProgress: 0,
+					FState: file.filestatus
+				});				
+			    swfUpload.setPostParams(post_params);  
+			}
+			function onUploadSuccess(file, serverData) {
+				var me = swfUpload.customSettings.scope_handler;						 		
+				var rows = $('#ResultsFileGrid').datagrid('getRows');				
+				if($.evalJSON(serverData).success){
+					for(var i=0; i<rows.length; i++){
+						//s += rows[i].FFileName + ':' + rows[i].id + ',';			
+						var record=rows[i];
+						if(record.id==file.id)
+						{						
+							$('#ResultsFileGrid').datagrid('updateRow',{
+								index: $('#ResultsFileGrid').datagrid('getRowIndex',record),
+								row: {									
+									FState: file.filestatus
+								}
+							});
+						}
+					}
+				}else
+				{
+					for(var i=0; i<rows.length; i++){							
+						var record=rows[i];
+						if(record.id==file.id)
+						{						
+							$('#ResultsFileGrid').datagrid('updateRow',{
+								index: $('#ResultsFileGrid').datagrid('getRowIndex',record),
+								row: {
+									FProgress: 0,
+									FState: -3
+								}
+							});
+						}
+					}
+				}
+			}
+			function uploadProgress(file, bytesComplete, totalBytes){//处理进度条
+
+
+				var me = swfUpload.customSettings.scope_handler;
+				var percent = Math.ceil((bytesComplete / totalBytes) * 100);
+				percent = percent == 100? 99 : percent;				 		
+				var rows = $('#ResultsFileGrid').datagrid('getRows');			
+				for(var i=0; i<rows.length; i++){
+					//s += rows[i].FFileName + ':' + rows[i].id + ',';			
+					var record=rows[i];
+					if(record.id==file.id)
+					{						
+						$('#ResultsFileGrid').datagrid('updateRow',{
+							index: $('#ResultsFileGrid').datagrid('getRowIndex',record),
+							row: {
+								fileName : file.name,
+								FId: 0,
+								id: file.id,
+								fkId: $("#ufkId").val(),
+								FFileName:  file.name,
+								FFileType:	file.type,
+								FSize: file.size,
+								FProgress: percent,
+								FState: file.filestatus
+							}
+						});
+					}
+				}			
+			}
+			function onUploadComplete(file) {
+				var me = swfUpload.customSettings.scope_handler;
+				if(file.filestatus==-4){
+					var rows = $('#ResultsFileGrid').datagrid('getRows');			
+					for(var i=0; i<rows.length; i++){								
+						var record=rows[i];
+						if(record.id==file.id)
+						{	
+							if(record.FState!=-3){
+								$('#ResultsFileGrid').datagrid('updateRow',{
+									index: $('#ResultsFileGrid').datagrid('getRowIndex',record),
+									row: {										 
+										FProgress: 100,
+										FState: file.filestatus
+									}
+								});
+							}
+						}
+					}					
+				}
+				
+				if (swfUpload.getStats().files_queued > 0 && swfUpload.uploadStopped == false) {
+					swfUpload.startUpload();
+				}else{			
+					//me.toggleBtn(false);
+					//me.linkBtnEvent();
+				}		
+			}
+			function onUploadError(file, errorCode, message) {
+				var me = swfUpload.customSettings.scope_handler;
+				var rows = $('#ResultsFileGrid').datagrid('getRows');			
+					for(var i=0; i<rows.length; i++){								
+						var record=rows[i];
+						if(record.id==file.id)
+						{								 
+							$('#ResultsFileGrid').datagrid('updateRow',{
+								index: $('#ResultsFileGrid').datagrid('getRowIndex',record),
+								row: {										 
+									FProgress: 0,
+									FState: file.filestatus
+								}
+							});							 
+						}
+					}
+			}
+			function onFileError(file,n){
+				switch(n){
+					case -100 : tip('待上传文件列表数量超限，不能选择！');
+					break;
+					case -110 : tip('文件太大，不能选择！');
+					break;
+					case -120 : tip('该文件大小为0，不能选择！');
+					break;
+					case -130 : tip('该文件类型不可以上传！');
+					break;
+				}
+				function tip(msg){
+					alert(msg);					
+				}
+			}
+			function deleteFile(){
+				var ss = [];  
+				var rows = $('#ResultsFileGrid').datagrid('getSelections');  
+				for(var i=0; i<rows.length; i++){  
+					var row = rows[i];  
+					//ss.push('<span>'+row.id+":"+row.F2+":"+row.F4+'</span>');
+					$('#ResultsFileGrid').datagrid("deleteRow",$('#ResultsFileGrid').datagrid('getRowIndex',row));				
+					swfUpload.cancelUpload(row.id,false);
+				}  	
+			 }
+			 function startUpload() {		 
+				if (swfUpload) {
+					if (swfUpload.getStats().files_queued > 0) {
+						swfUpload.uploadStopped = false;
+						swfUpload.startUpload();						
+					}
+				}
+			}
+			function stopUpload() {
+				if (swfUpload) {
+					swfUpload.uploadStopped = true;
+					swfUpload.stopUpload();
+				}
+			}		 
+
+		$(function() {
+			$.ajax({
+				url:'/Buss/ConstructionFileService/2',
+				type: 'POST',
+				dataType: 'json',
+				async :  false,
+				success:function(data) {
+					if(data.success){
+						CreateSwfFile(data.root);
+						$("#ufkId").val(Request.QueryString("FKID"));						
+					}else
+						{
+							alert("没有登录系统！请先登录系统。");
+							return true;
+						}
+				}
+			});
+			//初始化Grid
+			//data-options="rownumbers:true,fit:true,singleSelect:true,url:'/Buss/CommonOpinionService/searchEasy/1',toolbar:'#tb'"
+			function formatProgressBar(v){
+				var progressBarTmp = getTplStr(v);
+				return progressBarTmp;
+			}
+			function getTplStr(v){
+				var bgColor = "orange";
+				var borderColor = "#008000";
+				var strTemp='<div>'+
+							'<div style="border:1px solid {0};height:10px;width:{1}px;margin:4px 0px 1px 0px;float:left;">'+		
+							'<div style="float:left;background:{2};width:{3}%;height:10px;"><div></div></div>'+'</div>'+
+					'<div style="text-align:center;float:right;width:40px;margin:3px 0px 1px 0px;height:10px;font-size:12px;">{3}%</div>'+'</div>';
+				return strTemp.format(borderColor,(90),bgColor, v);
+			}
+			function formatFileState(n){//文件状态
+
+
+				switch(n){
+					case -1 : return '未上传';
+					break;
+					case -2 : return '正在上传';
+					break;
+					case -3 : return '<div style="color:red;">上传失败</div>';
+					break;
+					case -4 : return '上传成功';
+					break;
+					case -5 : return '取消上传';
+					break;
+					default: return n;
+				}
+			}
+			function ForDight(Dight,How){  
+				Dight = Math.round(Dight*Math.pow(10,How))/Math.pow(10,How);  
+				return Dight;  
+			}
+			function formatFileSize(_v) {
+				var fileSize;
+				var strfileSize="";
+				if(_v<=1024*1024){
+					fileSize=ForDight(_v/1024,3);
+					strfileSize=fileSize+"KB";
+				}
+				else{
+					fileSize=ForDight(_v/1024/1024,3);				
+					strfileSize=fileSize+"MB";
+				}
+				return strfileSize;
+			}
+			function formatDelBtn(iv){
+				//return $("#ResultsFileGrid").datagrid('deleteRow', iv);
+				return "<a href='#' id='"+iv+"'  style='color:blue' class='link-btn'>移除</a>";
+			}
+			
+			$("#ResultsFileGrid").datagrid({
+				title:'',
+				width: '98%',
+				height: '98%',
+				columns:[
+					[{title:'编号',field:'FId',width:60,hidden:true},
+					 {title:'fkId',field:'fkId',width:60,hidden:true},
+					 {title:'文件名称',field:'FFileName',width:180,align:'center'},
+					 {title:'文件类型',field:'FFileType',width:70,align:'center'},
+					 {title:'文件大小',field:'FSize',width:80,align:'center',
+						formatter : function(value,row,index){
+							return formatFileSize(value);
+						}
+					 },
+					 {title:'上传进度',field:'FProgress',width:160,align:'center',
+						formatter : function(value,row,index){
+							return formatProgressBar(value);
+						}
+					 },
+					 {title:'上传状态',field:'FState',width:66,align:'center',
+						formatter : function(value,row,index){
+							return formatFileState(value);
+						}
+					 },
+					 {
+						field:'id',checkbox:true,align:'center',width:39
+					 }
+					]],
+				url: '',
+				rownumbers:true,fit:true,singleSelect:false,
+				toolbar:'#tb',
+				pagination:false,
+				onSelect: function(index,row){				
+					$("#FId").attr("value",row.FId);
+					$("#FContentT").text(row.FContent);
+				}
+			});			
+		});		
+	</script>
+    <style type="text/css">
+		.swfupload {vertical-align: middle;}
+	</style>
+    </head>
+  <body class="easyui-layout">
+  	<input type="hidden" id="ufkId" name="ufkId"  value=""/>
+	<div data-options="region:'center',title:'造价资料文件上传'">
+		<div class="easyui-layout" fit="true"> 
+			<div region="north" split="false" border="false" style="height: 46px;">                 
+				 <p style="font-size:13pt;">&nbsp;&nbsp;&nbsp;&nbsp;请从您本地计算机中，选择成果文件，文件类型包括：*.rar;*.jpg;*.doc;等等；每个文件大小不得超过500MB。上传时请注意。</p>
+            </div>  
+            <div region="center" border="false">				           	 	 
+					<table id="ResultsFileGrid" name="ResultsFileGrid" title="">			
+					</table>
+					<div id="tb">					
+						<a href="javascript:void(0)" style="width:88px;" class="easyui-linkbutton" data-options="plain:true">
+							 <form><span id="addFile">添加文件</span></form>
+						</a>					
+						<a href="javascript:void(0)" class="easyui-linkbutton" style="margin-top:1px;" data-options="iconCls:'icon-undo',plain:true" onclick="startUpload();">上传文件</a> 
+						<a href="javascript:void(0)" class="easyui-linkbutton" style="margin-top:1px;" data-options="iconCls:'icon-remove',plain:true" onclick="deleteFile()">删除文件</a>
+						<a href="javascript:void(0)" class="easyui-linkbutton" style="margin-top:1px;" data-options="iconCls:'icon-cancel',plain:true" onclick="stopUpload()">停止上传</a>
+					</div>				
+            </div>             
+        </div>
+	</div>
+	
+  </body>
+</html>

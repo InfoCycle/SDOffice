@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>重大事项报告-历史</title>
+	<link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/showLoading/css/showLoading.css" type="text/css"></link>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>			
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+	<script type="text/javascript" src="../../plugin/showLoading/js/jquery.showLoading.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/EasyUIautoMergeCells.js"></script>
+	<script type="text/javascript" src="../../plugin/js/arrow34.js"></script>
+	<style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 100%;
+			width: 98%;
+		}		
+		a{
+			cursor: pointer;
+			color: #0000C6;
+		}
+		a:link {
+			color:#0000FF;
+			text-decoration:underline;
+		}
+		a:visited {
+			color:#0000C6;
+			text-decoration:none;
+		}
+		a:hover {
+			color:#000000;
+			text-decoration:none;
+		}
+		a:active {
+			color:#EA7500;
+			text-decoration:none;
+		}
+		.tdtextcentet{		
+			text-align: center;
+		}
+		.loading-indicator-bars {
+			background-image: url('/html/plugin/showLoading/images/loading.gif');
+			width: 150px;
+		}
+		.classerror{
+			 border: 1px solid #f00;
+			 background:#fcc;
+		}
+		.div-disabled{
+			background: none repeat scroll 0 0 #FFFFF0;
+			position: fixed; 
+			top: 0px; 
+			left: 0px; 
+			opacity: 0.3; 
+			display: block; 
+			z-index: 99998; 
+			height: 100%; 
+			width: 100%;
+		}
+	</style>	
+  </head>
+  
+  <body>
+    <noscript><a href="#">Click to the Top</a></noscript>
+  	<div  id="divDisable" name="divDisable"></div>
+    <form id="formreport" action="" method="post">
+     <div style="display: none;">
+			action:<input type="text" id="action" name="action"  value=""/>
+			processId:<input type="text" id="processId" name="processId" value=""/>
+			activeId:<input type="text" id="activeId" name="activeId" value=""/>
+			formPKID:<input type="text" id="formPKID" name="formPKID" value=""/>
+			state:<input type="text" id="state" name="state" value=""/></br>
+			userID:<input id="userID" name="userID" type="text"/>
+			userName:<input id="userName" name="userName" type="text"/>
+			userOrgID:<input id="userOrgID" name="userOrgID" type="text"/>
+			unitStation:<input id="unitStation" name="unitStation" type="text"/>
+			fAcceptUser:<input id="fAcceptUser" name="fAcceptUser" type="text"/>
+			fState:<input id="fState" name="fState" type="text"/>
+			isAcceptance:<input id="isAcceptance" name="isAcceptance" type="text"/>
+			<input type="text" id="FCurrentStep" name="FCurrentStep" style="width:20px;" />	
+			<input type="text" id="FLastStep" name="FLastStep" style="width:20px;" />
+	 </div>
+	 <div style="text-align:center" id="MainDiv">
+			<table style="width:851px;margin:auto"  class="pagetable">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aT_OK" style="display: black;"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aT_CANCLE" style="display: black;"><img
+									src="../../images/oa/delete.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel='#' id="aT_BACK" style="display: black;"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />返回列表</a>
+							</li>
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br/> <br/></br></td>
+				</tr>
+				<tr>
+					<td style="padding-left:1px;">
+						<div class="content" id="content" style="height:1280px;width:851px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br />
+							<br />
+							<br />							 
+							<div style="float:left;padding-left:20px;">
+								<table class="content_table1"  border="1" cellpadding="0" style="padding-left:10px;position:absolute;width:810px;">
+									  <caption>
+										<strong style="height:35px;font-size:22px;">昆明松岛工程造价咨询有限公司项 目重大事项报告表<br><br>
+										</strong>
+									  </caption>
+									  <tr>
+										<th colspan="4" align="left" valign="middle" style="height:30px;font-size:14px;" scope="col">编号：<label>
+											<input type="text" id="FNumbers" name="FNumbers"  value="" style="width:601px;">
+											<input type="hidden" id="FDeptMgrId" name="FDeptMgrId" style="width:20px;" />
+											<input type="button" id="getFXBNumbers" name="getFXBNumbers" value="获得编号"/>											 
+										</th>
+									  </tr>
+									  <tr>
+										<td width="96px" class="tdtextcentet">任务名称</td>
+										<td width="529px">
+											<input type="hidden" id="FId" name="FId" style="width:20px;" />
+											<div style="height:auto;width:auto;float:left;"><input type="hidden"
+												id="fkTaskId" name="fkTaskId" style="width:45px"
+												value=""> <input type="text" id="FKTaskName" 
+												name="FKTaskName" style="width:431px;float:left;padding-top:2px;"/></div>											
+											<input type="button" class="btnSelect" id="butnSelectEU" name="butnSelectEU" onclick="javascript:SelectTask();" title="请选择任务"></input>	
+										</td>
+										<td width="60" class="tdtextcentet">报告人</td>
+										<td width="72">
+											<input type="hidden" id="FEakerId" name="FEakerId" style="width:45px" value="">
+											<input type="text" id="FEakerName" name="FEakerName" style="width:65px"  value="">
+										</td>
+									  </tr>
+									  <tr>
+										<td class="tdtextcentet">项目类型</td>
+										<td colspan="3">
+											<input type="text"
+												id="FServiceCategory" name="FServiceCategory" class="easyui-combotree" data-options="url:'',cascadeCheck:false,required:false" style="width:321px"/>
+										</td>
+									  </tr>
+									  <tr>
+										<td class="tdtextcentet">项目实施进度</td>
+										<td colspan="3">
+											<input type="hidden" id="FProgress" name="FProgress" />										
+											<select id="FProgressId" name="FProgressId" class="easyui-combobox" style="width:321px"></select> 
+										</td>
+									  </tr>
+									  <tr>
+										<td class="tdtextcentet">事项简述</td>
+										<td colspan="3" style="margin-top:3px;">
+											<textarea cols="79" rows="8"  style="margin-left:8px;margin-top:3px;" id="FMattersBriefly" name="FMattersBriefly" ></textarea>														 
+										</td>
+									  </tr>
+									  <tr>
+										<td class="tdtextcentet">申请的支持</td>
+										<td colspan="3">											
+											<textarea cols="79" rows="8" style="margin-left:8px;margin-top:3px;"  id="FApplicationSupport"  name="FApplicationSupport"  ></textarea>														
+										</td>
+									  </tr>
+									  <tr>
+										<td class="tdtextcentet">拟处理意见</td>
+										<td colspan="3">											
+												<textarea cols="79" rows="8"  style="margin-left:8px;margin-top:3px;" id="FQpopionion"  name="FQpopionion" ></textarea>	
+										</td>
+									  </tr>
+									  <tr>
+										<td class="tdtextcentet">部门处理意见</td>
+										<td colspan="3">											
+												<div class="article_new"><a id="aDeptLink" rel="#">&lt;&lt;请填写意见 &gt;&gt;</a></div>					
+												<textarea cols="79" rows="8"  style="margin-left:8px;margin-top:3px;"  id="FDeptPrgOpinion" name="FDeptPrgOpinion" ></textarea>														
+										</td>
+									  </tr>
+									  <tr>
+										<td colspan="4" valign=top height="100%" style="padding:0px 0px 0px 0px;">
+										<div id="divOtherDept" style="overflow:auto;">
+										</div>
+										</td>
+									  </tr>
+									  <tr>
+										<td style="border-top:#f5f5f5 1px solid" class="tdtextcentet">总经理意见</td>
+										<td style="border-top:#f5f5f5 1px solid" colspan="3">											
+												<div class="article_new"><a id="aTgmgrLink"  rel="#">&lt;&lt;请填写意见 &gt;&gt;</a></div>					
+												<textarea cols="79" rows="8"  style="margin-left:8px;margin-top:3px;"  id="FTgmgrOpinion"  name="FTgmgrOpinion"></textarea>														
+										</td>
+									  </tr>									 							  
+									</table>	 
+								<br/>
+								<br/>
+							</div>										
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aB_OK" style="display: black;"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aB_CANCLE" style="display: black;"><img
+									src="../../images/oa/delete.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel='#' id="aB_BACK" style="display: black;"><img src="../../images/oa/quite.png"
+									  style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />返回列表</a>
+							</li>
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br />
+						<p></p>
+						<div  style="float:left;width:100%;height:251px;">
+							<table id="qkTable" name="qkTable" style="height:100%;">
+							</table>
+						</div>
+						</td>						 
+				</tr>
+			</table>
+		</div>
+			<br/>		
+	</form>	
+  </body>  
+</html>
+<script type="text/javascript">
+		$(document).bind("selectstart",function(){return false;});  
+		function  addDivClass(){
+			$("#divDisable").addClass("div-disabled");
+		}
+		function showLoadings(){
+			jQuery('#MainDiv').showLoading({ 'addClass': 'loading-indicator-bars'});
+		}
+		function hideLoadings(){
+			jQuery('#MainDiv').hideLoading();
+		}
+		showLoadings();
+		if($.browser.msie){
+			if($.browser.version<=8){
+				setActiveStyleSheet("papers.css");
+			}else				
+				setActiveStyleSheet("papersother.css");
+		} else if($.browser.mozilla){
+			setActiveStyleSheet("papersother.css");
+		} else{
+			setActiveStyleSheet("papersother.css");
+		}
+		function setActiveStyleSheet(filename) {
+			document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+		}
+		function closeJBox(){
+			$.jBox.close(true);
+		}		 
+		function MessageInfo(Title,Msg){
+			$.messager.show({
+				title:Title,
+				msg:Msg,
+				showType:'fade',
+				timeout:2000,
+				style:{
+					right:'',
+					bottom:''
+				}
+			});
+		}
+		var IFrame='<iframe src="{0}" style="width:100%;height:98%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';
+		
+		function todom(dom){
+			var body = (window.opera) ? (document.compatMode == "CSS1Compat" ? $('html') : $('body')) : $('html,body');
+			body.animate({scrollTop: $(dom).offset().top}, 500);
+		}
+		
+		/**  
+		判断输入框中输入的日期格式是否为 yyyy-mm-dd   或yyyy-m-d
+		*/  
+		function isDate(dateString){
+		var flag=false;		
+		if(dateString.trim()=="") return flag;
+		//年月日正则表达式
+		var r=dateString.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
+		    if(r==null){
+		    	//MessageInfo("系统提示","请输入格式正确的日期\n\r日期格式：yyyy-mm-dd\n\r例    如：2008-08-08\n\r");
+		    	flag=false;
+		    }else
+		    	flag=true;
+		return flag;
+		}
+		function getEasyValue(obj,type){
+		var value;
+		switch (type) {
+			case "combo":
+				value=obj.combo('getValue');
+				break;
+			case "combobox":
+				value=obj.combobox('getValue');
+				break;
+			case "combotree":
+				value=obj.combotree('getValue');
+				break;
+			case "numberbox":
+				value=obj.numberbox('getValue');
+				break;
+			case "datebox":
+				value=obj.datebox('getValue');
+				break;
+			case "datetimebox":
+				value=obj.datetimebox('getValue');
+				if(!isDate(value))
+					value="";
+				break;
+		}
+		return value;
+		}
+		function setEasyRequired(obj,type){
+		switch (type) {
+			case "combo":
+				obj.combo({required:true});
+				break;
+			case "combobox":
+				obj.combobox({required:true});
+				break;
+			case "combotree":
+				obj.combotree({required:true});
+				break;
+			case "numberbox":
+				obj.numberbox({required:true});
+				break;
+			case "datebox":
+				obj.datebox({required:true});
+				break;
+			case "datetimebox":
+				obj.datetimebox({required:true});
+				break;
+		}
+		}
+		$.fn.extend({        
+		validData :function(msg,isShowMsg,easytype,maxChar){   //msg 例如：'不能为空！请仔细填写。'			   
+		   var obj=$(this);
+			   var value;	   	   
+			   if(isShowMsg==1){
+					if(easytype!="")
+		   			value=	getEasyValue(obj,easytype); 
+					else
+						value= obj.val();	   			
+		   		if(value=="" || value==null)
+				   {	if(easytype=="datetimebox")
+					   		MessageInfo("系统提示",msg+",请输入格式正确的日期\n\r日期格式：yyyy-mm-dd\n\r例    如：2008-08-08\n\r");
+				   		else{
+				   			MessageInfo('系统提示',msg);
+				   		}
+						if(easytype!="")
+							setEasyRequired(obj,easytype);						
+					    return false;
+				   }else{
+					    if(maxChar>0){
+						    if(value.length>maxChar){
+						    	MessageInfo('系统提示',msg+"或长度超过"+maxChar);
+								return false;
+						    }else
+						    	return true;
+					    }else
+					    	return true;
+				   }
+			   }else
+				{
+				   if(trim(obj.val())=="" || obj.val()=="该输入项为必输项！")
+				   {
+						obj.addClass("classerror");
+					    obj.val("该输入项为必输项！");									
+					    obj.focus(function(){
+							obj.removeClass("classerror");
+					    });							
+						todom(this);
+					    return false;
+				   }else{						   
+						   if(maxChar>0){
+							    if(obj.val().length>maxChar){
+							    	MessageInfo('系统提示',msg+"或长度超过"+maxChar);
+									return false;
+							    }else
+							    	return true;
+						   
+						   }else
+						    	return true;
+					   }
+				}
+			   
+		}				
+		});
+		
+		function SelectTask() {
+			var Parameter={
+			    	ISHISTORY: 0
+				};
+			var ParameterJSON= Base64.encode($.toJSON(Parameter));				
+			var win = $(IFrame.format('/html/module/public/SelectTask.html?Parameter='+ParameterJSON));
+				$.lightbox(win, {
+					modal  : true,
+					width   : 560,
+					height  : 385
+			   });			
+			return false;			
+		}		
+		function WriteOpinion(formid,tablename,updatefield,userid) {
+			//判断是否已签收
+			if($("#isAcceptance").val()=="0")
+			{
+				$.messager.alert('系统提示','请先签收！再作其他操作','info');								 
+				return false;
+			}
+			var url="/html/module/public/OpinionBoxEasy.html"+"?formid="+formid+"&tablename="+tablename+"&updatefield="+updatefield+"&userid="+userid;
+			var win = $(IFrame.format(url));
+				$.lightbox(win, {
+					modal  : true,
+					width   : 650,
+					height  : 398,
+					onClose : function(){
+						window.location.reload();
+					}
+			   });
+			return false;
+		}
+		function getTaskInfo(taskid,taskname,taskservertype,tasknumber,deptmgrid){
+			$.LightBoxObject.close();			
+			$("#fkTaskId").attr("value",taskid);
+			$("#FKTaskName").attr("value",taskname);
+			$("#FServiceCategory").combotree('setValue',taskservertype);
+			$("#FDeptMgrId").attr("value",deptmgrid);
+			//获得编号
+			
+			$.post("/GetNumber/FunForNumber/", {
+				"year": new Date().getFullYear(),
+				"taskname": tasknumber.substring(0,tasknumber.length-11), 
+				"fid": $("#formPKID").val(),
+				"numbercode": "XB"
+					}, function(data) {
+						if (data.success) {
+							$("#FNumbers").attr("value",data.Number);
+						}else
+						{															
+							//$.messager.alert('系统提示','编号生成失败，请重试!','error');
+							return false;
+						}
+			}, "json");
+		}
+		 function fn_loadCode(){
+			  $('#FProgressId').combobox({
+						url:'/GetCode/Query/',  
+						valueField:'FId',  
+						textField:'FCodeText',
+						onSelect: function(record){
+							$('#FProgress').val($('#FProgressId').combobox('getText'));
+						},
+						onBeforeLoad: function(param){
+							param.action = "getAppCode";
+							param.CodeTypeId = 365;
+							param.State = 1;
+						}
+			   });
+			   $('#FServiceCategory').combotree ({
+						url: "/GetCode/CodeTreeExt/2/",
+							panelWidth: 251,
+							cascadeCheck:true
+			   });
+			   $('#FServiceCategory').combotree('disable');
+		  }					
+		  function fn_loadData(id){
+			  $.post("/Buss/MMReportService/16", {
+					"ID" : id			
+					}, function(data) {
+						if(data.root)
+							if(data.success)
+								SetFormValue(data, "");
+							else
+								
+						hideLoadings();
+					}, "json");
+				if(FormState==0)
+				{
+					setButtonState("#aT_LOADRESULT",false);
+				}else
+				{
+					setButtonState("#aT_LOADRESULT",true);
+				}
+		  }
+		  function CreateDivOtherDept(id,deptId,Name,Opinion,index,size,userId){
+				alinkId="alinkId";
+				textareaID="FXGDeptOpinion";
+				$("<table>")
+				.attr("id","tableOtherDept"+id)					
+				.css("valign","top")
+				.css("margin-top","0px")
+				.css("cellpadding","0px")
+				.css("cellspacing","0px")
+				.css("margin-left","0px")							
+				.css("margin-right","0px")
+				.css("margin-buttom","0px")
+				.appendTo($("#divOtherDept"));
+				$("<tr>").attr("id","tableOtherTR01"+id).appendTo($("#tableOtherDept"+id));
+				/*根据浏览器类型设置td的宽度*/
+				var tdwidth=101;
+				if($.browser.msie){
+					if($.browser.version<=8){
+						tdwidth=101;
+					}else				
+						tdwidth=101;
+				} else if($.browser.mozilla)
+					tdwidth=97;
+				if(index+1==size){
+					$("<td>")
+					.attr("id","tableOtherTD01"+id)				
+					.width(tdwidth)
+					.css("border-width","0px 0px 0px 0px")
+					.html(Name+"处理意见")
+					.appendTo($("#tableOtherTR01"+id));
+		
+					$("<td>")
+					.attr("id","tableOtherTD02"+id)
+					.width(694)						
+					.css("border-width","0px 0px 0px 1px")
+					.html("")
+					.appendTo($("#tableOtherTR01"+id));
+				}else{						
+					$("<td>")
+					.attr("id","tableOtherTD01"+id)				
+					.width(tdwidth)						
+					.css("border-width","0px 0px 1px 0px")
+					.html(Name+"处理意见")
+					.appendTo($("#tableOtherTR01"+id));
+		
+					$("<td>")
+					.attr("id","tableOtherTD02"+id)				
+					.width(694)						
+					.css("border-width","0px 0px 1px 1px")
+					.html("")
+					.appendTo($("#tableOtherTR01"+id));
+				}
+				textareaID+=deptId;
+				alinkId+=deptId.toString()+userId.toString();
+		       var $temp= $("<div><a id='"+alinkId+"' rel='#'>&lt;&lt;请填写意见 &gt;&gt;</a></div>"+						
+					"<textarea cols='79' rows='8'  readonly style='margin-left:8px;margin-top:3px;' "+" id='"+textareaID+"' name='"+textareaID+"' </textarea></br>"						
+				);
+		       
+				$temp.appendTo($("#tableOtherTD02"+id));				
+				document.getElementById(textareaID).innerHTML=Opinion;
+				//加超级链接点击事件
+				$("#"+alinkId).click(function() {										
+					WriteOpinion(id,'T_RelatedDetpOpinion','F_Dept_Opinion',1);
+				});					
+				$("#"+alinkId).hide();
+				if($("#state").val().toString()=="1")
+				{
+					var tempid="#alinkId"+$("#userOrgID").val().toString()+$("#userID").val().toString();							
+						$(tempid).show();
+				}
+		   }			  
+		  //////////////////////////////////////////////////////////////////////
+		  //设置元素可见否
+		   function setButtonState(id,state){
+				if(state)
+					$(id).show();
+				else
+					$(id).hide();
+			}
+		  //设置元素是否可用
+		   function setElementState(id,state){			
+				if(state)
+					$(id).attr({readonly:false});
+				else
+					$(id).attr({readonly:true});							
+			}
+		
+			function getRelatedDetpOpinion(id){
+				$.post("/Buss/MMReportService/5",{"ID":formPKID},function(data){
+					if (data.success) {
+						var size=data.totalProperty;							
+						 $.each( data.root, function(index, record){
+							  CreateDivOtherDept(record.FId,record.FDeptId,record.FDeptName,record.FDeptOpinion,index,size,record.FUserId);								 
+						 });
+						 if($.browser.msie){
+							 $("#content").height($("#content").height() +data.totalProperty*130);
+						} else if($.browser.mozilla){
+							 $("#content").height($("#content").height() +data.totalProperty*260);
+						} 
+						 
+					} else {
+						return false;
+					}
+				},"json");
+			}
+		function SetFormValue(data, type) {					
+			$("#FId").attr("value", data.root[0].FId);
+			//设置表单值
+			$("#fkTaskId").attr("value",data.root[0].fkTaskId); 
+			$("#FKTaskName").attr("value",data.root[0].FTaskName);
+			$("#FCurrentStep").attr("value", data.root[0].FCurrentStep);
+			$("#FLastStep").attr("value", data.root[0].FLastStep);
+			$("#FDeptMgrId").attr("value",data.root[0].FDeptMgrId);
+			if(data.root[0].FServiceCategory!=0)
+			    $('#FServiceCategory').combotree('setValue', data.root[0].FServiceCategory);
+			$('#FServiceCategory').combotree('disable');
+					
+			if(data.root[0].FEakerId==""){
+				$("#FEakerId").attr("value",$("#userID").val());
+				$("#FEakerName").attr("value",$("#userName").val());								
+			}else{
+				$("#FEakerId").attr("value",data.root[0].FEakerId);
+				$("#FEakerName").attr("value",data.root[0].FEakerName);
+			}
+			
+			$("#FNumbers").attr("value",data.root[0].FNumbers);
+			$('#FProgress').val(data.root[0].FProgress);
+			if(data.root[0].FProgressId!=0)
+			    $('#FProgressId').combobox('setValue', data.root[0].FProgressId);
+			$("#FMattersBriefly").attr("value",data.root[0].FMattersBriefly);
+			$("#FApplicationSupport").attr("value",data.root[0].FApplicationSupport);
+			$("#FQpopionion").attr("value",data.root[0].FQpopionion);
+			$("#FDeptPrgOpinion").attr("value",data.root[0].FDeptPrgOpinion);
+			$("#FTgmgrOpinion").attr("value",data.root[0].FTgmgrOpinion);
+			setFormButtonState($("#unitStation").val().toString(),$("#action").val().toString(),$("#fState").val().toString());
+		}
+		function fn_initpage(){								
+			action = Request.QueryString("action");
+			processId = Request.QueryString("processId");
+			activeId = Request.QueryString("activeId");
+			formPKID = Request.QueryString("formPKID");
+			state = Request.QueryString("state");
+			$("#action").attr("value",action);
+			$("#processId").attr("value",processId);
+			$("#activeId").attr("value",activeId);
+			$("#formPKID").attr("value",formPKID);
+			$("#state").attr("value",state);
+			$("#FDepartmentName").attr({readonly : 'true'});
+			$("#FEakerName").attr({readonly:'true'});
+			$("#FDeptPrgOpinion").attr({readonly:'true'});
+			$("#FTgmgrOpinion").attr({readonly:'true'});
+		
+			$("#FNumbers").attr({readonly : 'true'});
+			$("#FKTaskName").attr({readonly:'true'});
+			$("#FServiceCategory").attr({readonly:'true'});			
+		}
+		function fn_error(){
+			MessageInfo('加载数据错误！请重试。', '系统提示');
+		}
+		function fn_success(data){
+			if(data){
+				if (data.success) {			
+					fn_initpage();
+					fn_loadCode();
+					fn_loadData();
+				}else
+				{
+						userobj=null;					
+						return false;
+				}
+			}
+		}
+		function ValidateUser(activeId){
+			$.ajax({
+				url:'/Buss/CommonService/1',
+				type:'POST',
+				data:{"activeId":activeId},
+				dataType: 'json',
+				timeout: 5000,
+				error: fn_error,				
+				success: fn_success
+			});
+		}
+		function getPostData(){
+			return {
+				FId: $("#FId").val()==""? 0:$("#FId").val(),
+				FCurrentStep: $("#FCurrentStep").val(),
+				FLastStep: $("#FLastStep").val(),				
+				fkTaskId: $("#ftaskid").val(),
+				FNumbers: $("#FFHNumbers").val(),				
+				FConstructionUnit: $("#F_ConstructionUnit").val(),
+					//if(data.root[0].FResultsType!="")
+						FResultsType: $("#F_ResultsType").combobox("getValue"),
+						FResultTypeName: $('#F_ResultsType').combobox('getText'),
+					//if(data.root[0].FSubmitMaterials!="")
+						FSubmitMaterials: $("#F_SubmitMaterials").combobox("getValues").toString(),
+						FSubmitMaterialsName: $("#F_SubmitMaterials_Name").val(),
+						FProjectCost: $("#F_ProjectCost").numberbox("getValue"),
+						FUnitCost: $("#F_UnitCost").numberbox("getValue"),
+						FPmroReviewMan: $("#F_PMRO_ReviewMan").val(),
+						FPmroReviewTime: $("#F_PMRO_ReviewTime").datetimebox('getValue'),
+						FPmroProblems: $("#F_PMRO_Problems").val(),
+						FPmroRectification: $("#F_PMRO_Rectification").val(),
+						FPmroDiscuss: $("#F_PMRO_Discuss").val(),
+						FDmroReviewMan: $("#F_DMRO_ReviewMan").val(),
+						FDmroReviewTime: $("#F_DMRO_ReviewTime").datetimebox('getValue'),
+						FDmroProblems: $("#F_DMRO_Problems").val(),
+						FDmroRectification: $("#F_DMRO_Rectification").val(),
+						FDmroDiscuss: $("#F_DMRO_Discuss").val(),
+						FCglroFinalCost: $("#F_CGLRO_FinalCost").numberbox("getValue"),
+						FCglroProblems: $("#F_CGLRO_Problems").val(),
+						FCglroRectification: $("#F_CGLRO_Rectification").val(),
+						FCglroDiscuss: $("#F_CGLRO_Discuss").val(),
+						FReviewMan: $("#F_ReviewMan").val(),
+						FReviewManTime: $("#F_ReviewMan_Time").datetimebox('getValue'),
+						FGlosign: $("#F_GLOSign").val(),
+						FGlosignTime: $("#F_Glosign_Time").datetimebox('getValue')
+			};
+		}
+		$(document).ready(function() {			
+			  ValidateUser(Request.QueryString("activeId"));			
+				function FUN_Save() {
+					var issave=false;
+					issave=$("#FNumbers").validData("编号不能为空！",0,"",0);
+					issave= issave && $("#FKTaskName").validData("任务不能为空！",0,"",0);
+					issave= issave && $("#FProgressId").validData("项目实施进度不能为空！",1,"combotree",0);
+					issave= issave && $("#FMattersBriefly").validData("事项简述不能为空！",0,"",1000);
+					issave= issave && $("#FApplicationSupport").validData("申请的支持不能为空！",0,"",1000);
+					issave= issave && $("#FQpopionion").validData("拟处理意见不能为空！",0,"",1000);
+						if(issave)
+						{
+									var Id = $('input[name=FId]').fieldValue();
+									$("#FEakerId").attr("value",$("#userID").val());
+									$("#FEakerName").attr("value",$("#userName").val());
+									if (Id == "" || Id != null) {									
+										var form = $("#formreport");
+										form.ajaxSubmit(options);
+										return false;
+									}
+						}
+					}
+				
+				
+				$("#aT_BACK,#aB_BACK").click(function() {
+					window.location.href='/html/module/history/history.html?id=10006';
+				});
+				$("#aT_OK,#aB_OK").click(function() {
+					showLoadings();
+					$.post("/Buss/CheckReviewService/17", {
+						"JSONDATA" : JSON.stringify(getPostData()),
+						"TaskName" : $("#ftaskname").val()
+					}, function(data) {
+						if(data)
+							if(data.success){
+								$("#FId").val(data.id);
+								$("#ResultFileIframe").attr("src","/html/module/public/ResultsFileList.html?fkCheckReviewId="+$("#FId").val()+"&isView=0");
+								setButtonState("#aT_LOADRESULT",true);
+								MessageInfo('系统提示', '项目检查复核申报,保存成功。');
+							}
+						hideLoadings();
+					}, "json");
+					
+				});
+				$("#aT_CANCLE,#aB_CANCLE").click(function() {
+					$.messager.confirm('系统提示', '您确定要撤销吗？撤销将彻底删除所有复核申报记录,撤销后不能恢复？', function(r){
+						if (r){
+							showLoadings();
+							$.post("/Buss/CheckReviewService/18", {
+								"FId" : $("#FId").val()
+							}, function(data) {
+								if(data)
+									if(data.success){
+										$("#FId").val(data.id);						
+										MessageInfo('系统提示', '项目检查复核申报,撤销成功。');
+										window.location.href='/html/module/history/history.html?id=10006';
+									}
+								hideLoadings();
+							}, "json");									
+							}
+						});
+				});
+				
+				
+				$("#aTgmgrLink").click(function() {
+					var formId=$("#FId").val();					
+					WriteOpinion(formId,'T_MajorMattersReport','F_TgmgrOpinion',1);
+				});
+				$("#aDeptLink").click(function() {
+					var formId=$("#FId").val();					
+					WriteOpinion(formId,'T_MajorMattersReport','F_DeptPrgOpinion',1);
+				});
+		});	
+</script>

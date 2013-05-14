@@ -1,0 +1,405 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>任务书下达</title>
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+<link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+<link rel="stylesheet" href="../../css/treenodeicon.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+<link rel="stylesheet" href="../../plugin/showLoading/css/showLoading.css" type="text/css"></link>
+<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../plugin/easyui/jquery.menu.js"></script>
+<script type="text/javascript" src="../../js/jquery.form.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+<script type="text/javascript" src="../../plugin/showLoading/js/jquery.showLoading.min.js"></script>
+<script type="text/javascript" src="../../plugin/easyui/EasyUIautoMergeCells.js"></script>
+<!--[if lt IE 8]>
+<script type="text/javascript" src="../../plugin/js/PIE.js"></script>
+<![endif]-->
+
+<style type="text/css">
+	
+	body {
+		background: #f5f5f5;
+		height: 98%;
+		width: 98%;
+	}
+	
+	.loading-indicator-bars {
+		background-image: url('/html/plugin/showLoading/images/loading.gif');
+		width: 150px;
+	}
+	.icon-usermm{
+		 background-image: url(。。/../images/user.gif) !important;
+	}
+	.classerror{
+			 border: 1px solid #f00;
+			 background:#fcc;
+		}	
+	.div-disabled{
+		background: none repeat scroll 0 0 #FFFFF0;
+		position: fixed; 
+		top: 0px; 
+		left: 0px; 
+		opacity: 0.3; 
+		display: block; 
+		z-index: 99998; 
+		height: 100%; 
+		width: 100%;
+	}	
+	.icon-code01{
+			background:url('../../images/oa/file.png') no-repeat center center;
+	}
+	.icon-root{
+		background:url('../../images/oa/flord.png') no-repeat center center;
+	}
+	.icon-leaf{
+		background:url('../../images/oa/file.png') no-repeat center center;
+	}
+	.icon-menu-selected{
+		background:url('../../images/selected.png') no-repeat center center;
+	}
+	.input-001{
+		background:url(../../plugin/easyui/themes/gray/images/combo_arrow.png) repeat-y;
+	}
+	.select_style{
+		background:url(../../plugin/easyui/themes/gray/images/combo_arrow.png);
+		height:20px;width:16px;overflow:hidden;border:0px;margin:2px;
+		cursor: pointer;
+	}
+</style>
+</head>
+<body> 
+	<div  id="divDisable" name="divDisable"></div>
+	<form id="formtask" action="/Buss/TaskService/2" method="post">
+	<div style="display: none;">
+		action:<input type="text" id="action" name="action"  value=""/>
+		processId:<input type="text" id="processId" name="processId" value=""/>
+		activeId:<input type="text" id="activeId" name="activeId" value=""/>
+		formPKID:<input type="text" id="formPKID" name="formPKID" value=""/>
+		state:<input type="text" id="state" name="state" value=""/>
+		userID:<input id="userID" name="userID" type="text"/>
+		userName:<input id="userName" name="userName" type="text"/>
+		userOrgID:<input id="userOrgID" name="userOrgID" type="text"/>
+		unitStation:<input id="unitStation" name="unitStation" type="text"/>
+		fAcceptUser:<input id="fAcceptUser" name="fAcceptUser" type="text"/>
+		fState:<input id="fState" name="fState" type="text"/>
+		isAcceptance:<input id="isAcceptance" name="isAcceptance" type="text"/>
+		<input type="text" id="FCurrentStep" name="FCurrentStep" style="width:20px;" />	
+		<input type="text" id="FLastStep" name="FLastStep" style="width:20px;" />
+	</div>
+		<div style="text-align:center;" id="MainDiv" >
+			<table border="0" cellpadding="3" cellspacing="0" class="pagetable" style="width:820px;margin:auto">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+							</li>							
+							<li><a rel="#" id="aT_QSH" style="display: none;"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+							</li>
+							<li><a rel="#" id="aT_OK" style="display: none;"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aT_Post" style="display: none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aT_ZPPMBan" style="display: none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />任命项目经理</a>
+							</li>
+							<li><a rel="#" id="aT_Cancel" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel="#" id="aT_BACKTO" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+							</li>
+							<li><a rel="#" id="aT_ADDPLAN" style="display: none;"><img
+									src="../../images/oa/newfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />起草计划</a>
+							</li>					
+							<li><a rel="#" id="aT_CuiBan" style="display: none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aT_BLQK"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>														
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul></td>
+				</tr>
+				<tr>
+					<td style="padding-left:2px;padding-top:45px;">
+					<div style="height:516px;width:820px;" class="clear">
+						<div class="content" id="content" style="height:516px;width:810px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br /><br /><br /><br />						
+							<div style="float:left;">
+								<table  width="780px" border="0" class="content_table1" 
+									cellpadding="0" style="position:absolute; margin:10px 0px 0px 10px;border-collapse:collapse;border:none;border:solid #000 0px;">									
+									 <caption>
+									    <strong style="height:35px;font-size:22px;"> 昆明松岛工程造价咨询有限公司<label id="TitleYear"></label>年度任务书下达									             
+										</strong>
+										<br/>
+									</caption>
+									<tr>
+										<th style="height:35px;font-size:10pt;" colspan="7" align="left" valign="middle" scope="col">&nbsp;&nbsp;编号：<label>
+												<input type="hidden" id="FId" name="FId" style="width:20px;" />
+																																	
+												<input type="text" id="FTaskNumbers" name="FTaskNumbers" value="" style="width:521px;"/>
+												<input type="button" id="getTaskNumbers" name="getTaskNumbers" value="生成编号"/>
+												</label>											
+										</th>
+									</tr>
+									<tr>
+										<td width="73" >任务名称</td>
+										<td colspan="6"><label> 
+											<input type="text" id="FTaskName" name="FTaskName" style="width:461px;"/>																												
+										</label></td>
+									</tr>
+									<tr>
+										<td width="73">任务简称</td>
+										<td colspan="6"><label> 											 
+											<input type="text" id="FTaskShortName" name="FTaskShortName" style="width:281px;"/>																			
+										</label></td>
+									</tr>
+									<tr>
+										<td>委托单位</td>
+										<td colspan="6"><div style="height:auto;width:auto;float:left;"><input type="hidden"
+												id="FEntrustUnitId" name="FEntrustUnitId" style="width:45px;float:left;"
+												value=""> <input type="text" id="FEntrustUnitName"
+												name="FEntrustUnitName" style="width:361px;float:left;padding-top:5px;"></div>										
+											    <span  class="btnSelect" id="aSelectEU" name="aSelectEU" onclick="javascript:SelectEntrustUnit();"  title="请选择委托单位"></span>
+											             &nbsp;&nbsp;&nbsp;&nbsp;简称&nbsp;&nbsp;<input type="text" id="FEntrustUnitShortName" name="FEntrustUnitShortName" style="width:161px;padding-top:5px; "/>
+										</td>
+									</tr>
+									<tr>
+										<td>项目规模</td>
+										<td colspan="2"><label><input type="text" id="FProjectScale" name="FProjectScale" style="width:121px;"/> </label>
+												<select id="FProjectScaleUnit" name="FProjectScaleUnit" class="easyui-combobox" style="width:61px"></select>
+										</td>
+										<td width="106">结构类型</td>
+										<td colspan="3">										
+											<select id="FStructureTypeId" name="FStructureTypeId" class="easyui-combobox" style="width:260px"></select>
+											<input id="FStructureType" name="FStructureType" type="hidden"/>
+										</td>
+									</tr>
+									<tr>
+										<td>服务类别</td>
+										<td colspan="2">
+											<!-- <select style="width:181px;" id="FServiceCategory"  name="FServiceCategory" class="easyui-combotree" data-options="url:'',cascadeCheck:false,required:true"></select> -->
+											<input type="hidden" id="FServiceCategoryId" name="FServiceCategoryId" value="" style="width:61px"/>
+											<div style="border:1px solid #808080;height:23px;width:181px;margin-top:1px;">												
+												<input readonly="true" style="float:left;border:0;color: blue;font-size:100%;width:156px;height:20px;" id="FServiceCategory" name="FServiceCategory" title="请选择服务类别" type="text" />
+												<input class="select_style" id="FServiceCategoryB" tabindex="0" title="选择服务类别" type="button" value="" />
+											</div>
+										</td>
+										<td>合同预计收费</td>
+										<td colspan="3"><label> 
+											<input type="text" class="easyui-numberbox" value="0" data-options="min:0,precision:4" id="FContractYjCharge" name="FContractYjCharge"> </label>万元</td>
+									</tr>
+									<tr>
+										<td>业务类别</td>
+										<td colspan="2">
+											<!--<select style="width:181px;" class="easyui-combotree" data-options="url:'',cascadeCheck:false,required:true" id="FBusinessCategory" name="FBusinessCategory"></select>-->
+											<input type="hidden" id="FBusinessCategoryId" name="FBusinessCategoryId" value="" style="width:61px"/>
+											<div style="border:1px solid #808080;height:23px;width:181px;margin-top:1px;">												
+												<input readonly="true" style="float:left;border:0;color: blue;font-size:100%;width:156px;height:20px;" id="FBusinessCategory" name="FBusinessCategory" title="请选择业务类别" type="text" />
+												<input class="select_style" id="FBusinessCategoryB" tabindex="0" title="选择业务类别" type="button" value="" />
+											</div>
+										</td>
+										<td>行业类别</td>
+										<td colspan="3">
+											<!--<input type="hidden" id="FIndustryCategoryName" name="FIndustryCategoryName"/>
+											<select style="width:261px;" class="easyui-combotree" data-options="url:'',cascadeCheck:false,required:true" multiple id="FIndustryCategoryId" name="FIndustryCategoryId"/>-->
+											<input type="hidden" id="FIndustryCategoryId" name="FIndustryCategoryId" value="" style="width:61px"/>
+											<div style="border:1px solid #808080;height:23px;width:261px;margin-top:1px;">												
+												<input readonly="true" style="float:left;border:0;color: blue;font-size:100%;width:236px;height:20px;" id="FIndustryCategoryName" name="FIndustryCategoryName" title="请选择行业类别" type="text" />
+												<input class="select_style" id="FIndustryCategoryNameB" tabindex="0" title="选择行业类别" type="button" value="" />
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>承接部门</td>
+										<td colspan="2">
+										<div style="height:auto;width:auto;float:left;"><input type="hidden"  id="FDepartmentId" name="FDepartmentId"/> 
+										<input type="text" style="width:140px;float:left;" id="FDepartmentName"
+												name="FDepartmentName"/><span class="btnSelect" style="float:left;" id="aSelectDept" name="aSelectDept" onclick="javascript:SelectDept();" title="请选择承接部门"></span></div>									
+										</td>
+										<td>预计开始时间</td>
+										<td width="90">
+											<input id="FYjstartTime" name="FYjstartTime"  value="" style="width:91px">
+										</td>
+										<td width="92">预计完成时间</td>
+										<td width="83"><input 
+												id="FYjfinishTime" name="FYjfinishTime" value="" style="width:91px">
+										</td>
+									</tr>
+									<tr>
+										<td>下达人</td>
+										<td width="74"><label> <input type="hidden"
+												style="width:10px;" id="FGivePersonId" name="FGivePersonId">
+												<input type="text"
+												style="width:65px;" id="FGivePersonName"
+												name="FGivePersonName"> </label></td>
+										<td width="71">下达时间</td>
+										<td><input type="text"
+												style="width:73px;" id="FGiveTime" name="FGiveTime" type="text"></td>
+										<td>部门经理</td>
+										<td colspan="2"><input type="hidden"
+												style="width:45px;" id="FDeptMgrId" name="FDeptMgrId"><input
+												type="text" id="FDeptMgrName" name="FDeptMgrName">
+										</td>
+									</tr>
+									<tr>
+										<td>接收时间</td>
+										<td colspan="2"><label> <input type="text"
+												style="width:73px;" id="FReceivingTaskTime"
+												name="FReceivingTaskTime"> </label></td>
+										<td>项目经理</td>
+										<td colspan="3"><label>主：<input type="hidden"
+												style="width:25px;" id="FProjMgrName" name="FProjMgrName">
+												<input type="text" style="width:91px;" id="FProjMgrId"  class="easyui-combotree" data-options="url:''"
+												name="FProjMgrId">副：<input type="hidden"
+												style="width:25px;" id="FProjMgrViceName" name="FProjMgrViceName">
+												<input type="text" style="width:151px;" id="FProjMgrViceId" class="easyui-combotree" data-options="url:''" multiple
+												name="FProjMgrViceId"></label></td>
+									</tr>
+								</table>
+								<br /><br />
+								<input id="output2" type="hidden" value="" />								
+							</div>							
+						</div>
+						</div>					   				
+					</td>
+				</tr>
+				<tr>
+					<td>
+					<br /><br /><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>							
+							<li><a rel="#" id="aB_QSH" style="display: none;"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+							</li>
+							<li><a rel="#" id="aB_OK" style="display: none;"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>
+							<li><a rel="#" id="aB_Post" style="display: none;"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>
+							<li><a rel="#" id="aB_ZPPMBan" style="display: none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />任命项目经理</a>
+							</li>
+							<li><a rel="#" id="aB_Cancel" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+							</li>
+							<li><a rel="#" id="aB_BACKTO" style="display: none;"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+							</li>
+							<li><a rel="#" id="aB_ADDPLAN" style="display: none;"><img
+									src="../../images/oa/newfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />起草计划</a>
+							</li>					
+							<li><a rel="#" id="aB_CuiBan" style="display: none;"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aB_BLQK"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>														
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> <br />
+						<p></p>
+						<div  style="float:left;width:100%;height:251px;">
+							<table id="qkTable" name="qkTable" style="height:100%;">
+							</table>
+						</div>
+						</td>
+				</tr>
+				</br>				
+			</table>			
+		</div>			
+	</form>	
+	<div id="divreturn" class="easyui-dialog" title="打回操作" style="width:400px;height:250px;padding:10px"
+			data-options="
+				iconCls: 'icon-save',				
+				buttons: '#bdlg-buttons',
+				modal:'true',
+				closed:true,
+				closable:true
+			">
+		<lable>请输入打回意见：</lable>
+		<textarea id="OpinionMessageReturn" name="OpinionMessageReturn" style="height:121px;width:98%;"></textarea>
+	</div>
+	<div id="bdlg-buttons">
+		<a href="javascript:void(0)" id="aBackbutn" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="javascript:FUN_Back()">打回</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divreturn').dialog('close')">关闭</a>
+	</div>
+
+	<div id="divcuiban" class="easyui-dialog" title="催办操作" style="width:400px;height:250px;padding:10px"
+			data-options="
+				iconCls: 'icon-save',				
+				buttons: '#cdlg-buttons',
+				modal:true,
+				closed:true,
+				closable:true
+			">
+		<lable>请输入催办意见：</lable>
+		<textarea id="OpinionMessageCuiBan" name="OpinionMessageCuiBan" style="height:121px;width:98%;"></textarea>
+	</div>	
+	<div id="cdlg-buttons">
+		<a href="javascript:void(0)" id="aCuiBanbutn" data-options="iconCls:'icon-ok'" class="easyui-linkbutton" onclick="javascript:FUN_CuiBan()">催办</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divcuiban').dialog('close')">关闭</a>
+	</div>
+    
+    <div id="divmodifyinfo" class="easyui-dialog" title="修改记录" style="width:580px;height:310px;padding:10px"
+			data-options="
+				iconCls: 'icon-save',				
+				buttons: '#milg-buttons',
+				modal:true,
+				closed:true,
+				closable:true
+			">
+		<lable>修改信息：</lable>
+		<textarea id="ModifyMessage" name="ModifyMessage" style="height:181px;width:98%;"></textarea>
+	</div>	
+	<div id="milg-buttons">
+		<a href="javascript:void(0)" id="ModifyOkbuttn" data-options="iconCls:'icon-ok'" class="easyui-linkbutton" onclick="javascript:FUN_ModifyOk()">确认</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divmodifyinfo').dialog('close')">关闭</a>
+	</div>	
+</body>
+<script type="text/javascript" src="js/task.js"></script>
+</html>

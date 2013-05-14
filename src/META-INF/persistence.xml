@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+    http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+    version="2.0">
+    
+ 	<persistence-unit name="infoPersistence"
+ 		transaction-type="RESOURCE_LOCAL">
+ 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+ 		<class>com.info.domain.TProjectProcess</class>
+ 		<class>com.info.domain.ViewWfActiveAll</class>
+ 		<class>com.info.domain.TTask</class>
+ 		<class>com.info.domain.ViewClientTree</class>
+ 		<class>com.info.domain.ViewTask</class>
+ 		<class>com.info.domain.TImplementPlan</class>
+ 		<class>com.info.domain.TTeamPerson</class>
+ 		<class>com.info.domain.ViewImplementPlan</class>
+ 		<class>com.info.domain.TMajorMattersReport</class>
+ 		<class>com.info.domain.ViewMmreport</class>
+ 		<class>com.info.domain.TRelatedDetpOpinion</class>
+ 		<class>com.info.domain.TCheckReview</class>
+ 		<class>com.info.domain.TProjectAppraisalScoure</class>
+ 		<class>com.info.domain.TWfProcessSend</class>
+ 		<class>com.info.domain.TImplementPlanChange</class>
+ 		<class>com.info.domain.TTeamPersonChange</class>
+ 		<class>com.info.domain.ViewImplementPlanChange</class>
+ 		<class>com.info.domain.TWfUpdateRecords</class>
+ 		<class>com.info.domain.TWfProcess</class>
+ 	</persistence-unit>
+
+</persistence>

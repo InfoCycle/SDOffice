@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>业务办理记录</title>
+<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	margin: 10px auto;
+	width: 690px;
+	font: 75%/120% Arial, Helvetica, sans-serif;
+}
+
+p {
+	padding: 0 0 1em;
+}
+/* handlestatus display page */
+.handlestatus_list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	width: 690px;
+}
+
+.handlestatus_list li {
+	padding: 0;
+	margin: 0;
+	background: url('../../images/message-bar.gif') no-repeat;
+}
+
+.handlestatus_head {
+	padding: 5px 10px;
+	cursor: pointer;
+	position: relative;
+}
+
+.handlestatus_head .timestamp {
+	color: #0000FF;
+	font-size: 95%;
+	position: absolute;
+	right: 10px;
+	top: 5px;
+}
+
+.handlestatus_head cite {
+	font-size: 100%;
+	font-weight: bold;
+	font-style: normal;
+}
+
+.handlestatus_body {
+	padding: 0px;
+}
+
+.grid{
+    	background-image:url('../../images/grid.png');
+    	border:1px gray solid;
+    	font-weight:bold;
+    	height:31px;
+    }
+table {
+	width :100%;
+	margin-bottom: 2px;
+	margin-top:5px;
+	text-align:center;
+	background-color: #cccccc
+}
+</style>
+<script type="text/javascript">
+	Request = {
+	    QueryString : function(item){
+	            var sValue = unescape(location.search).match(new RegExp("[\?\&]" + item + "=([^\&]*)(\&?)","i"));
+	            return sValue ? sValue[1] : sValue;
+	    }
+	}
+	var processId = Request.QueryString("processId");
+	$(document).ready(function() {
+		var activeData=new Array();
+		var urgeData=new Array();
+		var returnData=new Array();
+		$.post("/wf/handlestatus/1/", 
+				{ processId: processId },
+				function(data){
+				   var list = data.root;
+				   if(!list) return false;
+				   $.each(list,function(i,entity){
+					   activeData.push('<tr style="background-color: white;height:25px"><td>'+entity.sendUser+'</td><td>'+entity.FSendTime+'</td><td>'+entity.acceptUser+'</td><td>'+entity.FAcceptTime+'</td><td>'+entity.FStateText+'</td><td>'+entity.completeTime+'</td><td>'+entity.FRemark+'</td></tr>');
+				   })
+				   $('#active_grid').empty().append(activeData.join(new String()));
+				   $('#activeCount').text(activeData.length+"步");
+				}
+		);
+	   $.post("/wf/handlestatus/2/", 
+				{ processId: processId },
+				function(data){
+				   var list = data.root;
+				   if(!list) return false;
+				   $.each(list,function(i,entity){
+					   urgeData.push('<tr style="background-color: white;height:25px"><td>'+entity.urgeUser+'</td><td>'+entity.FUrgeTime+'</td><td>'+entity.urgeToUser+'</td><td>'+entity.FRemark+'</td></tr>');
+				   })
+				   $('#urge_grid').empty().append(urgeData.join(new String()));
+				   $('#urgeCount').text(urgeData.length+"次");
+				}
+		);
+	   $.post("/wf/handlestatus/3/", 
+				{ processId: processId },
+				function(data){
+				   var list = data.root;
+				   if(!list) return false;
+				   $.each(list,function(i,entity){
+					   returnData.push('<tr style="background-color: white;height:25px"><td>'+entity.returnUser+'</td><td>'+entity.FReturnTime+'</td><td>'+entity.returnToUser+'</td><td>'+entity.FRemark+'</td></tr>');
+				   })
+				   $('#activereturn_grid').empty().append(returnData.join(new String()));
+				   $('#returnCount').text(returnData.length+"次");
+				}
+		);
+		
+		$(".handlestatus_list .handlestatus_body:gt(0)").hide();
+		$(".handlestatus_head").click(function() {
+			$(this).next(".handlestatus_body").slideToggle(500)
+			return false;
+		});		
+	});
+</script>
+</head>
+<body>
+<ol class="handlestatus_list">
+  <li>
+    <p class="handlestatus_head"><cite>业务办理情况:</cite> <span id="activeCount" class="timestamp">步</span></p>
+    <div class="handlestatus_body">
+      <table border="0" cellpadding="0" cellspacing="1">
+				<tr class="grid">
+					<td style="width:100px">发送人员</td>
+					<td style="width:150px">发送时间</td>
+					<td style="width:100px">接收人员</td>
+					<td style="width:150px">接收时间</td>
+					<td style="width:100px">办理状态</td>
+					<td style="width:150px">完成时间</td>
+					<td style="width:150px">备注</td>
+				</tr>
+				<tbody id="active_grid"></tbody>
+	  </table>
+      
+    </div>
+  </li>
+  <li>
+    <p class="handlestatus_head"><cite>催办列表:</cite> <span id="urgeCount" class="timestamp">0次</span></p>
+    <div class="handlestatus_body">
+      <table border="0" cellpadding="0" cellspacing="1" >
+				<tr class="grid">
+					<td style="width:100px">催办人员</td>
+					<td style="width:150px">催办时间</td>
+					<td style="width:100px">办理人员</td>
+					<td style="width:150px">备注</td>
+				</tr>
+				<tbody id="urge_grid"></tbody>
+	  </table>
+    </div>
+  </li>
+  <li>
+    <p class="handlestatus_head"><cite>业务打回记录:</cite> <span id="returnCount" class="timestamp">0次</span></p>
+    <div class="handlestatus_body">
+      <table border="0" cellpadding="0" cellspacing="1">
+				<tr class="grid">
+					<td style="width:100px">提交人员</td>
+					<td style="width:150px">打回时间</td>
+					<td style="width:100px">办理人员</td>
+					<td style="width:150px">备注</td>
+				</tr>
+				<tbody id="activereturn_grid"></tbody>
+	  </table>
+    </div>
+  </li>
+</ol>
+</body>
+</html>

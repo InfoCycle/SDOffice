@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>提交多选人</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script tyoe="text/javascript">
+		/**
+		 * JQuery扩展方法，用户对JQuery EasyUI的DataGrid控件进行操作。
+		 */
+		$.fn.extend({
+			 /**
+			  * 修改DataGrid对象的默认大小，以适应页面宽度。
+			  * 
+			  * @param heightMargin
+			  *            高度对页内边距的距离。
+			  * @param widthMargin
+			  *            宽度对页内边距的距离。
+			  * @param minHeight
+			  *            最小高度。
+			  * @param minWidth
+			  *            最小宽度。
+			  * 
+			  */
+			 resizeDataGrid : function(heightMargin, widthMargin, minHeight, minWidth) {
+				  var height = $(document.body).height() - heightMargin;
+				  var width = $(document.body).width() - widthMargin;				
+				  height = height < minHeight ? minHeight : height;
+				  width = width < minWidth ? minWidth : width;				
+				  $(this).datagrid('resize', {
+				   height : height,
+				   width : width
+				  });
+			 }
+		});
+		$(function() {
+		 // datagrid数据表格ID
+		 /*var datagridId = 'OpinionBox';
+		
+		 // 第一次加载时自动变化大小
+		 $('#' + datagridId).resizeDataGrid(0, 0, 0, 0);
+		
+		 // 当窗口大小发生变化时，调整DataGrid的大小
+		 $(window).resize(function() {
+		  $('#' + datagridId).resizeDataGrid(0, 0, 0, 0);
+		 });
+		 */
+			$('#tt').tree({
+				onClick: function(node){
+					//alert(node.text);  // alert node text property when clicked
+					//$("#pDeptUser").val(node.text+ "->部门人员列表");
+					 $("#divDeptUser").panel({title:node.text+ "->部门人员列表"});
+				}
+			});
+
+		});				
+	</script>
+	<script type="text/javascript">		
+		 
+    </script>
+  </head>
+<body class="easyui-layout">	
+	<div class="easyui-layout" data-options="region:'west',split:true,title:'部门及人员列表'" style="width:330px;padding:0px;">
+		<div data-options="region:'north',collapsed:false,border:false,title:'部门列表'" style="height:260px;background:#B3DFDA;padding:0px">
+		 <ul id="tt" class="easyui-tree" data-options="url:'tree_data1.json',animate:true"></ul>
+		</div>
+		<div  data-options="region:'center',border:false,title:'人员列表'" id="divDeptUser">
+		<select style="width:98%; height:98%" multiple name="list1" size="12" ondblclick="moveOption(document.myform.list1, document.myform.list2)">
+                    <option value="北京">北京</option>
+                    <option value="上海">上海</option>
+                    <option value="山东">山东</option>
+                    <option value="安徽">安徽</option>
+                    <option value="重庆">重庆</option>
+                    <option value="福建">福建</option>
+                    <option value="甘肃">甘肃</option>
+                    <option value="广东">广东</option>
+                    <option value="广西">广西</option>
+                    <option value="贵州">贵州</option>
+                    <option value="海南">海南</option>
+                    <option value="河北">河北</option>
+                    <option value="黑龙江">黑龙江</option>
+                    <option value="河南">河南</option>
+                    <option value="湖北">湖北</option>
+                    <option value="湖南">湖南</option>
+                    <option value="内蒙古">内蒙古</option>
+                    <option value="江苏">江苏</option>
+                    <option value="江西">江西</option>
+                    <option value="吉林">吉林</option>
+                    <option value="辽宁">辽宁</option>
+                    <option value="宁夏">宁夏</option>
+                    <option value="青海">青海</option>
+                    <option value="山西">山西</option>
+                    <option value="陕西">陕西</option>
+                    <option value="四川">四川</option>
+                    <option value="天津">天津</option>
+                    <option value="西藏">西藏</option>
+                    <option value="新疆">新疆</option>
+                    <option value="云南">云南</option>
+                    <option value="浙江">浙江</option>
+                    <option value="香港">香港</option>
+                    <option value="澳门">澳门</option>
+                    <option value="台湾">台湾</option>
+                    <option value="其他">其他</option>
+        </select>		
+		</table>
+		</div>
+	</div>
+	<div  class="easyui-layout" data-options="region:'center',title:'已选人员列表'">
+		<div data-options="region:'west',split:false,collapsed:false,border:false,title:''" style="width:30px;padding:0px;algin-text:center">
+		<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+		<input type="button" value=">" id="select001">
+		<input type="button" value="<" id="select002">
+		</div>
+		<div data-options="region:'east',split:false,collapsed:false,border:false,title:''" style="width:30px;padding:0px;algin-text:center">
+		<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+		<input type="button" value=">" id="select003">
+		<input type="button" value="<" id="select004">
+		</div>
+		<div data-options="region:'center',border:false,title:''">
+			<select style="width:98%; height:98%" multiple name="list2" size="12" ondblclick="moveOption(document.myform.list2, document.myform.list1)">
+            </select>			
+		</table>
+		</div>
+	</div>
+</body>

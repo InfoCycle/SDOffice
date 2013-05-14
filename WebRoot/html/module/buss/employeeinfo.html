@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html>
+  <head> 
+    <title>员工信息.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+     <link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+ 	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+   	
+    <link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	
+	 <style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 98%;
+			width: 98%;
+		}
+		.classerror{
+			 border: 1px solid #f00;
+			 background:#fcc;
+		}
+
+	</style>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+		
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+
+	<script type="text/javascript" src="../../plugin/easyui/EasyUIautoMergeCells.js"></script>
+	<script type="text/javascript" language="javascript">
+		if($.browser.msie){
+			if($.browser.version<=8){
+				setActiveStyleSheet("papers.css");
+			}else				
+				setActiveStyleSheet("papersother.css");
+		} else if($.browser.mozilla){
+			setActiveStyleSheet("papersother.css");
+		} else{
+			setActiveStyleSheet("papersother.css");
+		}
+
+		function setActiveStyleSheet(filename) {
+			document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">");
+		}
+    </script>
+    <script type="text/javascript" src="../../js/myEasymg.js" ></script>
+    <script type="text/javascript" language="javascript">
+    	$.extend($.fn.validatebox.defaults.rules, {
+		    CHS: {
+		        validator: function (value, param) {
+		            return /^[\u0391-\uFFE5]+$/.test(value);
+		        },
+		        message: '请输入汉字'
+		    },
+		    ZIP: {
+		        validator: function (value, param) {
+		            return /^[1-9]\d{5}$/.test(value);
+		        },
+		        message: '邮政编码不存在'
+		    },
+		    QQ: {
+		        validator: function (value, param) {
+		            return /^[1-9]\d{4,10}$/.test(value);
+		        },
+		        message: 'QQ号码不正确'
+		    },
+		    mobile: {
+		        validator: function (value, param) {
+		            return /^((\(\d{2,3}\))|(\d{3}\-))?13\d{9}$/.test(value);
+		        },
+		        message: '手机号码不正确'
+		    },
+		    loginName: {
+		        validator: function (value, param) {
+		            return /^[\u0391-\uFFE5\w]+$/.test(value);
+		        },
+		        message: '登录名称只允许汉字、英文字母、数字及下划线。'
+		    },
+		    safepass: {
+		        validator: function (value, param) {
+		            return safePassword(value);
+		        },
+		        message: '密码由字母和数字组成，至少6位'
+		    },
+		    equalTo: {
+		        validator: function (value, param) {
+		            return value == $(param[0]).val();
+		        },
+		        message: '两次输入的字符不一至'
+		    },
+		    number: {
+		        validator: function (value, param) {
+		            return /^\d+$/.test(value);
+		        },
+		        message: '请输入数字'
+		    },
+		    idcard: {
+		        validator: function (value, param) {
+		            return idCard(value);
+		        },
+		        message:'请输入正确的身份证号码'
+		    }
+		});
+		var safePassword = function (value) {
+    return !(/^(([A-Z]*|[a-z]*|\d*|[-_\~!@#\$%\^&\*\.\(\)\[\]\{\}<>\?\\\/\'\"]*)|.{0,5})$|\s/.test(value));
+}
+
+var idCard = function (value) {
+    if (value.length == 18 && 18 != value.length) return false;
+    var number = value.toLowerCase();
+    var d, sum = 0, v = '10x98765432', w = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2], a = '11,12,13,14,15,21,22,23,31,32,33,34,35,36,37,41,42,43,44,45,46,50,51,52,53,54,61,62,63,64,65,71,81,82,91';
+    var re = number.match(/^(\d{2})\d{4}(((\d{2})(\d{2})(\d{2})(\d{3}))|((\d{4})(\d{2})(\d{2})(\d{3}[x\d])))$/);
+    if (re == null || a.indexOf(re[1]) < 0) return false;
+    if (re[2].length == 9) {
+        number = number.substr(0, 6) + '19' + number.substr(6);
+        d = ['19' + re[4], re[5], re[6]].join('-');
+    } else d = [re[9], re[10], re[11]].join('-');
+    if (!isDateTime.call(d, 'yyyy-MM-dd')) return false;
+    for (var i = 0; i < 17; i++) sum += number.charAt(i) * w[i];
+    return (re[2].length == 9 || number.charAt(17) == v.charAt(sum % 11));
+}
+
+var isDateTime = function (format, reObj) {
+    format = format || 'yyyy-MM-dd';
+    var input = this, o = {}, d = new Date();
+    var f1 = format.split(/[^a-z]+/gi), f2 = input.split(/\D+/g), f3 = format.split(/[a-z]+/gi), f4 = input.split(/\d+/g);
+    var len = f1.length, len1 = f3.length;
+    if (len != f2.length || len1 != f4.length) return false;
+    for (var i = 0; i < len1; i++) if (f3[i] != f4[i]) return false;
+    for (var i = 0; i < len; i++) o[f1[i]] = f2[i];
+    o.yyyy = s(o.yyyy, o.yy, d.getFullYear(), 9999, 4);
+    o.MM = s(o.MM, o.M, d.getMonth() + 1, 12);
+    o.dd = s(o.dd, o.d, d.getDate(), 31);
+    o.hh = s(o.hh, o.h, d.getHours(), 24);
+    o.mm = s(o.mm, o.m, d.getMinutes());
+    o.ss = s(o.ss, o.s, d.getSeconds());
+    o.ms = s(o.ms, o.ms, d.getMilliseconds(), 999, 3);
+    if (o.yyyy + o.MM + o.dd + o.hh + o.mm + o.ss + o.ms < 0) return false;
+    if (o.yyyy < 100) o.yyyy += (o.yyyy > 30 ? 1900 : 2000);
+    d = new Date(o.yyyy, o.MM - 1, o.dd, o.hh, o.mm, o.ss, o.ms);
+    var reVal = d.getFullYear() == o.yyyy && d.getMonth() + 1 == o.MM && d.getDate() == o.dd && d.getHours() == o.hh && d.getMinutes() == o.mm && d.getSeconds() == o.ss && d.getMilliseconds() == o.ms;
+    return reVal && reObj ? d : reVal;
+    function s(s1, s2, s3, s4, s5) {
+        s4 = s4 || 60, s5 = s5 || 2;
+        var reVal = s3;
+        if (s1 != undefined && s1 != '' || !isNaN(s1)) reVal = s1 * 1;
+        if (s2 != undefined && s2 != '' && !isNaN(s2)) reVal = s2 * 1;
+        return (reVal == s1 && s1.length != s5 || reVal > s4) ? -10000 : reVal;
+    }
+};
+		var flag=true;
+		$('#formtask input').each(function () {
+		    if ($(this).attr('required') || $(this).attr('validType')) {
+			    if (!$(this).validatebox('isValid')) {
+			        flag = false;
+			        return;
+			    }
+		    }
+		})
+		var familyr;
+		var isEfamily=false;
+		var fe;
+		var professionalr;
+		var isEprofessional=false;
+		var pe;
+		var id;
+		//保存方法
+		function savefamily(){
+			if(fe){
+				switch(fe){
+					case 1:
+						$('#tablefamily').datagrid('selectRow',familyr);
+						$('#tablefamily').datagrid('endEdit',familyr);
+						var rec=$('#tablefamily').datagrid('getSelected');
+						var familydata={fFId:rec.FId,fFAndIrelationship:rec.FAndIrelationship,fFkEmployeeId:rec.fkEmployeeId,fFMainMembersName:rec.FMainMembersName,fFPhone:rec.FPhone};
+						$.loadmg('温馨提示','正在保存..');
+						$.post('/buss/employee/2',familydata,function(data){
+							if(data){
+								if(data.success){
+									$.tipmg('温馨提示',data.message,'success');
+									
+									fe=null;
+									isEfamily=false;
+								}else{
+									$.tipmg('温馨提示',data.message,'error');
+								}
+							}else{
+								$.tipmg('温馨提示','网络错误，请稍后再试，或与管理员联系','warning');
+							}
+						});
+						break;
+					case 2:
+						$('#tablefamily').datagrid('selectRow',familyr);
+						$('#tablefamily').datagrid('endEdit',familyr);
+						var rec=$('#tablefamily').datagrid('getSelected');
+						//alert(rec.FMainMembersName);
+						var familydata={fFId:rec.FId,fFAndIrelationship:rec.FAndIrelationship,fFkEmployeeId:rec.fkEmployeeId,fFMainMembersName:rec.FMainMembersName,fFPhone:rec.FPhone};
+						$.loadmg('温馨提示','正在保存..');
+						$.post('/buss/employee/5',familydata,function(data){
+							if(data){
+								if(data.success){
+									$.tipmg('温馨提示',data.message,'success');
+									
+									fe=null;
+									isEfamily=false;
+								}else{
+									$.tipmg('温馨提示',data.message,'error');
+								}
+							}else{
+								$.tipmg('温馨提示','网络错误，请稍后再试，或与管理员联系','warning');
+							}
+						});
+						break;
+				}
+			}else{
+				$.messager.alert('温馨提示','没有在修改的信息','info');
+			}	
+		}
+	    //添加家庭成员按钮点击事件
+		function addfamily(){
+			if(isEfamily){
+				$.messager.confirm('温馨提示','有未保存的信息是否现在保存？',function(r){
+					if(r){
+						savefamily();
+					}else{
+						$('#tablefamily').datagrid('cancelEdit', familyr);
+						if(fe==1){
+							$('#tablefamily').datagrid('deleteRow',familyr);
+						}
+						fe=null
+						isEfamily=false;
+					}
+				});
+				return false;
+			}
+			fe=1;
+			isEfamily=true;
+			familyr=$('#tablefamily').datagrid('getRows').length;
+			//if(familyr==0){
+				//familyr=1;
+			//}
+			$('#tablefamily').datagrid('appendRow',{
+				FId:'',
+				fkEmployeeId:id,
+				FMainMembersName:'',
+				FAndIrelationship:'',
+				FPhone:''
+			});
+			$('#tablefamily').datagrid('selectRow', familyr);
+			$('#tablefamily').datagrid('beginEdit', familyr);
+		}
+		//修改家庭成员
+		function updatefamily(){
+			if(isEfamily){
+				$.messager.confirm('温馨提示','有未保存的信息是否现在保存？',function(r){
+					if(r){
+						savefamily();
+					}else{
+						$('#tablefamily').datagrid('cancelEdit', familyr);
+						if(fe==1){
+							$('#tablefamily').datagrid('deleteRow',familyr);
+						}
+						fe=null;
+						isEfamily=false
+					}
+				});
+				return false;
+			}
+			fe=2;
+			isEfamily=true;
+			var rec=$('#tablefamily').datagrid('getSelected');
+			if(!rec){
+				$.messager.alert('温馨提示','请选择所要修改的信息','info');
+    			return false;
+			}
+			familyr=$('#tablefamily').datagrid('getRowIndex',rec);
+			$('#tablefamily').datagrid('beginEdit',familyr);
+		}
+		//删除家庭成员
+		function deletefamily(){
+			if(isEfamily){
+				$.messager.confirm('温馨提示','有未保存的信息是否现在保存？',function(r){
+					if(r){
+						savefamily();
+					}else{
+						$('#tablefamily').datagrid('cancelEdit', familyr);
+						if(fe==1){
+							//$('#tablefamily').datagrid('deleteRow',familyr);
+							$('#tablefamily').datagrid('reload');
+						}
+						isEfamily=false;
+						fe=null;
+					}
+				});
+				return false;
+			}
+			var rec=$('#tablefamily').datagrid('getSelected');
+			if(!rec){
+				$.messager.alert('温馨提示','请选择所要删除的信息','info');
+    			return false;
+			}
+			$.messager.confirm('温馨提示','确认要删除['+rec.FMainMembersName+']吗？',function(r){
+				if(r){
+					$.loadmg('温馨提示','正在删除');
+					var familydata={fFId:rec.FId,fFAndIrelationship:rec.FAndIrelationship,fFkEmployeeId:rec.fkEmployeeId,fFMainMembersName:rec.FMainMembersName,fFPhone:rec.FPhone};
+					$.post('/buss/employee/11',familydata,function(data){
+						if(data){
+							if(data.success){
+								$.tipmg('温馨提示',data.message,'success');
+								$('#tablefamily').datagrid('deleteRow',familyr);
+							}else{
+								$.tipmg('温馨提示',data.message,'error')
+							}
+						}else{
+							$.tipmg('温馨提示','网络错误,请稍后再试或与管理员联系','warning')
+						}
+					});
+				}else{
+					
+				}
+			});
+		}
+		//家庭成员grid工具栏
+		var familyb=[{
+			text:'新增',	
+  			iconCls:"insertbut-easytb",
+  			handler:addfamily
+		},{
+			text:'修改',
+			iconCls:'save-easytb',
+			handler:updatefamily
+		},{
+			text:'删除',
+			icoCls:'delete-easytb',
+			handler:deletefamily
+		},'-',{
+			text:'保存',
+			iconCls:'save-easytb',
+			handler:savefamily
+		}]
+    	//获取家庭成员
+    	function familyPost(MYid){
+    		/*$.post("/buss/employee/9",{FId:id},function(data){
+    			if(data){
+    				
+    			}else{
+    				$.tipmg('温馨提示','网络错误！请稍后再试或与管理员联系','warning');
+    			}
+    		});*/
+    		$('#tablefamily').datagrid({
+    			title:'家庭成员',
+    			url:"/buss/employee/9",
+    			height:200,
+    			singleSelect:true,
+    			rownumbers:true,
+    			toolbar:familyb,
+    			queryParams:{FId:MYid},
+    			columns:[[
+    				{field:'FMainMembersName',title:'姓名',width:150,align:'left',editor:'validatebox'},
+    				{field:'FAndIrelationship',title:'与本人关系(配偶、子女)',width:200,align:'left',editor:'validatebox'},
+    				{field:'FPhone',title:'联系电话',width:240,align:'left',editor:'numberbox'},
+    			]],
+    			onLoadSuccess:function(data){
+    				ProfessionalPost(MYid);
+    			}
+    		});
+    		
+    	}
+    	//保存专业资格
+    	function saveprofessional(){
+    		if(pe){
+    			switch(pe){
+    				case 1:
+    					$('#tableProfessional').datagrid('selectRow',professionalr);
+    					$('#tableProfessional').datagrid('endEdit',professionalr);
+						var rec=$('#tableProfessional').datagrid('getSelected');
+						var professionaldata={pFId:rec.FId,
+							pFkEmployeeId:rec.fkEmployeeId,
+							pFQualificationName:rec.FQualificationName,
+							pFGetTime:rec.FGetTime,
+							pFNumber:rec.FNumber,
+							pFValidity:rec.FValidity,
+							pFRegisteredUnit:rec.FRegisteredUnit,
+							pFRenewalEduSituation:rec.FRenewalEduSituation};
+						$.loadmg('温馨提示','正在保存..');
+						$.post('/buss/employee/3',professionaldata,function(data){
+							if(data){
+								if(data.success){
+									$.tipmg('温馨提示',data.message,'success');
+									pe=null;
+									isEprofessional=false;
+								}else{
+									$.tipmg('温馨提示',data.message,'error');
+								}
+							}else{
+								$.tipmg('温馨提示','网络错误，请稍后再试或与管理员联系','warning');
+							}
+						});
+						break;
+					case 2:
+						$('#tableProfessional').datagrid('selectRow',professionalr);
+						$('#tableProfessional').datagrid('endEdit',professionalr);
+						var rec=$('#tableProfessional').datagrid('getSelected');
+						//alert(rec.FNumber);
+						var professionaldata={pFId:rec.FId,
+							pFkEmployeeId:rec.fkEmployeeId,
+							pFQualificationName:rec.FQualificationName,
+							pFGetTime:rec.FGetTime,
+							pFNumber:rec.FNumber,
+							pFValidity:rec.FValidity,
+							pFRegisteredUnit:rec.FRegisteredUnit,
+							pFRenewalEduSituation:rec.FRenewalEduSituation};
+						$.loadmg('温馨提示','正在保存..');
+						$.post('/buss/employee/6',professionaldata,function(data){
+							if(data){
+								if(data.success){
+									$.tipmg('温馨提示',data.message,'success');
+									
+									pe=null;
+									isEprofessional=false;
+								}else{
+									$.tipmg('温馨提示',data.message,'error');
+								}
+							}else{
+								$.tipmg('温馨提示','网络错误,请稍后再试，或与管理员联系','warning');
+							}
+						});
+    			}
+    		}
+    	}
+    	//添加资格证取得情况
+    	function addprofessional(){
+    		if(isEprofessional){
+    			$.messager.confirm('温馨提示','有未保存的信息是否现在保存？',function(r){
+					if(r){
+						saveprofessional();
+					}else{
+						$('#tableProfessional').datagrid('cancelEdit',professionalr);
+						if(pe==1){
+							$('#tableProfessional').datagrid('deleteRow',professionalr);
+						}
+						isEprofessional=false;
+						pe=null;
+					}
+				});
+				return false;
+    		}
+    		pe=1;
+    		isEprofessional=true;
+    		professionalr=$('#tableProfessional').datagrid('getRows').length;
+    		//alert(professionalr);
+    		//if(professionalr==0){
+    			//professionalr=1;
+    		//}
+    		$('#tableProfessional').datagrid('appendRow',{
+				FId:'',
+				fkEmployeeId:id,
+				FQualificationName:'',
+				FGetTime:'',
+				FNumber:'',
+				FValidity:'',
+				FRegisteredUnit:'',
+				FRenewalEduSituation:''
+			});
+			$('#tableProfessional').datagrid('selectRow', professionalr);
+			$('#tableProfessional').datagrid('beginEdit', professionalr);
+    	}
+    	//修改专业资格
+    	function updateprofessional(){
+    		if(isEprofessional){
+    			$.messager.confirm('温馨提示','有未保存的信息是否现在保存？',function(r){
+					if(r){
+						saveprofessional();
+					}else{
+						$('#tableProfessional').datagrid('cancelEdit',professionalr);
+						if(pe==1){
+							$('#tableProfessional').datagrid('deleteRow',professionalr);
+						}
+						isEprofessional=false;
+						pe=null;
+					}
+				});
+				return false;
+    		}
+    		pe=2;
+    		isEprofessional=true;
+    		var rec=$('#tableProfessional').datagrid('getSelected');
+    		if(!rec){
+    			$.messager.alert('温馨提示','请选择所要修改的信息','info');
+    			return false;
+    		}
+    		professionalr=$('#tableProfessional').datagrid('getRowIndex',rec);
+    		$('#tableProfessional').datagrid('beginEdit',professionalr);
+    		
+    	}
+    	//删除专业资格证
+    	function deleteprofessional(){
+    		if(isEprofessional){
+    			$.messager.confirm('温馨提示','有未保存的信息是否现在保存？',function(r){
+					if(r){
+						saveprofessional();
+					}else{
+						$('#tableProfessional').datagrid('cancelEdit',professionalr);
+						if(pe==1){
+							$('#tableProfessional').datagrid('deleteRow',professionalr);
+						}
+						isEprofessional=false;
+						pe=null;
+					}
+				});
+				return false;
+    		}
+    		var rec=$('#tableProfessional').datagrid('getSelected');
+    		if(!rec){
+    			$.messager.alert('温馨提示','请选择所要删除的信息','info');
+    			return false;
+    		}
+    		$.messager.confirm('温馨提示','确认要删除['+rec.FQualificationName+']吗？',function(r){
+				if(r){
+					$.loadmg('温馨提示','正在删除');
+					var professionaldata={pFId:rec.FId,
+							pFkEmployeeId:rec.fkEmployeeId,
+							pFQualificationName:rec.FQualificationName,
+							pFGetTime:rec.FGetTime,
+							pFNumber:rec.FNumber,
+							pFValidity:rec.FValidity,
+							pFRegisteredUnit:rec.FRegisteredUnit,
+							pFRenewalEduSituation:rec.FRenewalEduSituation};
+					$.post('/buss/employee/12',professionaldata,function(data){
+						if(data){
+							if(data.success){
+								$.tipmg('温馨提示',data.message,'success');
+								$('#tableProfessional').datagrid('reload');
+							}else{
+								$.tipmg('温馨提示',data.message,'error')
+							}
+						}else{
+							$.tipmg('温馨提示','网络错误,请稍后再试或与管理员联系','warning')
+						}
+					});
+				}else{
+					
+				}
+    		});
+    	}
+    	//专业资格取得情况grid工具栏
+    	var Professionalb=[{
+    		text:'新增',	
+  			iconCls:"insertbut-easytb",
+  			handler:addprofessional
+		},{
+			text:'修改',
+			iconCls:'save-easytb',
+			handler:updateprofessional
+		},{
+			text:'删除',
+			iconCls:'delete-easytb',
+			handler:deleteprofessional
+		},'-',{
+			text:'保存',
+			iconCls:'save-easytb',
+			handler:saveprofessional
+		}]
+		//获取专业资格证
+		function ProfessionalPost(id){
+			$('#tableProfessional').datagrid({
+				url:"/buss/employee/10",
+				title:'专业资格证',
+				singleSelect:true,
+    			rownumbers:true,
+    			height:200,
+    			toolbar: Professionalb,
+    			queryParams:{FId:id},
+    			columns:[[
+    			    {field:'FNumber',title:'资格证编号',width:120,align:'left',editor:'numberbox'},
+    				{field:'FQualificationName',title:'资格名称',width:120,align:'left',editor:'validatebox'},
+    				{field:'FGetTime',title:'取得时间',width:120,align:'left',editor:'datebox'},
+    				{field:'FValidity',title:'有效期',width:120,align:'left',editor:'datebox'},
+    				{field:'FRegisteredUnit',title:'注册单位',width:120,align:'left',editor:'validatebox'},
+    				{field:'FRenewalEduSituation',title:' 续期教育情况',width:120,align:'left',editor:'validatebox'},
+    			]],
+    			onLoadSuccess:function(data){
+    				$.tipmg('温馨提示','加载完成！','success');
+    			}
+			});
+		}
+		//
+		//判断是否为空
+		function isnull(valu){
+			if(trim(valu)==""){
+				return  '请选择';
+			}else{
+				return valu;
+			}
+		}
+    	//设置人员信息
+    	function setEmployee(emp){
+    		$("#FId").val(emp.FId);
+    		//alert(isnull(emp.FCultureDegree));
+			$("#FBelongsDept").combobox('select',isnull(emp.FBelongsDeptId));
+			$("#FBirthDay").datebox('setValue',emp.FBirthDay);
+			$("#FContact").val(emp.FContact);
+			$("#FContractRs").val(emp.FContractRs);
+			$("#FCultureDegree").combobox('select',isnull(emp.FCultureDegree));
+			$("#FFamilyDetailedAddress").val(emp.FFamilyDetailedAddress);
+			$("#FIdcardNumber").val(emp.FIdcardNumber);
+			$("#FIntoCompanyTime").datebox('setValue',emp.FIntoCompanyTime);
+			$("#FTheLaborContractTime").datebox('setValue',emp.FTheLaborContractTime);
+			$("#FLaborContractExpiresTime").datebox('setValue',emp.FLaborContractExpiresTime);
+			$("#FLaborIs").val(emp.FLaborIs);
+			$("#FMajor").val(emp.FMajor);
+			$("#FMaritalStatus").combobox('select',isnull(emp.FMaritalStatus));
+			$("#FNational").combobox('select',isnull(emp.FNational));
+			$("#FNativePlace").val(emp.FNativePlace);
+			$("#FNowRpr").val(emp.FNowRpr);
+			$("#FNumbers").val(emp.FNumbers);
+			$("#FPolitical").combobox('select',isnull(emp.FPolitical));
+			$("#FProfessional").val(emp.FProfessional);
+			$("#FSex").combobox('select',isnull(emp.FSex));
+			$("#FStaffName").val(emp.FStaffName);
+			$("#FStaffState").combobox('select',isnull(emp.FStaffState));
+			$("#FEmployeeType").val(emp.FEmployeeType);
+			$("#FToWorkTime").datebox('setValue',emp.FToWorkTime);
+			$("#FTechnical").combobox('select',isnull(emp.FTechnical));
+		}
+		
+		function getEmployee(){
+  			var empp={
+  			FId:$("#FId").val(),
+  			FBelongsDeptId:$("#FBelongsDept").combobox('getValue'),
+			FBelongsDept:$("#FBelongsDept").combobox('getText'),
+			FBirthDay:$("#FBirthDay").datebox('getValue'),
+			FContact:$("#FContact").val(),
+			FContractRs:$("#FContractRs").val(),
+			FCultureDegree:$("#FCultureDegree").combobox('getText'),
+			FFamilyDetailedAddress:$("#FFamilyDetailedAddress").val(),
+			FIdcardNumber:$("#FIdcardNumber").val(),
+			FIntoCompanyTime:$("#FIntoCompanyTime").datebox('getValue'),
+			FTheLaborContractTime:$("#FTheLaborContractTime").datebox('getValue'),
+			FLaborContractExpiresTime:$("#FLaborContractExpiresTime").datebox('getValue'),
+			FLaborIs:$("#FLaborIs").val(),
+			FMajor:$("#FMajor").val(),
+			FMaritalStatus:$("#FMaritalStatus").combobox('getText'),
+			FNational:$("#FNational").combobox('getText'),
+			FNativePlace:$("#FNativePlace").val(),
+			FNowRpr:$("#FNowRpr").val(),
+			FNumbers:$("#FNumbers").val(),
+			FPolitical:$("#FPolitical").combobox('getValue'),
+			FProfessional:$("#FProfessional").val(),
+			FSex:$("#FSex").combobox('getText'),
+			FStaffName:$("#FStaffName").val(),
+			FStaffState:$("#FStaffState").combobox('getText'),
+			FEmployeeType:$("#FEmployeeType").val(),
+			FToWorkTime:$("#FToWorkTime").datebox('getValue'),
+			FTechnical:$("#FTechnical").combobox('getValue'),
+			};
+			return empp;
+  		}
+			
+	  		
+  			
+			
+			//重置按钮点击事件
+			function eReload(id){
+  				window.location.href="/html/module/employee/employeeinfo.html?id="+id;
+  			}
+  			//返回按钮点击事件
+  			function last(){
+  				window.location.href="/html/module/employee/employeemanage.html";
+  			}
+  			//保存按钮点击事件
+  			function eSave(){
+  				if(isEprofessional){
+    			$.messager.confirm('温馨提示','有未保存的信息是否现在保存？',function(r){
+					if(r){
+						saveprofessional();
+					}else{
+						$('#tableProfessional').datagrid('cancelEdit',professionalr);
+						if(pe==1){
+							$('#tableProfessional').datagrid('deleteRow',professionalr);
+						}
+						isEprofessional=false;
+						pe=null;
+					}
+				});
+				return false;
+    		}
+    		if(isEfamily){
+				$.messager.confirm('温馨提示','有未保存的信息是否现在保存？',function(r){
+					if(r){
+						savefamily();
+					}else{
+						$('#tablefamily').datagrid('cancelEdit', familyr);
+						if(fe==1){
+							$('#tablefamily').datagrid('deleteRow',familyr);
+						}
+						fe=null
+						isEfamily=false;
+					}
+				});
+			}
+				if (!flag) {
+					return false;
+				}
+				if($("#FId").val()==""){
+					$.loadmg('温馨提示',"正在保存,请稍等..");
+		  			var da=getEmployee();
+		  			$.post("/buss/employee/1",da,function(data){
+		  				if(data){
+		  					if(data.success){
+		  						$.tipmg('温馨提示',data.message, 'success');
+		  						eReload(data.root.FId);
+		  					}else{
+		  						$.tipmg('温馨提示',data.message, 'error');
+		  					}
+		  				}else{
+		  					$.tipmg('温馨提示','网络错误,请检查网络,或与管理员联系','warning');
+		  				}
+		  			});
+				}else{
+					$.loadmg('温馨提示','正在保存...');
+					var da=getEmployee();
+					$.post("/buss/employee/4",da,function(data){
+						if(data){
+							if(data.success){
+								$.tipmg('温馨提示',data.message,'success');
+							}else{
+								$.tipmg('温馨提示',data.message,'error');
+							}
+						}else{
+							$.tipmg('温馨提示','网络错误,请检查网络或与管理员联系','warning');
+						}
+					});
+				}
+  			}
+  			
+  			
+  			function save(nu,dd,id){
+			if (!$("#formtask").validationEngine('validate')) {
+									return false;
+				}
+			var urls={1:'/buss/employee/2',2:'/buss/employee/3',3:'/buss/employee/5',4:'/employee/6/'}
+			var url=urls[nu];
+			var data1={
+				"fFId":$("#fFId").val(),
+				"fFkEmployeeId":$("#fFkEmployeeId").val(),
+				"fFMainMembersName":$("#fFMainMembersName").val(),
+				"fFAndIrelationship":$("#fFAndIrelationship").val(),
+				"fFPhone":$("#fFPhone").val()
+			}
+			var data2={
+				"pFId":$("#pFId").val(),
+				"pFQualificationName":$("#pFQualificationName").val(),
+				"pFkEmployeeId":$("#pFkEmployeeId").val(),
+				"pFGetTime":$("#pFGetTime").val(),
+				"pFNumber":$("#pFNumber").val(),
+				"pFValidity":$("#pFValidity").val(),
+				"pFRegisteredUnit":$("#pFRegisteredUnit").val(),
+				"pFRenewalEduSituation":$("#pFRenewalEduSituation").val()
+			}
+			var datas={1:data1,0:data2};
+			var da=datas[nu%2];
+			$.loadmg('温馨提示',"正在保存,请稍等..");
+			$.post(
+				url,
+				da,
+				function(data){
+					if(data){
+						if(data.success){
+							$.tipmg('温馨提示',data.message, 'success');
+							closs(dd,id);
+							if(id=="addfbut"){
+								familyPost($("#FId").val(),false);
+							}else{
+								ProfessionalPost($("#FId").val());
+							}
+						}else{
+							$.tipmg('温馨提示',data.message, 'error');
+						}
+					}else{
+						$.tipmg('温馨提示','网络错误!请稍后再试..', 'warning'); 
+					}
+				});
+			}
+			function deletef(obj){
+	  			var ff=obj.parentNode.parentNode;
+	  			$.messager.confirm('温馨提示',
+	  			"确认要删除["+$("#"+ff.id+" td").eq(0).text()+"]吗?",
+	  			function(r){
+	  				if(r){
+	  					$.post(
+	  						"/buss/employee/11",
+	  						{
+	  							"fFId":ff.id.substring(1),
+	  							"fFAndIrelationship":$("#"+ff.id+" td").eq(1).text(),
+	  							"fFkEmployeeId":$("#FId").val(),
+	  							"fFMainMembersName":$("#"+ff.id+" td").eq(0).text(),
+	  							"fFPhone":$("#"+ff.id+" td").eq(2).text()
+	  						},
+	  						function(data){
+	  							$.loadmg('温馨提示',"正在删除,请稍等..");
+	  							if(data){
+	  								if(data.success){
+	  									$.tipmg('温馨提示',data.message, 'success');
+	  										for(var rows = $("#family tr").size();rows>1;rows--){
+													$("#family tr").eq(rows).remove()
+												}
+											familyPost($("#FId").val(),false);
+	  								}else{
+	  									$.tipmg('温馨提示',data.message, 'error');
+	  								}
+	  							}else{
+	  								$.tip('温馨提示',"网络错误!请稍后再试..", 'warning');
+	  							}
+	  						}
+	  					);
+	  				}
+	  			});
+	  		}
+	  		
+			
+			
+    	$(document).ready(function(){
+    		$.loadmg('温馨提示','正在加载..');
+			id=Request.QueryString('id');
+			$.post('/buss/employee/13',{codeId:'109'},function (data1){
+				if(data1){
+					$('#FNational').combobox({
+						data:data1,
+		    			valueField:'id', 
+		    			textField:'text',
+		    			editable:false
+					});
+					$.post('/buss/employee/13',{codeId:'103'},function (data2){
+						if(data2){
+							$('#FCultureDegree').combobox({
+								data:data2,
+					    		valueField:'id', 
+					    		textField:'text',
+					    		editable:false
+							});
+							$.post('/buss/employee/13',{codeId:'117'},function (data3){
+								if(data3){
+									$('#FTechnical').combobox({
+										data:data3,
+										valueField:'id',
+										textField:'text',
+										editable:false
+									});
+									$.post('/buss/employee/14',{},function(data4){
+										if(data4){
+											$('#FBelongsDept').combobox({
+												data:data4,
+								    			valueField:'id', 
+								    			textField:'text',
+								    			editable:false
+											});
+											if(id==null){
+												$("#FEmployeeType").val(1);
+												$("#family").attr("style","visibility:hidden");
+												$("#Professional").attr("style","visibility:hidden");
+												$("#Prod").attr("style","visibility:hidden");
+												$.tipmg('温馨提示','加载完成','success');
+											}else{
+												$.post("/buss/employee/8",{"FId":id},function(data){
+													if(data){
+														if(data.root!=null){
+															setEmployee(data.root[0]);
+															familyPost(id,true);
+														}else{
+															$.tipmg('温馨提示','网络错误！','warning');
+														}
+													}else{
+														$.tipmg('温馨提示','网络错误！','warning');
+													}
+												});
+											}
+										}else{
+											$.tipmg('温馨提示','数据加载失败！请与管理员联系','warning');
+										}
+									});
+								}else{
+									$.tipmg('温馨提示','数据加载失败！请与管理员联系','warning');
+								}
+							});
+						}else{
+							$.tipmg('温馨提示','数据加载失败！请与管理员联系','warning');
+						}
+					});
+				}else{
+					$.tipmg('温馨提示','数据加载失败！请与管理员联系','warning');
+				}
+			});
+    		
+    		$("#aB_OK").click(eSave);
+	  		$("#aB_Cancel").click(function(){
+	  			window.location.href="/html/module/buss/employeeinfo.html?id="+$("#FId").val();
+	  		});
+	  		$("#ret").click(function(){
+	  				window.location.href="/html/module/buss/employeemanage.html";
+	  			});
+	  		$("#aB_OKd").click(eSave);
+	  		$("#aB_Canceld").click(function(){
+	  			window.location.href="/html/module/buss/employeeinfo.html?id="+$("#FId").val();
+	  		});
+	  		$("#retd").click(function(){
+	  				window.location.href="/html/module/buss/employeemanage.html";
+	  		});
+    	});
+    </script>
+  </head>
+   	<body>
+  		<form id="formtask" action="/employee/1" method="post">
+			<div style="text-align:center">
+				<table border="0" cellpadding="3" cellspacing="0"style="width:810px;margin:auto">
+					<tr>
+						<td>
+							<ul id="css3menu">
+								<li class="topfirst">
+									<a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+								</li>
+								<li>
+									<a rel="#" id="aB_OK"><img src="../../images/oa/ok.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+								</li>
+								<li>
+									<a rel="#" id="aB_Cancel"><img src="../../images/oa/refresh.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />重置</a>
+								</li>
+								<li>
+									<a rel='workflow/process-list' id="ret"><img src="../../images/oa/quite.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />返回</a>
+								</li>
+								<li class="toplast">
+									<a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+									</a>
+								</li>
+							</ul> <br /> <br /><br/></td>
+				</tr>
+				<tr>
+					<td>
+						<div class="content" id="content"
+							style="height:1000px;width:810px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br />
+							<br />
+							<br />
+							<br />
+							<br />
+							<div style="float:left;">
+								<table  width="801px" border="0" cellspacing="0" cellpadding="0"  border="0" >
+									<caption style="height:30px;font-size:18px; " align="center">
+										<strong>在职员工登记表<br>
+										</strong>
+									</caption>
+									<tr>
+										<td  align="right" >
+											<input type="hidden" id="FId" name="FId" />
+											<input type="hidden" id="FEmployeeType" name="FEmployeeType" />
+											编号:
+											<label id="FNumbers"></label>
+										</td>
+									</tr>
+									<tr>
+										<table  class="content_table1" width="800px" cellpadding="0"  border="0" >
+											<tr >
+												<td class="tbl" width="90px" >姓名</td>
+												<td width="115px"><input type="text" class="easyui-validatebox" style="width:110px;" id="FStaffName" name="FStaffName"></td>
+												<td class="tbl" width="80px">性别</td>
+												<td width="115px">
+													<select style="width:110px;" id="FSex" name="FSex" class="easyui-combobox">
+														<option value ="男">男</option>
+														<option value ="女">女</option>
+													</select>
+												</td>
+												<td class="tbl" width="88px">出生年月</td>
+												<td width="115px"><input type="text" class="easyui-datebox" style="width:110px;" id="FBirthDay" name="FBirthDay" readonly/></td>
+												<td class="tbl" width="80px">民族</td>
+												<td width="115px"><input style="width:110px;" id="FNational" name="FNational"></td>
+											</tr>
+											<tr >
+												<td class="tbl">籍贯</td>
+												<td><input type="text" style="width:110px;" id="FNativePlace" name="FNativePlace" class="easyui-validatebox"></td>
+												<td class="tbl">文化程度</td>
+												<td><input type="text" style="width:110px;" id="FCultureDegree" name="FCultureDegree" class="easyui-validatebox"></td>
+												<td class="tbl">所学专业</td>
+												<td><input type="text" style="width:110px;" id="FMajor" name="FMajor" class="easyui-validatebox"></td>
+												<td class="tbl">政治面貌</td>
+												<td>
+													<select style="width:110px;" id="FPolitical" name="FPolitical" class="easyui-combobox">
+														<option value ="群众">群众</option>
+														<option value ="团员">团员</option>
+														<option value ="党员">党员</option>
+														<option value ="党员">其他党派</option>
+													</select>
+												</td>
+											</tr>
+											<tr >
+												<td class="tbl">参加工作时间</td>
+												<td><input style="width:110px;" class="easyui-datebox" id="FToWorkTime" name="FToWorkTime" type="text" readonly/></td>
+												<td class="tbl">专业资格</td>
+												<td><input type="text" style="width:110px;" id="FProfessional" name="FProfessional"></td>
+												<td class="tbl">技术职称</td>
+												<td><input type="text" style="width:110px;" id="FTechnical" name="FTechnical"></td>
+												<td class="tbl">婚否</td>
+												<td>
+													<select style="width:110px;" id="FMaritalStatus" name="FMaritalStatus" class="easyui-combobox">
+														<option value ="未婚">未婚</option>
+														<option value ="已婚">已婚</option>
+													</select>
+												</td>
+											</tr>
+											<tr>
+												<td class="tbl" nowrap>进入公司时间</td>
+												<td><input style="width:110px;" class="easyui-datebox" id="FIntoCompanyTime" name="FIntoCompanyTime" type="text" readonly/></td>
+												<td class="tbl" nowrap>合同签订时间</td>
+												<td><input style="width:110px;" class="easyui-datebox" id="FTheLaborContractTime" name="FTheLaborContractTime" type="text" readonly/></td>
+												<td class="tbl" nowrap>合同到期时间</td>
+												<td><input style="width:110px;" class="easyui-datebox" id="FLaborContractExpiresTime" name="FLaborContractExpiresTime" type="text" readonly/> </td>
+												<td class="tbl" nowrap>员工状态</td>
+												<td>
+													<select style="width:110px;" id="FStaffState" name="FStaffState" class="easyui-combobox">
+														<option value ="在职">在职</option>
+														<option value ="离职">离职</option>
+													</select>
+												</td>
+											</tr>
+											<tr>
+												<td class="tbl" nowrap>合同续签情况</td>
+												<td colspan="7"><textarea  type="text" style="width:98%;" id="FContractRs" name="FContractRs"></textarea></td>
+											</tr>
+											<tr >
+												<td class="tbl" nowrap>保险购买情况</td>
+												<td colspan="7"><textarea type="text" style="width:98%;" id="FLaborIs" name="FLaborIs"></textarea></td>
+											</tr>
+											<tr>
+												<td class="tbl" nowrap>家庭详细住址</td>
+												<td colspan="7"><textarea type="text" style="width:98%;" id="FFamilyDetailedAddress" name="FFamilyDetailedAddress"></textarea></td>
+											</tr>
+											<tr >
+												<td colspan="2" class="tbl" nowrap>身份证号码</td>
+												<td colspan="2"><input type="text" style="width:98%;" class="easyui-validatebox" id="FIdcardNumber" name="FIdcardNumber" class="validate[required,minSize[1],maxSize[18]]"></td>
+												<td colspan="2" class="tbl">联系方式(电话或传呼)</td>
+												<td colspan="2"><input type="text" style="width:98%;" id="FContact" name="FContact"></td>
+											</tr>
+											<tr >
+												<td colspan="2" class="tbl" nowrap>所属部门</td>
+												<td colspan="2">
+													<input type="text" style="width:200px;" id="FBelongsDept" name="FBelongsDept" />
+												</td>
+												<td colspan="2" class="tbl" nowrap>现户口所在地</td>
+												<td colspan="2"><input type="text" style="width:98%;" id="FNowRpr" name="FNowRpr"></td>
+											</tr>
+										</table>
+										<table id='tablefamily'></table>
+										<table id='family'></table>
+										<table id='tableProfessional'></table>
+										
+									</tr>
+									<tr>
+										<td><ul id="css3menu">
+												<li class="topfirst">
+													<a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+												</li>
+												<li>
+													<a rel="#" id="aB_OKd"><img src="../../images/oa/ok.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+												</li>
+												<li>
+													<a rel="#" id="aB_Canceld"><img src="../../images/oa/refresh.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />重置</a>
+												</li>
+												<li>
+													<a rel='workflow/process-list' id="retd"><img src="../../images/oa/quite.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />返回</a>
+												</li>
+												<li class="toplast"><a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+												</li>
+												</ul> <br /> <br /></td>
+										</tr>
+								</table>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+  </body>
+</html>

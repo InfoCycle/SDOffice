@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>项目检查记录登记</title>
+
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="this is my page">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	
+	<link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/from/emptyPattern.css" type="text/css"></link>
+	<link rel="stylesheet" type="text/css" href="../../css/layout.css" />
+
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	
+	<link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script src="../../plugin/from/emptyPattern.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.textField.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/EasyUIautoMergeCells.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+	<script type="text/javascript" src="../../js/myEasymg.js" ></script>
+<style type="text/css">
+body {
+	background: #f5f5f5;
+	height: 100%;
+	width: 98%;
+}
+.txta{width:101%; height:120px; color:#0000FF; font-size:1em; overflow:auto;}
+.txta_focus{color:#333; border:2px solid #C93;}
+.ui-combobox {
+		position: relative;
+		display: inline-block;
+	}
+	.ui-combobox-toggle {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		margin-left: -1px;
+		padding: 0;
+		/* adjust styles for IE 6/7 */
+		*height: 1.7em;
+		*top: 0.1em;
+	}
+	.ui-combobox-input {
+		margin: 0;
+		padding: 0.3em;
+	}
+#formtask img { vertical-align:middle; cursor:pointer; }
+.imageInputWrapper{border:solid 1px #000;  }
+#formtask input.inputWithImge {border:none; margin-right:5px;}
+</style>
+<script type="text/javascript" language="javascript">
+	var user = checkUserLogin();
+	var today = new Date();
+	var IFrame='<iframe src="{0}" style="width:100%;height:100%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';
+	
+	var action;
+	var processId;
+	var activeId;
+	var formPKID;
+	var state;
+	
+	var qianshou;
+	
+	var activeUser;
+	
+	/*内容发生改变事件*/
+	function textchan(){
+		setButtonState('#aB_OK,#aT_OK',true);
+		setButtonState('#aB_Post,#aT_Post',false);
+	}
+	
+	/*表单验证方法*/
+	function todom(dom){
+				var body = (window.opera) ? (document.compatMode == "CSS1Compat" ? $('html') : $('body')) : $('html,body');
+				body.animate({scrollTop: $(dom).offset().top}, 500);
+			}
+	//$("#").validData("不能为空！请仔细填写");
+	$.fn.extend({        
+			   validData :function(msg,types){   //msg 例如：'不能为空！请仔细填写。'			   
+				   var obj=$(this);
+				  if(types=="datatime"){
+				  	//alert(obj.datetimebox('getValue'));
+				  	if(trim(obj.datetimebox('getValue'))==""){
+								obj.addClass("classerror");
+							    //obj.val("该输入项为必输项！");
+								//ar scroll_y = parseInt(800);
+								//window.scrollBy(0, scroll_y);						
+							   obj.focus(function(){
+									obj.removeClass("classerror");
+							    });
+								//window.location.hash = this;
+								//todom(this);
+							    //MsgBox('系统提示',msg);
+							    return false;
+						   }else
+								return true;
+				  	}else if(types=="text"){
+				  		if(trim(obj.val())==""){
+								obj.addClass("classerror");
+							    //obj.val("该输入项为必输项！");
+								//ar scroll_y = parseInt(800);
+								//window.scrollBy(0, scroll_y);						
+							    obj.focus(function(){
+									obj.removeClass("classerror");
+							    });
+								//window.location.hash = this;
+								todom(this);
+							    //MsgBox('系统提示',msg);
+							    return false;
+						   }else
+								return true;
+				  	}
+				  }
+			});
+	
+	/*按钮显示方法*/
+	function setButtonState(id,states){
+		if(states)
+			$(id).show();
+		else
+			$(id).hide();
+	}
+	/*返回当前办理人*/
+	function getaccept(){
+		$.post(
+			"/Buss/ProjectCheckService/9",
+			{'activeId':activeId},
+			function(data){
+				//alert(state);
+				activeUser=data;
+				if(user.userID!=activeUser.FAcceptUser){
+					setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aB_QianShou,#aT_QianShou,#aT_Post,#aT_Cancel,#aT_Return',false);
+					$('input').attr('onfocus','blur()');
+					$('textarea').attr('onfocus','blur()');
+					$("#FBeCheckedTime,#FCheckPersonTime,#FEprCheckPersonTime").datetimebox('disable');
+					$("#OpinionMessage1,#OpinionMessage2").attr('onfocus','');
+				}else{
+					setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Return,#aB_Cancel,#aB_CuiBan,#aB_QianShou,#aB_BLQK,#aT_OK,#aT_Post,#aT_Return,#aT_QianShou,#aT_CuiBan,#aT_QianShou,#aT_Cancel,#aT_BLQK',false);
+					$('input').attr('onfocus','blur()');
+					$('textarea').attr('onfocus','blur()');
+					$("#FBeCheckedTime").datetimebox('disable');
+					if(activeUser.FAcceptTime==""){
+						setButtonState("#aB_QianShou,#aT_QianShou,#aT_BLQK,#aB_BLQK",true);
+					}else{
+						if(user.userID==$('#FCheckPersonId').val()){
+							//alert("checp");
+							setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+							$("#FBeCheckedTime").datetimebox('disable');
+							$("#OpinionMessage1,#OpinionMessage2").attr('onfocus','');
+						}else if(user.userID==$('#FBcheckPersonId').val()){
+							//alert("Bchecp")
+							setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+							$("#FCheckPersonTime,#FEprCheckPersonTime").datetimebox('disable');
+							$("#OpinionMessage1,#OpinionMessage2").attr('onfocus','');
+							$('#FEpr').attr('onfocus','');
+						}else{
+							setButtonState('#aT_BLQK,#aB_BLQK',true);
+							$('input').attr('onfocus','blur()');
+							$('textarea').attr('onfocus','blur()');
+							$("#FBeCheckedTime,#FCheckPersonTime,#FEprCheckPersonTime").datetimebox('disable');
+						}
+					}
+				}
+			}
+		);
+		$('#OpinionMessage1').attr('onfocus','');
+	}
+	/*按钮控制方法*/
+	function KZbut(){
+		//alert(action);
+		if(action==0){
+			setButtonState('#aB_OK,#aB_Post,#aB_Return,#aB_CuiBan,#aB_QianShou,#aT_OK,#aT_Post,#aT_Return,#aT_CuiBan,#aT_QianShou',false);
+			$('input').attr('onfocus','blur()');
+			$('textarea').attr('onfocus','blur()');
+			setActiveAcceptTime();
+			//$.tipmg('温馨提示','加载完成！','success');
+		}else if(action==1){
+			
+			if(state==0){
+				//$('#FExecutePhase').val(state);
+				setButtonState('#aB_OK,#aB_Post,#aB_Return,#aB_CuiBan,#aB_QianShou,#aT_OK,#aT_Post,#aT_Return,#aT_CuiBan,#aT_QianShou',false);
+				$('input').attr('onfocus','blur()');
+				$('textarea').attr('onfocus','blur()');
+				$('#FExecutePhase,#FInspectionRecord,#FEpapo,#FTcwcr').attr('onfocus','');
+				$("#FBeCheckedTime,#FEprCheckPersonTime").datetimebox('disable');
+				if($("#FNumbers").val()!=""){
+					setButtonState('#aB_Post,#aT_Post',true);
+				}
+			}else{
+				getaccept();
+				
+			}
+		}else if(action==2){
+			$('input').attr('onfocus','blur()');
+			$('textarea').attr('onfocus','blur()');
+			$("#FBeCheckedTime,#FCheckPersonTime,#FEprCheckPersonTime").datetimebox('disable');
+			setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Return,#aB_CuiBan,#aB_QianShou,#aB_Cancel,#aT_OK,#aT_Post,#aT_Return,#aT_CuiBan,#aT_QianShou,#aT_Cancel',false);
+		}else{
+			$.messager.alert('温馨提示','系统错误，请与管理员联系','error');
+			//$.jBox.tip('系统错误，请与管理员联系','error');
+		}
+		$.tipmg('温馨提示','加载成功','success');
+		//alert(state);
+	}
+	
+	function FUN_Save() {
+			$.loadmg("温馨提示","正在保存,请稍等..");
+			//$.jBox.tip("正在保存,请稍等..", 'loading');
+			if(checkOperation()){
+				var ID = $("#FId").val();
+				var FNumbers = $("#FNumbers").val();
+				var fkTaskId =  $("#fkTaskId").val();
+				var FExecutePhase = $("#FExecutePhase").val();
+				var FInspectionRecord = $("#FInspectionRecord").val();
+				var FEpapo = $("#FEpapo").val();
+				var FTcwcr = $("#FTcwcr").val();
+				var FBcheckPersonId = $("#FBcheckPersonId").val();
+				var FBcheckPersonName = $("#FBcheckPersonName").val();
+				var FBeCheckedTime = $("#FBeCheckedTime").datetimebox('getValue');
+				var FCheckPersonId =  $("#FCheckPersonId").val();
+				var FCheckPersonName = $("#FCheckPersonName").val();
+				var FCheckPersonTime = $("#FCheckPersonTime").datetimebox('getValue');
+				var FEpr = $("#FEpr").val();
+				var FEprCheckPersonId = $("#FEprCheckPersonId").val();
+				var FEprCheckPersonName = $("#FEprCheckPersonName").val();
+				var FEprCheckPersonTime = $("#FEprCheckPersonTime").datetimebox('getValue');
+				if (true){
+					$.post("/Buss/ProjectCheckService/1", {
+						"ID" : formPKID,
+						"processId":processId,
+						"FNumbers" : FNumbers,
+						"fkTaskId" : fkTaskId,
+						"FExecutePhase" : FExecutePhase,
+						"FInspectionRecord":FInspectionRecord,
+						"FEpapo":FEpapo,
+						"FTcwcr":FTcwcr,
+						"FBcheckPersonId":FBcheckPersonId,
+						"FBcheckPersonName":FBcheckPersonName,
+						"FBeCheckedTime":FBeCheckedTime,
+						"FCheckPersonId":FCheckPersonId,
+						"FCheckPersonName":FCheckPersonName,
+						"FCheckPersonTime":FCheckPersonTime,
+						"FEpr":FEpr,
+						"FEprCheckPersonId":FEprCheckPersonId,
+						"FEprCheckPersonName":FEprCheckPersonName,
+						"FEprCheckPersonTime":FEprCheckPersonTime,
+						"title": $("#FKTaskName").val()
+					}, function(data) {
+						if(data.success){
+							$('input[id=FId]').val(data.root.FId);
+							//alert(data.root.FId +'--'+data.root)
+							//setButtonState('#aB_Post,#aT_Post',true);
+							//setButtonState('#aB_OK,#aT_Ok',false);
+							$.tipmg("温馨提示","项目检查记录登记保存成功。","success");
+							//$.jBox.tip('项目检查记录登记保存成功。','success');
+						}else{
+							$.tipmg("温馨提示","项目检查记录登记保存失败，请检查网络或联系系统管理员！","error");
+							//$.jBox.tip('项目检查记录登记保存失败，请检查网络或联系系统管理员！','error');
+						}
+					}, "json");
+					return false;
+				}else{
+					$.messager.alert('温馨提示','校验失败，请检查必填项！','info');
+					//$.jBox.info('校验失败，请检查必填项！');
+				}
+			}
+		}
+	 function checkOperation(){
+			if(state == 3){
+				$.messager.alert('温馨提示','操作失败，该项目过程情况已经终止！','error');
+				//$.jBox.tip('操作失败，该项目过程情况已经终止！','error');
+				return false;
+			}else if(state == 4){
+				$.messager.alert('温馨提示','操作失败，该项目过程情况已经办理完成！','error');
+				//$.jBox.tip('操作失败，该项目过程情况已经办理完成！','error');
+				return false;
+			}else if(state == 5){
+				$.messager.alert('温馨提示','操作失败，该项目过程情况已经归档！','error');
+				//$.jBox.tip('操作失败，该项目过程情况已经归档！','error');
+				return false;
+			}else{
+				return true;
+			}
+		}
+
+	$(document).ready(function(){
+		$.loadmg("温馨提示","正在加载...");
+		$("#FBeCheckedTime,#FCheckPersonTime,#FEprCheckPersonTime").datetimebox({onChange:function(data){
+		textchan();}});
+		if(!checkUserLogin){
+			return false;
+		}
+			$("#divreturn").dialog({
+				width:300,
+				title:'打回操作',
+				modal:true,
+				closed:true,
+				closable:true,
+				shadow:false
+			});
+			$("#divcuiban").dialog({
+				width:300,
+				title:'催办操作',
+				modal:true,
+				closed:true,
+				closable:true,
+				shadow:false
+			});
+		$("#userID").val(user.userID);
+		$("#userName").val(user.userName);
+		$("#FInspectionRecord").textField({
+			focusClass : "txta_focus"
+		});
+		$("#FEpapo").textField({
+			focusClass : "txta_focus"
+		});
+		$("#FTcwcr").textField({
+			focusClass : "txta_focus"
+		});
+		$("#FEpr").textField({
+			focusClass : "txta_focus"
+		});
+		
+		$(".inputWithImge").each(
+			function() {
+				$(this).add($(this).next()).wrapAll(
+					'<div class="imageInputWrapper"></div>');
+		});
+		
+		//$("#TaskYear").text("-" + today.getFullYear());
+		$("#TitleYear").text(today.getFullYear());
+		$("#FEntrustUnitName").attr({readonly : 'true'});
+		
+		$("#FServiceCategory").attr({readonly : 'true'});
+		$("#FEntrustUnitName").attr({readonly : 'true'});
+		$("#FKTaskName").attr({readonly : 'true'});
+		$("#FGiveTime").attr({readonly : 'true'});
+		$("#FDeptMgrName").attr({readonly : 'true'});
+		$("#FProjMgrName").attr({readonly : 'true'});
+		$("#FDepartmentName").attr({readonly : 'true'});
+		$("#FBcheckPersonName").attr({readonly : 'true'});
+		$("#FBeCheckedTime").attr({readonly : 'true'});
+		$("#FCheckPersonName").attr({readonly : 'true'});
+		$("#FCheckPersonTime").attr({readonly : 'true'});
+		$("#FEprCheckPersonName").attr({readonly : 'true'});
+		$("#FEprCheckPersonTime").attr({readonly : 'true'});
+		
+		/* $("#FNumbers").blur(function() {
+			var str = '';
+			if($(this).val() != null && $(this).val() !=''){
+				str = 'KMSD-项检-'+ $(this).val()+"-" + today.getFullYear();
+				$("#FNumbers").attr("value", str);
+			}							
+		});		 */
+		//var Key = $.request.queryString["Key"];
+		action = Request.QueryString("action"); 
+		processId = Request.QueryString("processId");
+		activeId = Request.QueryString("activeId");
+		formPKID = Request.QueryString("formPKID");
+		state = Request.QueryString("state");
+		//alert(action + '-'+processId+'-'+activeId+'-'+formPKID+'-'+state);
+		//alert(action);
+		if (action == 0) {
+			$.post("/Buss/ProjectCheckService/0", {
+				"ID" : formPKID,
+				"processId":processId,
+				"title":"项目检查记录登记",
+				'FCheckPersonId':user.userID,
+				'FCheckPersonName':user.userName
+			}, function(data) {
+				$('input[id=FId]').val(data.root.FId);
+				$('input[id=FCheckPersonId]').val(user.userID);
+				$('input[id=FCheckPersonName]').val(user.userName);
+				$('input[id=FCheckPersonTime]').val(today.format('yyyy-MM-dd')); 
+					action = 1;
+					formPKID = data.root.FId;
+					
+								
+								$("#qkTable").datagrid({ 
+									title:'办理情况(近4次)', 
+									width: '98%', 
+									showHeader:false, 
+									//height: 221, 
+									columns:[ [
+										{/*title:'类型',*/field:'FStyle',width:80,align:'center', formatter: function(value,row,index){
+											if(value=="1") 
+												return "办理情况"; 
+											else if(value=="2") 
+												return "催办情况"; 
+											else if(value=="3") 
+												return "打回情况"; 
+											else if(value=="-1") 
+												return ""; 
+											else if(value=="-2") 
+												return ""; 
+												else if(value=="-3") 
+													return ""; 
+											} }, 
+										{/*title:'发送人员',*/field:'sendUser',width:80,hidden:false}, 
+										{/*title:'发送时间',*/field:'FSendTime',width:141,align:'center'}, 
+										{/*title:'接收人员',*/field:'acceptUser',width:80,align:'center'}, 
+										{/*title:'接收时间',*/field:'FAcceptTime',width:141,align:'center'}, 
+										{/*title:'办理状态',*/field:'FStateText',width:81,align:'center'}, 
+										{/*title:'完成时间',*/field:'completeTime',width:141,align:'center'}, 
+										{/*title:'备注',*/field:'FRemark',width:151,align:'center'}						]], 
+										url: '/Buss/CommonOpinionService/6/?processId='+processId+"&toprecord="+4, 
+										rownumbers:false,fit:true,singleSelect:true, //pagination:true, 
+										onSelect: function(index,row){
+										$("#FId").attr("value",row.FId); 
+										$("#FContentT").text(row.FContent); 
+									}, 
+									onLoadSuccess:function(){ 
+										//所有列进行合并操作 //$(this).datagrid("autoMergeCells"); //指定列进行合并操作 
+										$(this).datagrid("autoMergeCells",['FStyle','sendUser','FStateText']); 
+										mergeCellsByField("qkTable","FAcceptTime","FStateText","FStateText","complleteTime","FRemark"); 
+									}, 
+									rowStyler:function(index,row){ 
+										if(row.FStyle=="-1" || row.FStyle=="-2" || row.FStyle=="-3") 
+												return 'background-color: #fafafa;'
+												+ 'background: -webkit-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+												+ 'background: -moz-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+												+ 'background: -o-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+												+ 'background: linear-gradient(to bottom,#fdfdfd 0,#f5f5f5 100%);'
+												+ 'background-repeat: repeat-x;'
+												+ 'filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#fdfdfd,endColorrstr=#f5f5f5,GradientType=0);'
+												+ 'color:blue;font-weight:bold;'; 
+									},
+									onLoadSuccess:KZbut
+									}); 
+							
+					
+		});
+				
+					
+			//}, "json");
+		} else if (action == 1) {
+			
+			$.post("/Buss/ProjectCheckService/2", {
+				"ID" : formPKID
+			}, function(data) {
+				if (data.success) {
+					SetFormValue(data);
+					//setActiveAcceptTime();
+				} else {
+					//$.jBox.info('任务获取失败，请检查网络或联系系统管理员！');
+					$.tipmg("温馨提示","任务获取失败，请检查网络或联系系统管理员！","error");
+					return false;
+				}
+			}, "json");
+		}else if (action == 2) {
+			$.post("/Buss/ProjectCheckService/2", {
+				"ID" : formPKID
+			}, function(data) {
+				if (data.success) {
+					SetFormValue(data);
+					//KZbut();
+				} else {
+					$.tipmg("温馨提示","任务获取失败，请检查网络或联系系统管理员！","error");
+					//$.jBox.info('任务获取失败，请检查网络或联系系统管理员！');
+					return false;
+				}
+			}, "json");
+		}
+		
+		function setTask(taskid){	
+			$.ajax({
+				url:'/Buss/TaskService/1',
+				type: 'POST',
+				data:{ID:taskid}, 
+				dataType: 'json',
+				async :  false,
+				success:function(data) {
+					if(data.success){
+						if(data.root !=null){
+							if(data.root[0].FId > 0){
+								$('input[id=fkTaskId]').val(data.root[0].FId);
+								$('input[id=FKTaskName]').val(data.root[0].FTaskName);
+								$('input[id=FEntrustUnitId]').val(data.root[0].FEntrustUnitId);
+								$('input[id=FEntrustUnitName]').val(data.root[0].FEntrustUnitName);
+								var codeid = data.root[0].FServiceCategory;
+								if(codeid != null && codeid !=''){
+									$('#FServiceCategory').val(codeid);
+								}
+							}
+						}
+					}
+					$("#qkTable").datagrid({ 
+			title:'办理情况(近4次)', 
+			width: '98%', 
+			showHeader:false, 
+			//height: 221, 
+			columns:[ [
+				{/*title:'类型',*/field:'FStyle',width:80,align:'center', formatter: function(value,row,index){
+					if(value=="1") 
+						return "办理情况"; 
+					else if(value=="2") 
+						return "催办情况"; 
+					else if(value=="3") 
+						return "打回情况"; 
+					else if(value=="-1") 
+						return ""; 
+					else if(value=="-2") 
+						return ""; 
+						else if(value=="-3") 
+							return ""; 
+					} }, 
+				{/*title:'发送人员',*/field:'sendUser',width:80,hidden:false}, 
+				{/*title:'发送时间',*/field:'FSendTime',width:141,align:'center'}, 
+				{/*title:'接收人员',*/field:'acceptUser',width:80,align:'center'}, 
+				{/*title:'接收时间',*/field:'FAcceptTime',width:141,align:'center'}, 
+				{/*title:'办理状态',*/field:'FStateText',width:81,align:'center'}, 
+				{/*title:'完成时间',*/field:'completeTime',width:141,align:'center'}, 
+				{/*title:'备注',*/field:'FRemark',width:151,align:'center'}						]], 
+				url: '/Buss/CommonOpinionService/6/?processId='+processId+"&toprecord="+4, 
+				rownumbers:false,fit:true,singleSelect:true, //pagination:true, 
+				onSelect: function(index,row){
+				$("#FId").attr("value",row.FId); 
+				$("#FContentT").text(row.FContent); 
+			}, 
+			onLoadSuccess:function(){ 
+			//所有列进行合并操作 //$(this).datagrid("autoMergeCells"); //指定列进行合并操作 
+			$(this).datagrid("autoMergeCells",['FStyle','sendUser','FStateText']); 
+			mergeCellsByField(
+				"qkTable",
+				"FAcceptTime",
+				"FStateText",
+				"FStateText",
+				"complleteTime",
+				"FRemark"
+			); 
+			}, 
+			rowStyler:function(index,row){ 
+				if(row.FStyle=="-1" || row.FStyle=="-2" || row.FStyle=="-3") 
+				return 'background-color: #fafafa;'
+				+ 'background: -webkit-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+				+ 'background: -moz-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+				+ 'background: -o-linear-gradient(top,#fdfdfd 0,#f5f5f5 100%);'
+				+ 'background: linear-gradient(to bottom,#fdfdfd 0,#f5f5f5 100%);'
+				+ 'background-repeat: repeat-x;'
+				+ 'filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#fdfdfd,endColorrstr=#f5f5f5,GradientType=0);'
+				+ 'color:blue;font-weight:bold;'; 
+			},
+			onLoadSuccess:KZbut
+			}); 
+				}
+			});
+		}
+		
+		function SetFormValue(data) {
+			//$("#FId").val(data.root.FId);
+			$("#FNumbers").val(data.root.FNumbers);
+			//$("#fkTaskId").val(data.root.fkTaskId);
+			setTask(data.root.fkTaskId);
+			$("#FExecutePhase").val(data.root.FExecutePhase);
+			$("#FInspectionRecord").val(data.root.FInspectionRecord);
+			$("#FEpapo").val(data.root.FEpapo);
+			$("#FTcwcr").val(data.root.FTcwcr);
+			$("#FBcheckPersonId").val(data.root.FBcheckPersonId);
+			$("#FBcheckPersonName").val(data.root.FBcheckPersonName);
+			//alert(data.root.FBeCheckedTime);
+			$("#FBeCheckedTime").datetimebox('setValue',data.root.FBeCheckedTime);
+			$("#FCheckPersonId").val(data.root.FCheckPersonId);
+			$("#FCheckPersonName").val(data.root.FCheckPersonName);
+			$("#FCheckPersonTime").datetimebox('setValue',data.root.FCheckPersonTime);
+			$("#FEpr").val(data.root.FEpr);
+			$("#FEprCheckPersonId").val(data.root.FEprCheckPersonId);
+			$("#FEprCheckPersonName").val(data.root.FEprCheckPersonName);
+			$("#FEprCheckPersonTime").datetimebox('setValue',data.root.FEprCheckPersonTime);
+		}
+
+		function checkField(){
+			var err=$('[empty=true]').emptyAll({parentID:true});
+			return err;
+		}
+		
+		
+		$("#aT_OK").click(function() { 		
+			FUN_Save(); 
+			 setButtonState('#aB_OK,#aT_OK',false);
+			 setButtonState('#aB_Post,#aT_Post',true)
+		});
+		$("#aB_OK").click(function() {
+			 FUN_Save(); 
+				 setButtonState('#aB_OK,#aT_OK',false);
+				 setButtonState('#aB_Post,#aT_Post',true);
+		});
+
+		function PostCheRe(){
+	    	var entitys={
+	    		userID:user.userID,
+	    		userName:user.userName
+	    	}
+	    	var entityJSON= Base64.encode($.toJSON(entitys));
+	    	var win = $(IFrame.format('/html/module/controls/PostTask.html?entitys='+entityJSON));
+	    	$.lightbox(win, {
+				    modal: true,
+					width: 550,
+				    height: 350
+				  });
+			return false;
+	    }
+	    
+		function FUN_Post() {
+	 			PostCheRe();
+ 		}
+ 		//起草阶段的表单验证
+		function postcheck1(){
+			if(!$("#FCheckPersonTime").validData("不能为空！请仔细填写",'datatime')){
+					$("#FCheckPersonTime").datetimebox({required:true});
+					$.messager.alert('温馨提示','请填写检查日期','info');
+					return false;
+				}else if(!$("#FExecutePhase").validData("不能为空！请仔细填写",'text')){
+					$("#FExecutePhase").validatebox({required:true});
+					$("#FExecutePhase").focus();
+					//$.messager.alert('温馨提示','请填写项目实施阶段','info');
+					return false;
+				}else if(!$('#FInspectionRecord').validData("不能为空！请仔细填写",'text')){
+					$("#FInspectionRecord").validatebox({required:true});
+					$("#FInspectionRecord").focus();
+					//$.messager.alert('温馨提示','请填写项目查情况记录','info');
+					return false;
+				}else if(!$('#FEpapo').validData("不能为空！请仔细填写",'text')){
+					$("#FEpapo").validatebox({required:true});
+					$("#FEpapo").focus();
+					//$.messager.alert('温馨提示','请填写项目查情况记录','info');
+					return false;
+				}else if(!$('#FTcwcr').validData("不能为空！请仔细填写",'text')){
+					$("#FTcwcr").validatebox({required:true});
+					$("#FTcwcr").focus();
+					//$.messager.alert('温馨提示','请填写项目查情况记录','info');
+					return false;
+				}else{
+					return true;
+				}
+			}
+		function postcheck2(){
+			if(!$('#FEpr').validData("dd",'text')){
+				$('#FEpr').validatebox({required:true});
+				$("#FEpr").focus();
+				return false;
+			}else if(!$("#FBeCheckedTime").validData("dd","datatime")){
+				$("#FBeCheckedTime").datetimebox({required:true});
+				$.messager.alert('温馨提示','请填写被检查日期','info');
+				return false;
+			}else{
+				return true;
+			}
+		}
+		function postcheck3(){
+			if(!$("#FEprCheckPersonTime").validData("dd","datatime")){
+				$("#FEprCheckPersonTime").datetimebox({required:true});
+				$.messager.alert('温馨提示','请填写签字日期','info');
+				return false;
+			}else{
+				return true;
+			}
+		}
+		//验证提交
+		function FUN_checkpost(){
+			if(state==0){
+				if(!postcheck1()){
+					return false;
+				}
+			}else if(state==1){
+				if(user.userID==$('#FCheckPersonId').val()){
+					
+					$('#FEprCheckPersonId').val(user.userID);
+					$('#FEprCheckPersonName').val(user.userName);
+					if(!postcheck3()){
+						return false;
+					}
+					$.loadmg("温馨提示","正在提交...");
+					if(checkOperation()){
+						var ID = $("#FId").val();
+						var FNumbers = $("#FNumbers").val();
+						var fkTaskId =  $("#fkTaskId").val();
+						var FExecutePhase = $("#FExecutePhase").val();
+						var FInspectionRecord = $("#FInspectionRecord").val();
+						var FEpapo = $("#FEpapo").val();
+						var FTcwcr = $("#FTcwcr").val();
+						var FBcheckPersonId = $("#FBcheckPersonId").val();
+						var FBcheckPersonName = $("#FBcheckPersonName").val();
+						var FBeCheckedTime = $("#FBeCheckedTime").val();
+						var FCheckPersonId =  $("#FCheckPersonId").val();
+						var FCheckPersonName = $("#FCheckPersonName").val();
+						var FCheckPersonTime = $("#FCheckPersonTime").val();
+						var FEpr = $("#FEpr").val();
+						var FEprCheckPersonId = $("#FEprCheckPersonId").val();
+						var FEprCheckPersonName = $("#FEprCheckPersonName").val();
+						var FEprCheckPersonTime = $("#FEprCheckPersonTime").val();
+						if (true){
+							$.post("/Buss/ProjectCheckService/1", {
+								"ID" : formPKID,
+								"processId":processId,
+								"FNumbers" : FNumbers,
+								"fkTaskId" : fkTaskId,
+								"FExecutePhase" : FExecutePhase,
+								"FInspectionRecord":FInspectionRecord,
+								"FEpapo":FEpapo,
+								"FTcwcr":FTcwcr,
+								"FBcheckPersonId":FBcheckPersonId,
+								"FBcheckPersonName":FBcheckPersonName,
+								"FBeCheckedTime":FBeCheckedTime,
+								"FCheckPersonId":FCheckPersonId,
+								"FCheckPersonName":FCheckPersonName,
+								"FCheckPersonTime":FCheckPersonTime,
+								"FEpr":FEpr,
+								"FEprCheckPersonId":FEprCheckPersonId,
+								"FEprCheckPersonName":FEprCheckPersonName,
+								"FEprCheckPersonTime":FEprCheckPersonTime,
+								"title": $("#FKTaskName").val()
+							}, function(data) {
+								if(data.success){
+									$('input[id=FId]').val(data.root.FId);
+									//$.jBox.tip('项目检查记录登记保存成功。','success');
+									$.post(
+										'/Buss/ProjectCheckService/10',
+										{activeId:Request.QueryString("activeId")},
+										function(data){
+											$.tipmg("温馨提示","项目检查记录登记完成。","success");
+											//$.jBox.tip('项目检查记录登记完成。','success');
+											$("#FBeCheckedTime,#FCheckPersonTime,#FEprCheckPersonTime").datetimebox('disable');
+											setButtonState('#aB_OK,#aB_Post,#aB_Return,#aB_CuiBan,#aB_QianShou,#aB_Cancel,#aT_OK,#aT_Post,#aT_Return,#aT_CuiBan,#aT_QianShou,#aT_Cancel',false);
+											return false;
+										}
+									);
+								}else{
+									$.messager.alert('温馨提示','项目检查记录登记保存失败，请检查网络或联系系统管理员！','error');
+									//$.jBox.tip('项目检查记录登记保存失败，请检查网络或联系系统管理员！','error');
+								}
+							}, "json");
+						}
+					}
+					return false;
+				}else if(user.userID==$('#FBcheckPersonId').val()){
+							if(!postcheck2()){
+								return false;
+							}
+						}
+			}
+			
+	 		FUN_Post();
+ 		}
+		$("#aB_Post").click(function() {
+			FUN_checkpost();
+		});
+		
+		$("#aT_Post").click(function() {
+			FUN_checkpost();
+		});
+		function FUN_Cancel() { 
+			if(state==0){
+				//var submit = function(v, h, f) {
+				var submit=function(r){
+					//if(v == 'ok'){
+					if(r){
+						$.loadmg("温馨提示","正在撤销项目检查记录登记，请稍等...");
+						//$.jBox.tip("正在撤销项目检查记录登记，请稍等...", 'loading'); 
+						$.post("/Buss/ProjectCheckService/3", 
+						{ 
+							"ID" : formPKID, 
+							"processId":processId,
+							"activeId":activeId
+						},
+						function(data) { 
+							//alert(data);
+							 if(data.success){ 
+							 	$('#formtask')[0].reset(); 
+								//$.jBox.tip('撤销成功。', 'success');
+								$.tipmg("温馨提示","撤销成功","success");
+								$('input').attr('disabled',true);
+								$('#FInspectionRecord,#FEpapo,#FTcwcr').attr('onfocus','blur()');
+								$('#FCheckPersonTime').datetimebox('disable');
+								setButtonState('#btnSelectPlan,#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aT_Post,#aT_Cancel,#aT_Return,#aB_BLQK,#aT_BLQK',false);
+							}else{
+								$.tipmg("温馨提示",data.message,"error");
+								//$.jBox.tip(data.message,'error');
+							} 
+						},
+						"json"
+						);
+				//}else if(v == 'cancel'){ 
+				}else{
+				// 取消 
+				} return true; 
+				window.location.reload();
+			};
+			//$.jBox.confirm("确定要撤销该项目检查记录登记吗？", "重要提示", submit);
+			$.messager.confirm('温馨提示', '确定要撤销该项目检查记录登记吗？',submit);
+		}else{
+			//$.jBox.tip('该项目检查登记正在处理中，不能撤销！', 'error'); 
+			$.messager.alert('温馨提示','项目过程情况保存失败，请检查网络或联系系统管理员！','info');
+		} 
+	}
+
+		$("#aT_Cancel").click(function() {
+	 			FUN_Cancel();
+ 		}); 
+		$("#aB_Cancel").click(
+			function() { 
+				FUN_Cancel(); 
+			}
+		); //state = 1; 
+		function FUN_Return(){ 
+			if(state == 0){ 
+				//$.jBox.tip('该项目检查登记处于起草阶段，不能执行此操作！', 'error'); 
+				$.messager.alert('温馨提示','该项目检查登记处于起草阶段，不能执行此操作！','info'); 
+			}else if(state == 3){ 
+				//$.jBox.tip('该项目检查登记处于终止阶段，不能执行此操作！', 'error'); //state = 1; 
+				$.messager.alert('温馨提示','该项目检查登记处于终止阶段，不能执行此操作！','info');
+			}else{ 
+				/*var html = '<div style="padding:5px;">打回意见：<textarea  cols="38" rows="3" id="OpinionMessage" name="OpinionMessage"></textarea></div>'; */
+				//var submit = function (v, h, f) { 
+				var submit = function(){
+					$.loadmg("温馨提示","正在保存打回信息...");
+					if ($('#OpinionMessage1').val() != '' && $('#OpinionMessage1').val() != null) { 
+						$.post("/Buss/ProjectCheckService/6", 
+						{ //"ID" : formPKID, 
+							//"processId":processId, 
+							"activeId":activeId, 
+							"remark":$('#OpinionMessage1').val() }, 
+			function(data) { 
+				//alert(data); 
+				if(data.success){
+				$('#formtask')[0].reset();  
+				//$.jBox.tip('项目检查登记打回成功！', 'success'); 
+				$("#divreturn").dialog('close');
+				$.tipmg("温馨提示","项目检查登记打回成功！","success");
+				$("#divreturn").dialog("close");
+				setButtonState('#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aT_Post,#aT_Cancel,#aT_Return',false);
+				setButtonState('#aB_CuiBan,#aB_BLQK,#aT_CuiBan,#aT_BLQK',true);
+				$('input').attr('onfocus','blur()');
+				$('textarea').attr('onfocus','blur()');
+			}else{ 
+				//$.jBox.tip('项目检查登记打回失败','error'); 
+				$.tipmg("温馨提示","项目检查登记打回失败","error"); 
+			} 
+		}, 
+		"json"); 
+		return true; 
+		}else{
+			$.messager.alert('温馨提示','请输入打回意见。','info'); 
+			//$.jBox.tip("请输入打回意见。", 'error'); 
+			return false; 
+		}	
+		return true; 
+		}; 
+		//$.jBox(html, { title: "打回操作", submit: submit }); 
+		$("#divreturn").dialog({
+				width:400,
+				title:'打回操作',
+				modal:true,
+				closed:true,
+				closable:true,
+				buttons:[{text:'确认',iconCls:"okbut-esaybt",handler:submit}]
+			});	
+			$("#divreturn").dialog('open');
+		} 
+		}
+
+		$("#aT_Return").click(function() {
+	 			FUN_Return();
+ 		}); 
+			$("#aB_Return").click(function() { FUN_Return(); });				
+
+		function BLQK(processId){
+	 			var 
+			href="../wf/HandleStatus.html?processId="+processId;
+	
+			parent.NavigateUrl('wf_handle_'+processId,'办理情况',href); return false; }
+
+		$("#aT_BLQK").click(function() {
+	 			BLQK(processId);
+ 		}); 
+			$("#aB_BLQK").click(function() { BLQK(processId); });
+
+		function FUN_CuiBan(){
+	 		if(state==0){
+				//$.jBox.tip('该项目检查登记处于起草阶段，不能执行此操作！', 'error'); 
+				$.messager.alert('温馨提示','该项目检查登记处于起草阶段，不能执行此操作！','info');
+			}else{ 
+			/*	var html = '<div style="padding:5px;">催办意见：<textarea  cols="38" rows="3" id="OpinionMessage" name="OpinionMessage"></textarea></div>' ; */
+				//var submit = function (v, h, f) { 
+				var submit=function(){
+					$.loadmg("温馨提示","正在保存催办信息...");
+					if ($('#OpinionMessage2').val()!= '' && $('#OpinionMessage2').val()!= null) {
+						$.post(
+							"/Buss/ProjectCheckService/7", 
+							{"activeId":activeId, 
+							"remark":$('#OpinionMessage2').val()
+							}, 
+							function(data) { 
+								//alert(data.sucess); 
+								if(data.success){ 
+									//$('#formtask')[0].reset();  
+									//$.jBox.tip('项目检查登记催办成功！', 'success'); 
+									$.tipmg("温馨提示","项目检查登记催办成功！","success");
+									$("#divcuiban").dialog("close");
+								}else{ 
+									//$.jBox.tip('项目检查登记催办失败','error'); 
+									$.tipmg("温馨提示","项目检查登记催办失败！","error");
+								} 
+							}, 
+							"json"); 
+							return true; 
+						}else{
+							$("#divload").dialog('close');
+							$.messager.alert('温馨提示','请输入催办意见。','error');
+							//$.jBox.tip("请输入催办意见。", 'error'); 
+							return false; 
+						}	
+						return true; 
+			}; 
+			/*$.jBox(html, { 
+				title: "催办操作", 
+				submit: submit 
+			});*/
+			$("#divcuiban").dialog({
+				width:400,
+				title:'催办操作',
+				modal:true,
+				closed:true,
+				closable:true,
+				buttons:[{text:'确认',iconCls:"okbut-esaybt",handler:submit}]
+			});	 
+			$("#divcuiban").dialog('open');
+			} 
+			}
+
+		$("#aT_CuiBan").click(function() {
+	 			FUN_CuiBan();
+ 		}); 
+		$("#aB_CuiBan").click(function() { FUN_CuiBan(); });
+
+		$('input[id=btnSelectPlan]').click(function(){
+	         //alert('ssss');
+			/*$.jBox.open('iframe:../report/SelectTask.html', '任务选择', 510, 321, { 
+			buttons: { '关闭': true} 
+			});
+	 			return false; */
+	 		var win =$(IFrame.format('/html/module/report/selectTask2.html'));
+	  		$.lightbox(win, {
+				    modal  : true,
+					width   : 600,
+				    height  : 440
+				  });
+			return false;
+	 	}); 
+	 	$("#aT_QianShou").click(function(){
+			setActiveAcceptTime();
+		});
+		$("#aB_QianShou").click(function(){
+			setActiveAcceptTime();
+		});
+			//按钮控制位
+	});
+ 
+ 	
+
+	function closeJBox(){
+ 			var param=$('input[id=FKTaskName]').val();
+ 			var taskId=$('#fkTaskId').val();
+ 			var taskNumber=$('#taskNumbers').val();
+ 			setButtonState('#aB_OK,#aT_OK',true);
+ 			setButtonState('#aB_Post,#aT_Post',false);
+			getcode(taskNumber,taskId)
+			//$.fn.query(); 
+			//$.jBox.close(true); 
+			$.LightBoxObject.close();
+	}
+
+	function getcode(tasknumber,taskId){
+		var d=new Date();
+		var year=d.getFullYear();
+		var numlength=tasknumber.length-11
+		var tasknumbe=tasknumber.substring(0,numlength);
+		$.loadmg('温馨提示','正在加载相关数据..');
+		$.post('/GetNumber/FunForNumber/',{fid:formPKID,year:year,taskname:tasknumbe,numbercode:'XJ'},function(data){
+			$("#FNumbers").val(data.Number);
+			$.post('/Buss/TaskService/1',{ID:taskId},function(data){
+				if(data){
+					$('input[id=FEntrustUnitId]').val(data.root[0].FEntrustUnitId); 
+					$('input[id=FEntrustUnitName]').val(data.root[0].FEntrustUnitName); 
+					$('#FServiceCategory').val(data.root[0].FServiceCategory);
+					$.tipmg('温馨提示','加载成功','success');
+				}else{
+					$.tipmg('温馨提示','加载失败','warning');
+				}
+				
+				
+			});
+		});
+	}
+
+	$.fn.extend({
+ 		query:function(){
+ 			var d=new Date();
+			var year=d.getFullYear();
+	 		$.ajax({ 
+	 			url:'/Buss/TaskService/1', 
+				type: 'POST', 
+				data:{ID:taskId}, 
+				dataType: 'json', 
+				async : false,
+				success:function(data) { 
+					if(data.success){ 
+						if(data.root !=null){ 
+							$('input[id=FEntrustUnitId]').val(data.root[0].FEntrustUnitId); 
+							$('input[id=FEntrustUnitName]').val(data.root[0].FEntrustUnitName); 
+						var codeid = data.root[0].FServiceCategory; 
+						if(codeid != null && codeid !=''){ 
+							$('#FServiceCategory').val(codeid); 
+						} 
+						var str ="";
+						$.post("/GetNumber/ForNumberRule/", {
+							"Code": "XJ",
+							"Title": $("#FKTaskName").val(),
+							"isHaveSub": 0
+								}, function(data) {
+									if (data.success) {
+										str=data.Number;
+										$("#FNumbers").val(str); 
+										//$.messager.alert('系统提示','编号生成成功!','info');
+									}else
+									{															
+										$.messager.alert('系统提示','编号生成失败，请重试!','error');
+										return false;
+									}
+						}, "json");
+						
+						} 
+					} 
+				}
+			}); 
+		}
+	});
+	
+	if (window.navigator.userAgent.indexOf("Firefox") >= 1) {
+ 		//如果浏览器为Firefox 
+			setActiveStyleSheet("papersother.css"); 
+	} else { //如果浏览器为其它 
+			setActiveStyleSheet("papers.css"); 
+	} 
+	function setActiveStyleSheet(filename) { 
+		document.write("<link href=\"..\/..\/css\/"+filename+"\" type=\"text\/css\" rel=\"stylesheet\">"); 
+	}
+
+	/*function PostTask(id) {
+ 		//window.showModalDialog("PostTask.html?ID=" + 	id,window,"dialogLeft:300px;dialogTop:300px;dialogWidth:510px;dialogHeight:301px;scroll:no;status:no");
+ 		$.jBox.open("iframe:/html/module/task/SelectMan.html?ID=" + id, "提交", 510, 391, { 
+ 			buttons: { '关闭': true} 
+ 		}); 
+ 		return false; 
+ 	}*/
+	//获取选择Id
+	/*function ToPart(dd){
+		$.loadmg("温馨提示","正在提交...");
+		$.post(
+			"/system/SvrService/UserService/5",
+			{
+				FId:dd.acceptUserId
+			},
+			function(data){
+				if(data.success){
+					if(state==0){
+						$("#FBcheckPersonId").val(data.root.FId);
+						$("#FBcheckPersonName").val(data.root.Name);
+						var date=ta
+						FUN_Save();
+						setButtonState('#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aT_Post,#aT_Cancel,#aT_Return',false);
+						setButtonState('#aB_CuiBan,#aB_BLQK,#aT_CuiBan,#aT_BLQK',true);
+					}
+				}else{
+					$.tipmg("温馨提示","提交失败！请与管理员联系","error");
+					//$.jBox.tip('提交失败！请与管理员联系','error');
+				}
+			}
+		);		
+	}*/
+	//根据
+	function checkUserLogin(){	
+		var CurrentUser;
+ 		$.ajax({ url: 
+			"/system/SvrService/AppIndex/4/",
+			method: 'GET', 
+			async : false,
+			//同步请求 
+			success: function (data) { 
+				if(data.success){ 
+					CurrentUser=data.root; 
+				}else{ 
+					window.location.href='/html/module/system/loginApp.html'; 
+				} 
+			} 
+		}); 
+		return CurrentUser; 
+		}
+
+	function getCodeName(id){
+ 		var CodeName;
+ 		$.ajax({
+ 			url: "/Buss/ProjectCheckService/5",
+ 			method: 'GET',
+ 			data:{ID:id}, 
+			dataType: 'json',
+			async :  false,
+			//同步请求 
+			success: function (data) { 
+				if(data.success){ 
+					CodeName=data.root.FCodeText; 
+				}else{ 
+					$.tipmg("温馨提示","获取服务类别失败，请检查网路是否正常！","errot");
+					//$.jBox.tip("获取服务类别失败，请检查网路是否正常！", 'error'); 
+				} 
+			} 
+		}); 
+		return CodeName; 
+		} 
+ 	
+		Date.prototype.format = function(fmt){ 
+			//author: meizz   
+			var o = {
+				"M+" : this.getMonth()+1,
+				//月份
+				"d+" : this.getDate(),
+				//日
+				"h+" : this.getHours(), 
+				//小时
+				"m+" : this.getMinutes(),
+				//分
+				"s+" : this.getSeconds(),
+				//秒
+				"q+" : Math.floor((this.getMonth()+3)/3), 
+				//季度 
+				"S"  : this.getMilliseconds() 
+				//毫秒
+				};
+				if(/(y+)/.test(fmt))fmt=fmt.replace(RegExp.$1,(this.getFullYear()+"").substr(4 - RegExp.$1.length));
+				for(var k in o) 
+					if(new RegExp("("+ k +")").test(fmt))
+					fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+					return fmt;
+			} 
+			
+				/*提交方法
+		2013-3-7
+		椿蕾
+		*/
+	function ToPart(entitys){
+		$.loadmg("温馨提示","正在提交...");
+			$.post(
+				"/Buss/ProjectCheckService/4",
+				{
+					processId:Request.QueryString("processId"),
+					aboveActId:Request.QueryString("activeId"),
+					uid:entitys.acceptUserId,
+					remark:entitys.remark
+					},
+				function(data){
+					$.LightBoxObject.close();
+					if($('#FBcheckPersonId').val()==""&&$('#FBcheckPersonName').val()==""){
+						$('#FBcheckPersonId').val(data.root.FId);
+						$('#FBcheckPersonName').val(data.root.FName);
+					}
+					if(data.success){
+						//alert(data.root.FName);
+						//alert(state);
+						if(state==0){
+							$("#FBcheckPersonId").val(data.root.FId);
+							$("#FBcheckPersonName").val(data.root.FName);
+							FUN_Save();
+							state=1;
+						}else{
+							$.tipmg("温馨提示","提交成功！","success");
+						}
+						setButtonState('#aB_OK,#aB_Post,#aB_Cancel,#aB_Return,#aT_OK,#aT_Post,#aT_Cancel,#aT_Return',false);
+						setButtonState('#aB_CuiBan,#aB_BLQK,#aT_CuiBan,#aT_BLQK',true);
+						$('input').attr('onfocus','blur()');
+						$('textarea').attr('onfocus','blur()');
+						activeId+=1;
+						//$.tipmg("温馨提示",data.message,"success");
+						//$.jBox.tip(data.message, 'success');	
+					}else{
+						$.tipmg("温馨提示",data.message,"error");
+						//$.jBox.tip(data.message, 'error');
+					}
+				}
+			);
+			
+		}
+	
+		/*设置接收时间
+		*/
+		function setActiveAcceptTime(){
+			//alert(0);
+			$.loadmg("温馨提示","正在签收..");
+			$.post(
+					"/Buss/ProjectCheckService/8",
+					{
+						activeId:Request.QueryString("activeId"),
+					},
+					function(data){
+						if(data){
+							$.tipmg("温馨提示",'接收成功！',"success");
+							//$.jBox.tip(data.message, 'success');
+							setButtonState("#aB_Return,#aT_Return",true);
+							setButtonState("#aB_QianShou,#aT_QianShou",false);
+							if(user.userID==$('#FCheckPersonId').val()){
+								setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+								$("#FBeCheckedTime").datetimebox('disable');
+								$("#OpinionMessage1,#OpinionMessage2").attr('onfocus','');
+							}else if(user.userID==$('#FBcheckPersonId').val()){
+								setButtonState("#aB_Post,#aT_Post,#aB_Return,#aT_Return,#aB_BLQK,#aT_BLQK",true);
+								$("#FCheckPersonTime,#FEprCheckPersonTime").datetimebox('disable');
+								$("#OpinionMessage1,#OpinionMessage2").attr('onfocus','');
+								$('#FEpr').attr('onfocus','');
+							}else{
+								setButtonState('#aT_BLQK,#aB_BLQK',true);
+								$('input').attr('onfocus','blur()');
+								$('textarea').attr('onfocus','blur()');
+								$("#FBeCheckedTime,#FCheckPersonTime,#FEprCheckPersonTime").datetimebox('disable');
+			}
+						}
+					}
+				);
+			}
+			//alert($('#FEpapo').val().length());
+	</script>
+	</head>
+
+<body>
+ 	
+	<form id="formtask" action="/Buss/TaskService/2" method="post"> 
+			<input id="userID" name="userID" type="hidden"/>
+ 			<input id="userName" name="userName" type="hidden"/>
+ 		<div style="text-align:center">
+			<table border="0" cellpadding="3" cellspacing="0" class="pagetable" style="width:910px;margin:auto">
+		 		<tr>
+			 		<td><ul id="css3menu">
+					 		<li class="topfirst">
+					 			<a rel="#"><img src="../../images/menu/mainbkcm.png"style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+							</li>
+					 		<li><a rel="#" id="aT_OK"><img src="../../images/oa/ok.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+					 		</li>
+							<li><a rel="#" id="aT_Post"><img src="../../images/oa/passfile.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+					 		</li>
+							<li><a rel="#" id="aT_Cancel"><img src="../../images/oa/refresh.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+					 		</li>
+					 		<li><a rel="#" id="aT_Return"><img src="../../images/oa/refresh.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+					 		</li>
+							<li><a rel="#" id="aT_CuiBan"><img	src="../../images/oa/talk.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+					 		</li>
+					 		<li><a rel="#" id="aT_QianShou">
+								<img src="../../images/oa/talk.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+							</li>
+							<li><a rel='#' id="aT_BLQK"><img src="../../images/oa/quite.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;"/>办理情况</a>
+					 		</li><li class="toplast"><a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" /></a>
+					 		</ul> <br /> <br /></td>
+		 				</tr>
+		 				<tr>
+							<td>
+								<div class="content" id="content" style="height:1090px;width:910px;display:table;text-align:left;">
+									<div class="divimageclass"></div>
+					 				<br />
+					 				<br />
+									<br />
+					 				<br />
+					 				<br />
+					 				<div style="float:left;">
+						 				<table class="content_table1" width="810px" border="1" cellpadding="0" style="position:absolute;margin:10px 0px 0px 40px;">
+						 					<caption style="height:30px;font-size:18px;">
+											<strong>昆明松岛工程造价咨询有限公司<label id="TitleYear">
+												</label>项目检查记录<br></strong>
+							 				</caption>
+							 				<tr>	
+												<th colspan="7" align="left" valign="middle" scope="col">编号：<input type="hidden" id="FId" name="FId" style="width:20px;" />
+													<label id="TaskH">
+														<input type="text" id="FNumbers" name="FNumbers" value="" style="width:800px;" class="validate[required,minSize[5],maxSize[50]]" />
+													</label>
+												</th>
+											</tr>
+							 				<tr>
+								 				<td colspan="7" align="left" valign="middle" scope="col"><label>一、项目基本情况：</label></td>
+											</tr>
+											<tr>
+								 				<td width="80" nowrap>项目名称</td>
+								 				<td colspan="3">
+								 					<input type="hidden" style="width:25px;" id="fkTaskId" name="fkTaskId">
+								 					<input type="hidden" style="width:25px;" id="taskNumbers" name="taskNumbers">
+													<input type="text" style="width:280px;" id="FKTaskName" name="FKTaskName" empty="true" />
+													<input id="btnSelectPlan" type="button" class="btnSelect"/>
+								 				</td>
+								 				<td width="80" nowrap>服务类别</td>
+								 					<td colspan="2"><label>
+														<input type="text" style="width:320px;" id="FServiceCategory" name="FServiceCategory"></label>
+								 					</td>
+											</tr>
+							 				<tr>
+								 				<td width="80" nowrap>委托单位</td>
+								 				<td colspan="3"><label> <input type="hidden" style="width:25px;" id="FEntrustUnitId" name="FEntrustUnitId">
+													<input type="text" style="width:320px;" id="FEntrustUnitName" name="FEntrustUnitName"></label>
+								 				</td>
+												<td width="80" nowrap>实施阶段</td>
+								 					<td colspan="2"><label> 
+														<input type="text" style="width:320px;" id="FExecutePhase" name="FExecutePhase" onchange='textchan()'></label>
+								 					</td>
+											</tr>
+							 				<tr>
+								 				<td colspan="7" align="left" valign="middle" scope="col"><label>二、项目检查情况记录：</label></td>
+								 			</tr>
+							 				<tr>
+									   			<td colspan="7" >
+									   				<div class="test_x" style="width:754px;">
+									   					<textarea id="FInspectionRecord" name="FInspectionRecord" class="txta mt5" style="resize:none;" onchange='textchan()'></textarea>		
+										  			</div>
+										  		</td>
+										  	</tr>
+										  	<tr>
+										  		<td colspan="7" align="left" valign="middle" scope="col"><label>三、存在问题及处理意见：</label></td>
+							 				</tr>
+							 				<tr>
+									   			<td colspan="7" >
+									   				<div class="test_x" style="width:754px;">
+									   					<textarea id="FEpapo" name="FEpapo" class="txta mt5" style="resize:none;" onchange='textchan()'></textarea>
+									   				</div>
+									   				</td>
+									   			</tr>
+									   			<tr>
+									   				<td colspan="7" align="left" valign="middle" scope="col"><label>四、与客户的沟通记录：</label></td>
+							 					</tr>
+							 					<tr>
+							 						<td colspan="7" >
+							 							<div class="test_x" style="width:754px;">
+							 								<textarea id="FTcwcr" name="FTcwcr" class="txta mt5" style="resize:none;" onchange='textchan()'></textarea>		
+														</div>			
+													</td>
+												</tr>
+												<tr>
+													<td width="80"  nowrap>被检查人</td>
+								 					<td colspan="3"><label><input type="hidden"style="width:25px;" id="FBcheckPersonId" name="FBcheckPersonId">	
+								 					<input type="text" style="width:220px;" id="FBcheckPersonName" name="FBcheckPersonName" onfocus="blur()"></label>
+								 					</td>
+													<td width="80">检查人</td>
+								 					<td colspan="2"><label> <input type="hidden" style="width:25px;" id="FCheckPersonId" name="FCheckPersonId">
+									 					<input type="text" style="width:220px;" id="FCheckPersonName" name="FCheckPersonName" onfocus="blur()"></label>
+								 					</td>
+								 					</tr>
+							 						<tr>
+								 					<td width="80"  nowrap>被检查日期</td><td colspan="3"><label> 
+								 						<input type="text" style="width:223px;" id="FBeCheckedTime" name="FBeCheckedTime" class="easyui-datetimebox" type="text" onchange='textchan()' onfocus="blur()">
+									 					</label>
+									 					</td><td width="80">检查日期</td><td colspan="2">
+									 						<label>
+									 						<input type="text"style="width:223px;" id="FCheckPersonTime" name="FCheckPersonTime" class="easyui-datetimebox" type="text"  onfocus="blur()">
+									 						</label>
+									 					</td>
+							 						</tr>
+							 						<tr>
+														<td colspan="7" align="left" valign="middle" scope="col"><label>五、存在问题整改情况：</label></td>
+							 						</tr>
+													<tr>
+														<td colspan="7" >	
+									  						<div class="test_x" style="width:754px;">		
+										  						<textarea id="FEpr" name="FEpr" class="txta mt5" style="resize:none;" onchange='textchan()'></textarea>
+															</div>			
+														</td>
+													</tr>
+													<tr>
+														<td width="80"  nowrap>检查人签字</td>
+								 						<td colspan="3"><label> 
+								 							<input type="hidden" style="width:25px;" id="FEprCheckPersonId" name="FEprCheckPersonId">
+								 							<input type="text" style="width:220px;" id="FEprCheckPersonName"name="FEprCheckPersonName" onfocus="blur()"></label>
+								 						</td>
+								 						<td width="80">签字日期</td>
+								 						<td colspan="2">
+								 							<label>
+								 							<input type="text" style="width:223px;" id="FEprCheckPersonTime" name="FEprCheckPersonTime" class="easyui-datetimebox" type="text" onfocus="blur()">
+									 					</label>
+									 					</td>
+							 							</tr>
+						 								</table><br /><br />
+						 								<input id="output2" type="hidden" value="" />
+					 							</div>
+				 						</div>
+			 					</td>
+						</tr>
+					 	<tr>
+						 	<td><ul id="css3menu">
+								<li class="topfirst"><a rel="#">
+								 		<img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+								 	</a>
+								 </li>
+								<li><a rel="#" id="aB_OK">
+									<img src="../../images/oa/ok.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+								</li>
+								<li><a rel="#" id="aB_Post">
+									<img src="../../images/oa/passfile.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+								</li>							
+								<li><a rel="#" id="aB_Cancel">
+									<img src="../../images/oa/refresh.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />撤销</a>
+								</li>
+								<li><a rel="#" id="aB_Return">
+									<img src="../../images/oa/refresh.png" style="margin-right:5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+								</li>
+								<li><a rel="#" id="aB_CuiBan">
+									<img src="../../images/oa/talk.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+								</li>
+								<li><a rel="#" id="aB_QianShou">
+									<img src="../../images/oa/talk.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+								</li>
+								<li><a rel='#' id="aB_BLQK"><img src="../../images/oa/quite.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+								</li>
+								<li class="toplast">
+									<a rel="#"><img src="../../images/menu/mainbkcm.png" style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+								</a></ul> <br /> <br />
+								<p></p>
+								<div  style="float:left;width:100%;height:251px;">
+									<table id="qkTable" name="qkTable" style="height:100%;"></table>
+								</div>
+							</td>
+					 	</tr>
+				 	</table>
+	 			</div>
+	 		</form>
+	 		<div id='divreturn' width="300px" style="padding:5px;">打回意见：<textarea  cols="38" rows="3" id="OpinionMessage1" name="OpinionMessage"></textarea></div>
+	 		<div id="divcuiban" width="300px" style="padding:5px;">催办意见：<textarea  cols="38" rows="3" id="OpinionMessage2" name="OpinionMessage"></textarea></div>' 
+		</body>
+	</html>
+

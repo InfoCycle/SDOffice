@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OpinionBoxEasy.html</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script tyoe="text/javascript">
+		/**
+		 * JQuery扩展方法，用户对JQuery EasyUI的DataGrid控件进行操作。
+		 */
+		$.fn.extend({
+			 /**
+			  * 修改DataGrid对象的默认大小，以适应页面宽度。
+			  * 
+			  * @param heightMargin
+			  *            高度对页内边距的距离。
+			  * @param widthMargin
+			  *            宽度对页内边距的距离。
+			  * @param minHeight
+			  *            最小高度。
+			  * @param minWidth
+			  *            最小宽度。
+			  * 
+			  */
+			 resizeDataGrid : function(heightMargin, widthMargin, minHeight, minWidth) {
+				  var height = $(document.body).height() - heightMargin;
+				  var width = $(document.body).width() - widthMargin;				
+				  height = height < minHeight ? minHeight : height;
+				  width = width < minWidth ? minWidth : width;				
+				  $(this).datagrid('resize', {
+				   height : height,
+				   width : width
+				  });
+			 }
+		});
+		
+		 var treeGrid;
+		 $(function(){
+		     InitTreeGrid();
+		 });
+		 
+		 /**
+		  * 初始化treegrid
+		  */
+		 function InitTreeGrid(){
+		    treeGrid = $('#treeGrid').treegrid({
+		         url: '/GetCode/OrgUserTreeEasyTree/?DEPTID='+"-1",
+		         title: 'treeGrid',
+		         rownumbers: true,
+		         singleSelect: false,
+		         idField: 'id',
+		         treeField: 'deptname',
+		         width: '100%',
+		         fitColumns: true,
+				onLoadSuccess:function(rowIndex, rowData){
+					//加载完毕后获取所有的checkbox遍历//循环判断状态为2的不能选择
+					for(var i=0;i<rowData.rows.length;i++){    
+						if(rowData.rows[i].userid==0){        
+							$("input[type='checkbox']")[i+1].disabled=true;							
+						}   
+					}     
+					/*$("input[type='checkbox']").each(function(index,el){    
+						if(index%2==0){        
+							el.disabled=true;    
+							}     
+					})*/         
+				},
+				onClickRow:function(row)
+				{
+					if(row.userid==0){						
+						//var sn=$('#treeGrid').treegrid('getSelected');
+						$('#treeGrid').treegrid('unselect',row.id)
+					}
+				  },
+		         columns: [[{title: '序号',field: 'id',align: 'left'
+		         }, {title: '部门名称',field: 'deptname',width: 180
+		         },  {title: '人员Id',field: 'userid',width: 80,align: 'right',checkbox: true
+		         }, {title: '人员姓名',field: 'username',width: 280,align: 'right'
+		         }, {title: '人员岗位',field: 'userunit',width: 280
+		         }]],
+		         toolbar: [{
+		             id: 'idAdd',
+		             text: '增加',
+		             iconCls: 'icon-add',
+		             plain: 'true',
+		             //按钮事件
+		             handler: function(){
+		            	 var ids = new Array;
+		            	 var selectes = $('#treeGrid').treegrid('getSelections');
+		            	 for(var i=0;i<selectes.length;i++){
+								ids.push(selectes[i].id);
+							} 
+		            	 alert(ids.toString());
+		            	 /*for(var i=0;i<rowData.rows.length;i++){   
+		            		 if(rowData.rows[i].certStatus==2){      
+		            			 $("input[type='checkbox']")[i+1].disabled=true;    
+		            			 }   
+		            		 }*/
+		             }
+		         }, '-', {
+		             id: 'idDelete',
+		             text: '删除',
+		             //disabled: true,
+		             iconCls: 'icon-remove',
+		             //按钮事件
+		             handler: function(){
+		             
+		             }
+		         }, '-', {
+		             id: 'idEdit',
+		             text: '修改',
+		             iconCls: 'icon-edit',
+		             //disabled: true,
+		             handler: function(){
+		             }
+		         }, '-', {
+		             id: 'idSave',
+		             text: '保存',
+		             iconCls: 'icon-save',
+		             //disabled: true,
+		             handler: function(){
+		             }
+		         }, '-', {
+		             id: 'idCancle',
+		             text: '取消编辑',
+		             iconCls: 'icon-undo',
+		             //disabled: true,
+		             handler: function(){
+		             }
+		         }, '-'],
+		     
+		     
+		     });
+		 }
+	</script>
+  </head>
+<body>	
+	 <table id="treeGrid" name="treeGrid">
+	</table>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+    <title>jQuery msgBox</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="scripts/jquery.msgBox.js" type="text/javascript"></script>
+    <link href="styles/msgBoxLight.css" rel="stylesheet" type="text/css" />
+    <link href="styles/styles.css" rel="stylesheet" type="text/css" />
+	
+    <script type="text/javascript">
+        function example1() {
+            $.msgBox({
+                title: "Selam / Hello",
+                content: "Merhaba D¨¹nya! / Hello World!"
+            });
+        }
+
+        function example2() {
+            $.msgBox({
+                title: "Selam / Hello",
+                content: "Merhaba D¨¹nya! / Hello World!",
+                type:"info"
+            });
+        }
+
+        function example3() {
+            $.msgBox({
+                title: "Are You Sure",
+                content: "Would you like a cup of coffee?",
+                type: "confirm",
+                buttons: [{ value: "Yes" }, { value: "No" }, { value: "Cancel"}],
+                success: function (result) {
+                    if (result == "Yes") {
+                        alert("One cup of coffee coming right up!");
+                    }
+                }
+            });
+        }
+
+        function example4() {
+            $.msgBox({
+                title: "Ooops",
+                content: "Ohh dear! You broke it!!!",
+                type: "error",
+                buttons: [{ value: "Ok"}],
+                afterShow: function (result) { alert("Message has been shown!"); }
+            });
+        }
+
+        function example5() {
+            $.msgBox({
+                title: "Ooops",
+                content: "Ohh dear! You broke it!!!",
+                type: "error",
+                beforeClose: function () { alert("Message will be closed!"); },
+                showButtons: false,
+                opacity: 0.9
+            });
+        }
+
+        function example6() {
+            $.msgBox({
+                title: "Ooops",
+                content: "Ohh dear! You broke it!!!",
+                type: "error",
+                showButtons: false,
+                opacity: 0.9,
+                autoClose:true
+            });
+        }
+
+        function example7() {
+            $.msgBox({ type: "prompt",
+                title: "Log In",
+                inputs: [
+                { header: "User Name", type: "text", name: "userName" },
+                { header: "Password", type: "password", name: "password" },
+                { header: "Remember me", type: "checkbox", name: "rememberMe", value: "theValue"}],
+                buttons: [
+                { value: "Login" }, { value: "Cancel"}],
+                success: function (result, values) {
+                    var v = result + " has been clicked\n";
+                    $(values).each(function (index, input) {
+                        v += input.name + " : " + input.value + 
+                        (input.checked != null ? (" - checked: " + input.checked) : "") + "\n";
+                    });
+                    alert(v);
+                }
+            });
+        }
+    </script>
+</head>
+<body>   
+
+    <h1>Examples</h1>
+
+<!--Example 1 End-->
+<div class="codeBlock">
+    <code>
+$.msgBox({
+    title:"Selam / Hello",
+    content:"Merhaba D¨¹nya! / Hello World!"
+});
+    </code>
+</div>
+<div class="buttonBlock">
+    <input type="button" value="Example 1" onClick="example1();"/>
+</div>
+<!--Example 1 End-->
+
+
+
+<!--Example 2-->
+<div class="codeBlock">
+    <code>
+$.msgBox({
+    title:"Selam / Hello",
+    content:"Merhaba D¨¹nya! / Hello World!",
+    type:"info"
+});
+    </code>
+</div>
+<div class="buttonBlock">
+    <input type="button" value="Example 2" onClick="example2();"/>
+</div>
+<!--Example 2 End-->
+
+
+
+<!--Example 3-->
+<div class="codeBlock">
+    <code>
+$.msgBox({
+    title: "Are You Sure",
+    content: "Would you like a cup of coffee?",
+    type: "confirm",
+    buttons: [{ value: "Yes" }, { value: "No" }, { value: "Cancel"}],
+    success: function (result) {
+        if (result == "Yes") {
+            alert("One cup of coffee coming right up!");
+        }
+    }
+});
+    </code>
+</div>
+<div class="buttonBlock">
+    <input type="button" value="Example 3" onClick="example3();"/>
+</div>
+<!--Example 3 End-->
+
+
+
+<!--Example 4-->
+<div class="codeBlock">
+    <code>
+$.msgBox({
+    title: "Ooops",
+    content: "Ohh dear! You broke it!!!",
+    type: "error",
+    buttons: [{ value: "Ok" }],
+    afterShow: function (result) { alert("Message has been shown!"); }
+});
+    </code>
+</div>
+<div class="buttonBlock">
+    <input type="button" value="Example 4" onClick="example4();"/>
+</div>
+<!--Example 4 End-->
+
+
+
+<!--Example 5-->
+<div class="codeBlock">
+    <code>
+$.msgBox({
+    title: "Ooops",
+    content: "Ohh dear! You broke it!!!",
+    type: "error",
+    beforeClose: function () { alert("Message will be closed!"); },
+    showButtons:false,
+    opacity:0.9
+});
+    </code>
+</div>
+<div class="buttonBlock">
+    <input type="button" value="Example 5" onClick="example5();"/>
+</div>
+<!--Example 5 End-->
+
+
+
+<!--Example 6-->
+<div class="codeBlock">
+    <code>
+$.msgBox({
+    title: "Ooops",
+    content: "Ohh dear! You broke it!!!",
+    type: "error",
+    showButtons: false,
+    opacity: 0.9,
+    autoClose:true
+});
+    </code>
+</div>
+<div class="buttonBlock">
+    <input type="button" value="Example 6" onClick="example6();"/>
+</div>
+<!--Example 6 End-->
+
+
+
+<!--Example 7-->
+<div class="codeBlock">
+    <code>
+$.msgBox({ type: "prompt",
+    title: "Log In",
+    inputs: [
+    { header: "User Name", type: "text", name: "userName" },
+    { header: "Password", type: "password", name: "password" },
+    { header: "Remember me", type: "checkbox", name: "rememberMe", value: "theValue" }],
+    buttons: [
+    { value: "Login" }, {value:"Cancel"}],
+    success: function (result, values) {
+        var v = result + " has been clicked\n";
+        $(values).each(function (index, input) {
+            v += input.name + " : " + input.value + 
+            (input.checked != null ? (" - checked: " + input.checked) : "") + "\n";
+        });
+        alert(v);
+    }
+});
+    </code>
+</div>
+<div class="buttonBlock">
+    <input type="button" value="Example 7" onClick="example7();"/>
+</div>
+<!--Example 7 End-->
+</body>
+</html>

@@ -1,0 +1,55 @@
+.btnSelect {	
+	width: 24px;
+	height: 24px;
+	border: 0;
+	background: url(../images/oa/bank.png) no-repeat;
+	margin-right: 0px;
+	color: #333;
+	text-align: center;
+	cursor: pointer;
+	margin-left: 5px;
+	margin-top: 5px;
+	padding:0 0 0 1.5em;
+.s-select{
+	background-position:0 -100px;
+	background:url(../images/oa/bank.png) no-repeat scroll 0 0 transparent;
+	cursor:pointer;
+	float:left;	
+	height:16px;
+	list-style:none outside none;	
+	margin-left: 5px;
+	margin-top: 5px;
+	padding:0 0 0 1.5em;
+	width:16px;
+}
+.aSelectCss{
+	width: 24px;
+	height: 24px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	text-indent: -900em;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	text-decoration: none;
+	line-height: 100%;
+	white-space: nowrap;
+	display: inline-block;
+	position: relative;
+	vertical-align: middle;
+	margin: 0 2px 5px 0;	
+	/* default button color */
+	background-color: #ececec;
+	border: solid 1px #b8b8b9;
+	
+	/* default box shadow */
+	-webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.1);
+	-moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.1);
+	box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.1);
+
+	/* default border radius */
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	background-image: url(/html/images/oa/bank.png);
+}

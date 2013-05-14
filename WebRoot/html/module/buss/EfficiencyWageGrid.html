@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>EfficiencyWageGrid.html</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css" />
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css" />
+<link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+<script type="text/javascript">
+var pageSize=20;
+var GridStore=new Ext.data.Store({
+	proxy:new Ext.data.HttpProxy({url:'/Buss/Wage/3'}),
+	reader:new Ext.data.JsonReader({
+		totalProperty : 'totalProperty',
+		root : 'root',
+		successProperty : 'success'
+	},
+	[{name : 'FId',mapping : 'FId',type : 'string'}, 
+	{name : 'FNumbers',mapping : 'FNumbers',type : 'string'},
+	{name : 'fkTaskId',mapping : 'fkTaskId',type : 'string'},
+	{name : 'fkContractId',mapping : 'fkContractId',type : 'string'},
+	{name : 'FTaskName',mapping : 'FTaskName',type : 'string'},
+	{name : 'FEntrustUnitName',mapping : 'FEntrustUnitName',type : 'string'},
+	{name : 'FProjMgrName',mapping : 'FProjMgrName',type : 'string'},
+	{name : 'FProjMgrViceName',mapping : 'FProjMgrViceName',type : 'string'},
+	{name : 'FContractNumbers',mapping : 'FContractNumbers',type : 'string'},
+	{name : 'FReceivables',mapping : 'FReceivables',type : 'string'}, 
+	{name : 'FAlreadyCollection',mapping : 'FAlreadyCollection',type : 'string'}, 
+	{name : 'FExtractionBase',mapping : 'FExtractionBase',type : 'string'},
+	{name : 'FBasicProportion',mapping : 'FBasicProportion',type : 'string'},
+	{name : 'FShouldProportion',mapping : 'FShouldProportion',type : 'string'},
+	{name : 'FRealProportion',mapping : 'FRealProportion',type : 'string'},
+	{name : 'FRetainedProportion',mapping : 'FRetainedProportion',type : 'string'},
+	{name : 'FAppraisalScore',mapping : 'FAppraisalScore',type : 'string'},
+	{name : 'FCarryTotal',mapping : 'FCarryTotal',type : 'string'},
+	{name : 'FRealCarryTotal',mapping : 'FRealCarryTotal',type : 'string'},
+	{name : 'FRetainedTotal',mapping : 'FRetainedTotal',type : 'string'},
+	{name : 'FAtoasbapCivil',mapping : 'FAtoasbapCivil',type : 'string'},
+	{name : 'FAtoasbapInstallation',mapping : 'FAtoasbapInstallation',type : 'string'},
+	{name : 'FProjMgr',mapping : 'FProjMgr',type : 'string'},
+	{name : 'FFinanceDept',mapping : 'FFinanceDept',type : 'string'},
+	{name : 'FIntegratedDept',mapping : 'FIntegratedDept',type : 'string'},
+	{name : 'FDeptMgr',mapping : 'FDeptMgr',type : 'string'},
+	{name : 'FProductionChief',mapping : 'FProductionChief',type : 'string'},
+	{name : 'FGeneralMgr',mapping : 'FGeneralMgr',type : 'string'}
+	])
+});
+var GridModel = new Ext.grid.ColumnModel([new Ext.grid.RowNumberer(), 
+    {header : '合同编号',dataIndex : 'FContractNumbers',width : 100,sortable : true},
+    {header : '效益编号',dataIndex : 'FNumbers',width : 120,sortable : true}, 
+    {header : '项目名称',dataIndex : 'FTaskName',width : 300,sortable : true,align : 'left'},
+    {header : '委托单位',dataIndex : 'FEntrustUnitName',width : 200,sortable : true,align : 'left'},
+    {header : '应收款（元）',dataIndex : 'FReceivables',width : 100,sortable : true,align:'center'},
+    {header : '已收款（元）',dataIndex : 'FAlreadyCollection',width : 100,sortable : true,align:'center'},
+    {header : '提起基数（元）',dataIndex : 'FExtractionBase',width : 120,sortable : true,align:'center'},
+    {header : '基础比例',dataIndex : 'FBasicProportion',width : 80,sortable : true,align:'center'},
+    {header : '应提比例',dataIndex : 'FShouldProportion',width : 80,sortable : true,align:'center'},
+    {header : '实提比例',dataIndex : 'FRealProportion',width : 80,sortable : true,align:'center'},
+    {header : '考评得分',dataIndex : 'FAppraisalScore',width : 80,sortable : true,align:'center'},
+    {header : '应提总额（元）',dataIndex : 'FCarryTotal',width : 110,sortable : true,align:'center'},
+    {header : '实提总额（元）',dataIndex : 'FRealCarryTotal',width : 110,sortable : true,align:'center'},
+    {header : '留存总额（元）',dataIndex : 'FRetainedTotal',width : 110,sortable : true,align:'center'}
+    ]);
+ 
+function LoadGridView() {
+	Ext.apply(GridStore, {
+		baseParams : {
+			start:0,
+			limit:pageSize,
+			FNumber :Ext.getCmp('FNumber').getValue(),
+			FContractNumbers:Ext.getCmp('FContractNumbers').getValue(),
+			FTaskName:Ext.getCmp('FTaskName').getValue(),
+			FEntrustUnitName:Ext.getCmp('FEntrustUnitName').getValue()
+		}
+	});
+
+	GridStore.load();
+}
+
+var queryToolbar=new Ext.Toolbar({
+	style: 'padding:2px 2px 2px 5px;',
+	items:
+		[{xtype:'tbtext',text:'合同编号:',style:'padding-left:20px',width:80},
+		 {xtype:'textfield',id:'FContractNumbers',width:150},
+		 {xtype:'tbtext',text:'效益编号:',style:'padding-left:20px',width:80},
+		 {xtype:'textfield',id:'FNumber',width:150},
+		 {xtype:'tbtext',text:'项目名称:',style:'padding-left:20px',width:80},
+		 {xtype:'textfield',id:'FTaskName',width:150},
+		 {xtype:'tbtext',text:'委托单位:',style:'padding-left:20px',width:80},
+		 {xtype:'textfield',id:'FEntrustUnitName',width:150},
+		 {xtype:'button',width:70,text:'查询',handler:function(){
+			 LoadGridView();
+		 }}
+		]
+});
+
+var wageUI = Ext.extend(Ext.Viewport, {
+	layout : 'border',
+	border : false,
+	initComponent : function() {
+		Ext.apply(this, {
+			items : [ {
+				xtype : 'grid',
+				id : 'gridView',
+				title : '',
+				columnLines:true,
+				region : 'center',
+				border : false,
+				ds : GridStore,
+				cm : GridModel,
+				margins : '0 0 0 0',
+				loadMask : true,
+				tbar:queryToolbar,
+				bbar:new Ext.PagingToolbar({
+        			pageSize: pageSize,
+        			store: GridStore,
+        			displayInfo: true,
+        			displayMsg: '当前显示 {0} - {1} 条，共 {2} 条',
+        			emptyMsg: '没有符合条件的记录'
+    			}),
+    			listeners:{
+       	        	rowdblclick:function(grid,rowIndex,e){
+            			var record =grid.getStore().getAt(rowIndex);
+            			if (Ext.isEmpty(record)){
+            				Ext.MessageBox.alert('温馨提示', '请选择一行数据进行操作！');
+            				return false;
+            			}else{
+            				var str='../buss/EfficiencyWagePage.html?formPKID='+record.data.FId+'&fkTaskId='+record.data.fkTaskId;
+            				window.parent.NavigateUrl('Wages-Content','效益工资-查看',str);
+            			}
+       	        	}
+       	         }
+			}]
+		});
+
+		wageUI.superclass.initComponent.call(this);
+	}
+});
+
+Ext.onReady(function() {
+	Ext.QuickTips.init();
+	var page = new wageUI();
+	page.show();
+	LoadGridView();
+});
+</script>
+</head>
+
+<body>
+</body>
+</html>

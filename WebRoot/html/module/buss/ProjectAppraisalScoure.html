@@ -1,0 +1,419 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>项目考评打分</title>	
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../css/layout.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/showLoading/css/showLoading.css" type="text/css"></link>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+	<script type="text/javascript" src="../../js/publciUtil.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+	<script type="text/javascript" src="../../plugin/showLoading/js/jquery.showLoading.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/EasyUIautoMergeCells.js"></script>
+	<script type="text/javascript" src="../../plugin/js/arrow34.js"></script>
+	<style type="text/css">
+		body {
+			background: #f5f5f5;
+			height: 98%;
+			width: 98%;
+		}
+	    .numbertext {
+            width:58px;
+            ime-mode:disabled;
+	    }
+		.longtext{
+			width: 156px;
+		}
+	    .auto-style1 {
+            width: 112px;
+        }
+        .auto-style2 {
+            width: 76px;
+        }
+        .auto-style3 {
+            width: 78px;
+        }
+        .auto-style4 {
+            width: 48px;
+        }
+		 .auto-style5 {
+            width:132px;
+        }
+        .loading-indicator-bars {
+			background-image: url('/html/plugin/showLoading/images/loading.gif');
+			width: 150px;
+		}
+		.classerror{
+			 border: 1px solid #f00;
+			 background:#fcc;
+		}
+		.div-disabled{
+			background: none repeat scroll 0 0 #FFFFF0;
+			position: fixed; 
+			top: 0px; 
+			left: 0px; 
+			opacity: 0.3; 
+			display: block; 
+			z-index: 99998; 
+			height: 100%; 
+			width: 100%;
+		}
+		</style>
+	<link rel="stylesheet" href="../../css/treenodeicon.css" type="text/css"></link>		 
+</head>
+  <body>
+  <noscript><a href="#">Click to the Top</a></noscript>
+  <div  id="divDisable" name="divDisable"></div>
+  <div style="display: none;">		
+		action:<input type="text" id="action" name="action"  value=""/>
+		processid:<input type="text" id="processId" name="processId" value=""/>
+		activeid:<input type="text" id="activeId" name="activeId" value=""/>
+		formPKID:<input type="text" id="formPKID" name="formPKID" value=""/>
+		state:<input type="text" id="state" name="state" value=""/>
+		userID:<input id="userID" name="userID" type="text"/>
+		userName:<input id="userName" name="userName" type="text"/>
+		userOrgID:<input id="userOrgID" name="userOrgID" type="text"/>	
+		unitStation:<input id="unitStation" name="unitStation" type="text"/>		
+		fAcceptUser<input id="fAcceptUser" id="fAcceptUser" type="text"/>
+		fState<input id="fState" id="fState" type="text"/>
+		isAcceptance:<input id="isAcceptance" name="isAcceptance" type="text"/>
+		<input type="text" id="FCurrentStep" name="FCurrentStep" style="width:20px;" />	
+		<input type="text" id="FLastStep" name="FLastStep" style="width:20px;" />
+	</div>
+		<div id="tabMain" class="easyui-tabs" data-options="tools:'#tab-tools'" style="width:986px;height:1022px; padding: 10px 0px 0px 100px;">			
+    	<div title="考评打分" data-options="tools:'#p-tools'" style="text-align:center" id="MainDiv">
+			<table bordleer="0" cellpadding="3" cellspacing="0"
+				style="width:869px;margin:auto" class="pagetable">
+				<tr>
+					<td><ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aT_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>							
+							<li><a rel="#" id="aT_QSH"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+							</li>
+							<li><a rel="#" id="aT_Post"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>							
+							<li><a rel="#" id="aT_Return"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+							</li>
+							<li><a rel="#" id="aT_CuiBan"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aT_BLQK"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>													
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br/> <br/><br/></td>
+				</tr>
+				<tr>
+					<td style="padding-left:3px;">
+						<div class="content" id="content"
+							style="height:858px;width:886px;display:table;text-align:left;">
+							<div class="divimageclass"></div>
+							<br/>
+							<br/>
+							<br/><br/>                           
+							<div style="float:left;padding-left:10px;">
+								<table class="content_table1"  border="1" cellpadding="0" style="width:856px;position:absolute; margin:10px 0px 0px 5px;text-align: center;">
+									<caption>
+										<strong style="height:35px;font-size:22px;">昆明松岛工程造价咨询有限公司<label id="TitleYear"></label>项目考评打分<br>
+										</strong>
+									</caption>
+									<tr>
+										<th colspan="9" align="left" valign="middle" style="height:30px;font-size:11pt;padding:0px 0px 0px 5px;" scope="col">编号：<label>
+											<input type="text" id="FKPNumbers" name="FKPNumbers" value="" style="width:561px;">
+											<!-- <input type="button" id="getNumber" name="getNumber" value="获得编号"/> -->
+										</th>
+									</tr>
+							        <tr>
+							            <td colspan="2">               
+							                    <span class="span-label" style="text-align: center">项目名称</span>												
+												</td>
+						              <td colspan="7" style="text-align: left"><input type="hidden"  style="width:35px;"  id="ftaskid" name="ftaskid">
+										<input type="hidden"  style="width:35px;"  id="FPasId" name="FPasId">
+										<input type="text"  style="width:639px;float:left;"  id="ftaskname" name="ftaskname">
+										<a id="aSelectTask" name="aSelectTask" class="btnSelect" onclick="javascript:SelectTask();" href="javascript:;" title="请选择项目"></a>
+										</td>
+							        </tr>
+							        <tr>
+							            <td colspan="2">
+							                 项目成员</td>
+						              <td colspan="7"  style="text-align: left"><input type="text" class="numbertext" style="width:639px;" id="ftaskmanlist" name="ftaskmanlist"></td>
+							        </tr>
+							        <tr>
+							            <td colspan="3" rowspan="2">         
+							                 考评内容</td>
+							            <td  rowspan="2" class="auto-style2">分值</td>
+							            <td colspan="3">考评得分</td>
+							            <td  rowspan="2"  class="auto-style5" style="text-align: center">部门说明</td>
+							            <td  rowspan="2"  class="auto-style5" >公司说明</td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style2">部门评分</td>
+							            <td class="auto-style3">公司评分</td>
+							            <td class="auto-style2">综合得分</td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >一</td>
+							            <td  colspan="2" class="auto-style1">项目沟通协调</td>
+							            <td >20<input type="hidden" id="FID01" name="FID01" value=""/></td>
+							            <td class="auto-style2"><input type="text"  class="easyui-numberbox" data-options="min:0,max:20,required:true" id="FDepartmentScore1" name="FDepartmentScore1" style="width:58px;"></td>
+							            <td class="auto-style2"><input type="text"  class="easyui-numberbox" data-options="min:0,max:20,required:true" id="FCompanyScore1" name="FCompanyScore1" style="width:58px;"></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:40,required:true"  id="FComprehensiveScore1" name="FComprehensiveScore1" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext"  id="FDeptScoreThat1" name="FDeptScoreThat1">
+					                  </td>
+						              <td>
+										<!--<input type="text" class="longtext" id="FCTS1" name="FCTS1">-->
+										<input type="text" id="FCTS1" name="FCTS1" value=""/>
+									  </td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >1</td>
+							            <td  colspan="2" class="auto-style1">内部协调</td>
+							            <td >10<input type="hidden" id="FID02" name="FID02" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore2" name="spanFDepartmentScore2" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:10,required:true" name="FDepartmentScore2" id="FDepartmentScore2" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore2" name="spanFCompanyScore2" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:10,required:true" name="FCompanyScore2" id="FCompanyScore2" style="width:58px;"></span></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:20,required:true" name="FComprehensiveScore2" id="FComprehensiveScore2" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext"  id="FDeptScoreThat2" name="FDeptScoreThat2"></td>
+						              <td><input type="text" class="longtext" id="FCTS2" name="FCTS2"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >2</td>
+							            <td  colspan="2" class="auto-style1">外部协调</td>
+							            <td >10<input type="hidden" id="FID03" name="FID03" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore3" name="spanFDepartmentScore3" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:10,required:true" name="FDepartmentScore3" id="FDepartmentScore3" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore3" name="spanFCompanyScore3" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:10,required:true" name="FCompanyScore3" id="FCompanyScore3" style="width:58px;"></span></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:20,required:true" name="FComprehensiveScore3" id="FComprehensiveScore3" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat3" name="FDeptScoreThat3"></td>
+						              <td><input type="text" class="longtext" id="FCTS3" name="FCTS3"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >二</td>
+							            <td  colspan="2" class="auto-style1">计划执行情况</td>
+							            <td >15<input type="hidden" id="FID04" name="FID04" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore4" name="spanFDepartmentScore4" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:15,required:true" name="FDepartmentScore4" id="FDepartmentScore4" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore4" name="spanFCompanyScore4" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:15,required:true"  name="FCompanyScore4" id="FCompanyScore4" style="width:58px;"></span></td><td class="auto-style3" ><input type="text"  class="easyui-numberbox" data-options="min:0,max:30,required:true" name="FComprehensiveScore4" id="FComprehensiveScore4" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat4" name="FDeptScoreThat4"></td>
+                                      <td><input type="text" class="longtext" id="FCTS4" name="FCTS4"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >三</td>
+							            <td  colspan="2" class="auto-style1">质量控制</td>
+							            <td >60<input type="hidden" id="FID05" name="FID05" value=""/></td>
+							            <td class="auto-style2"><input type="text"  class="easyui-numberbox" data-options="min:0,max:60,required:true" name="FDepartmentScore5" id="FDepartmentScore5"  style="width:58px;"></td>
+							            <td class="auto-style2"><input type="text"  class="easyui-numberbox" data-options="min:0,max:60,required:true" name="FCompanyScore5" id="FCompanyScore5" style="width:58px;"></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:01,max:120,required:true" name="FComprehensiveScore5" id="FComprehensiveScore5" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat5" name="FDeptScoreThat5"></td>
+						              <td><input type="text" class="longtext" id="FCTS5" name="FCTS5"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >1</td>
+							            <td  colspan="2" class="auto-style1">成果文件完整性</td>
+							            <td >5<input type="hidden" id="FID06" name="FID06" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore6" name="spanFDepartmentScore6" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:5,required:true" name="FDepartmentScore6" id="FDepartmentScore6" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore6" name="spanFCompanyScore6" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:5,required:true" name="FCompanyScore6" id="FCompanyScore6" style="width:58px;"></span></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:10,required:true" name="FComprehensiveScore6" id="FComprehensiveScore6" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat6" name="FDeptScoreThat6"></td>
+						              <td><input type="text" class="longtext" id="FCTS6" name="FCTS6"></td>
+							        </tr><tr>
+							            <td class="auto-style4" >2</td>
+							            <td  colspan="2" class="auto-style1">工作底稿</td>
+							            <td >5<input type="hidden" id="FID07" name="FID07" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore7" name="spanFDepartmentScore7" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:5,required:true" name="FDepartmentScore7" id="FDepartmentScore7" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore7" name="spanFCompanyScore7" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:5,required:true" name="FCompanyScore7" id="FCompanyScore7" style="width:58px;"></span></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:10,required:true" name="FComprehensiveScore7" id="FComprehensiveScore7" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat7" name="FDeptScoreThat7"></td>
+						              <td ><input type="text" class="longtext" id="FCTS7" name="FCTS7"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >3</td>
+							            <td  colspan="2" class="auto-style1">成果质量</td>
+							            <td >30<input type="hidden" id="FID08" name="FID08" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore8" name="spanFDepartmentScore8" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:30,required:true" name="FDepartmentScore8" id="FDepartmentScore8" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore8" name="spanFCompanyScore8" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:30,required:true" name="FCompanyScore8" id="FCompanyScore8" style="width:58px;"></span></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:60,required:true" name="FComprehensiveScore8" id="FComprehensiveScore8" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat8" name="FDeptScoreThat8"></td>
+						              <td><input type="text" class="longtext" id="FCTS8" name="FCTS8"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >4</td>
+							            <td  colspan="2" class="auto-style1">报告（说明）</td>
+							            <td >10<input type="hidden" id="FID09" name="FID09" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore9" name="spanFDepartmentScore9" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:10,required:true" id="FDepartmentScore9" name="FDepartmentScore9" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore9" name="spanFCompanyScore9" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:10,required:true" id="FCompanyScore9" name="FCompanyScore9" style="width:58px;"></span></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:20,required:true" id="FComprehensiveScore9" name="FDepartmentScore9" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat9" name="FDeptScoreThat9"></td>
+						              <td><input type="text" class="longtext" id="FCTS9" name="FCTS9"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >5</td>
+							            <td  colspan="2" class="auto-style1">加分奖励</td>
+							            <td >10<input type="hidden" id="FID010" name="FID010" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore10" name="spanFDepartmentScore10" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:10,required:true" name="FDepartmentScore10" id="FDepartmentScore10" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore10" name="spanFCompanyScore10" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:10,required:true" name="FCompanyScore10" id="FCompanyScore10" style="width:58px;"></span></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:20,required:true" name="FComprehensiveScore10" id="FComprehensiveScore10" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat10" name="FDeptScoreThat10"></td>
+						              <td><input type="text" class="longtext" id="FCTS10" name="FCTS10"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >6</td>
+							            <td colspan="2" class="auto-style1">扣分情况</td>
+							            <td >&nbsp;<input type="hidden" id="FID011" name="FID011" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore11" name="spanFDepartmentScore11" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:20,required:true" name="FDepartmentScore11" id="FDepartmentScore11" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore11" name="spanFCompanyScore11" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:20,required:true" name="FCompanyScore11" id="FCompanyScore11" style="width:58px;"></span></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:40,required:true" name="FComprehensiveScore11" id="FComprehensiveScore11" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat11" name="FDeptScoreThat11"></td>
+						              <td><input type="text" class="longtext" id="FCTS11" name="FCTS11"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >四</td>
+							            <td  colspan="2" class="auto-style1">归档情况</td>
+							            <td >15<input type="hidden" id="FID012" name="FID012" value=""/></td>
+							            <td class="auto-style2"><span id="spanFDepartmentScore12" name="spanFDepartmentScore12" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:15,required:true" name="FDepartmentScore12" id="FDepartmentScore12" style="width:58px;"></span></td>
+							            <td class="auto-style2"><span id="spanFCompanyScore12" name="spanFCompanyScore12" ><input type="text"  class="easyui-numberspinner" data-options="min:0,max:15,required:true" name="FCompanyScore12" id="FCompanyScore12" style="width:58px;"></span></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:30,required:true" name="FComprehensiveScore12" id="FComprehensiveScore12" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat12" name="FDeptScoreThat12"></td>
+						              <td><input type="text" class="longtext" id="FCTS12" name="FCTS12"></td>
+							        </tr>
+							        <tr>
+							            <td class="auto-style4" >五</td>
+							            <td  colspan="2" class="auto-style1">合计</td>
+							            <td >110<input type="hidden" id="FID013" name="FID013" value=""/></td>
+							            <td class="auto-style2"><input type="text"  class="easyui-numberbox" data-options="min:0,max:110,required:true" name="FDepartmentScore13" id="FDepartmentScore13" style="width:58px;"></td>
+							            <td class="auto-style2"><input type="text"  class="easyui-numberbox" data-options="min:0,max:110,required:true" name="FCompanyScore13" id="FCompanyScore13" style="width:58px;"></td>
+							            <td class="auto-style3"><input type="text"  class="easyui-numberbox" data-options="min:0,max:220,required:true" name="FComprehensiveScore13" id="FComprehensiveScore13" style="width:58px;"></td>
+						              <td class="auto-style2" ><input type="text" class="longtext" id="FDeptScoreThat13" name="FDeptScoreThat13"></td>
+						              <td><input type="text" class="longtext" id="FCTS13" name="FCTS13"></td>
+							        </tr>
+							        <tr>
+							            <td colspan="2">考评组成员</td>
+							            <td colspan="7"  style="text-align: left"><textarea style="color:blue;" id="FAppraisalGroup" name="FAppraisalGroup" cols="60" rows="2"></textarea> 
+						              <br></td>
+							        </tr>
+							        <tr>
+							            <td colspan="2">项目经理</td>
+						              <td colspan="7"  style="text-align: left"><input type="text" id="pmlist"  name="pmlist" style="width:512013/2/220px;" class="longtext" name="text56"></td>
+							        </tr>
+					          </table>							  
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><br/>
+						<ul id="css3menu">
+							<li class="topfirst"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+							</li>
+							<li><a rel="#" id="aB_OK"><img
+									src="../../images/oa/ok.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />保存</a>
+							</li>							
+							<li><a rel="#" id="aB_QSH"><img
+									src="../../images/oa/info.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />签收</a>
+							</li>
+							<li><a rel="#" id="aB_Post"><img
+									src="../../images/oa/passfile.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />提交</a>
+							</li>							
+							<li><a rel="#" id="aB_Return"><img
+									src="../../images/oa/refresh.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />打回</a>
+							</li>
+							<li><a rel="#" id="aB_CuiBan"><img
+									src="../../images/oa/talk.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />催办</a>
+							</li>
+							<li><a rel='#' id="aB_BLQK"><img src="../../images/oa/quite.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />办理情况</a>
+							</li>													
+							<li class="toplast"><a rel="#"><img
+									src="../../images/menu/mainbkcm.png"
+									style="margin-right: 5px;padding-bottom: 0px; margin-bottom: 2px;" />
+							</a>
+						</ul> <br /> </td>
+				</tr>
+			</table>
+		</div>
+		<div title="相关信息" data-options="closable:false,cache:false,href:'http://www.baidu.com/'" style="padding:20px;">
+				This is Tab2 with close button.
+		</div>
+		</div>
+		<p></p>
+		<div style="float:left;width:906px;height:81px;padding: 10px 0px 0px 100px;">
+			<p>备注：</p>
+			<p>&nbsp;&nbsp;&nbsp;&nbsp;质量控制权重为：部门40%，公司60%；</p>
+			<p>&nbsp;&nbsp;&nbsp;&nbsp;项目人员对项目质量不重视，二次复核仍存在类似问题发生，可根据情节轻重加倍扣分。</p>
+		 </div>
+		 <div  style="float:left;width:906px;height:251px;padding: 20px 0px 0px 100px;">
+			 <table id="qkTable" name="qkTable" style="height:100%;">
+			 </table>
+		 </div>
+		 
+		 <div id="divcuiban" class="easyui-dialog" title="催办操作" style="width:400px;height:250px;padding:10px"
+				data-options="
+					iconCls: 'icon-save',				
+					buttons: '#cdlg-buttons',
+					modal:true,
+					closed:true,
+					closable:true
+				">
+			<lable>请输入催办意见：</lable>
+			<textarea id="OpinionMessageCuiBan" name="OpinionMessageCuiBan" style="height:121px;width:98%;"></textarea>
+		</div>	
+		<div id="cdlg-buttons">
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="javascript:FUN_CuiBan()">催办</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divcuiban').dialog('close')">关闭</a>
+		</div>	
+		
+		<div id="divpost" class="easyui-dialog" title="提交操作" style="width:610px;height:466px;padding:10px"
+				data-options="
+					iconCls: 'icon-save',				
+					buttons: '#postdlg-buttons',
+					modal:true,
+					closed:true,
+					closable:true
+				">
+			<table id="AcceptUserGrid" name="AcceptUserGrid"></table>
+			<li>注意：总工办及生产部,每个部门各选一个人；</li>
+			<li>请输入提交人意见：</li>
+			<textarea id="OpinionMessagePost" name="OpinionMessagePost" style="height:101px;width:99%;"></textarea>
+		</div>	
+		<div id="postdlg-buttons">
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="javascript:FUN_POSTEASY()">提交</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" onclick="javascript:$('#divpost').dialog('close')">关闭</a>
+		</div>
+  </body>
+  <script type="text/javascript" src="js/projectappraisalscoure.js"></script>
+</html>

@@ -1,0 +1,33 @@
+/* CSS Document */
+/**********invoice*********/
+.invoice {
+	padding: 0 !important;	
+	margin:5px 0;	
+	margin-left:10px;	
+}
+.content {
+    background: -webkit-gradient(linear, 0% 0%, 0% 80%, from(#FFF), to(#F2F2F2));
+	background: -moz-linear-gradient(#FFF, #F2F2F2 80%);
+	background:url(../images/4J.png) no-repeat right top;
+	padding: 20px 0 10px;	
+	border: 1px solid #000;
+	background:#FDFDFD;
+	color:#333;
+	filter:progid:DXImageTransform.Microsoft.Shadow(color=#909090,direction=120,strength=4);
+	-moz-box-shadow: 2px 2px 10px #909090;
+	-webkit-box-shadow: 2px 2px 10px #909090;	
+	-webkit-transition: all 0.4s;
+	-moz-transition: all 0.4s;
+	-ms-transition: all 0.4s;
+	-o-transition: all 0.4s;
+	box-shadow: 1px 2px 4px rgba(0,0,0,0.7);
+	behavior: url(ie-css3.htc);
+}
+.content:hover {
+	border-top-right-radius: 88px 66px;
+	box-shadow: 9px 9px 9px rgba(0.3,0.3,0.3,0.9);
+	behavior: url(ie-css3.htc);
+}
+.clear {
+	clear: both;
+}

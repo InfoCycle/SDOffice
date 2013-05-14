@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>昆明松岛综合业务办公平台</title>
+<link id="icon" href="/favicon.ico" rel="icon" type="image/x-icon" />
+<link id="favicon" href="/favicon.ico" rel="icon" type="image/x-icon" />
+<link id="shortcut icon" href="/favicon.ico" rel="icon" type="image/x-icon" />
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css" type="text/css"/>
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css" type="text/css"/>
+<link rel="stylesheet" href="../../css/style.css" type="text/css"></link>
+<link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+<link rel="stylesheet" href="../../css/wfMsg.css" type="text/css"></link>
+<script type="text/javascript" src="../../js/wfMsg.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../ext/ux/TabCloseMenu.js"></script>
+<script type="text/javascript" src="../../ext/ux/TabScrollerMenu.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+
+<style type="text/css">
+html body {
+	font-size: 13px;
+	font-family: "Arial", "Tahoma", "微软雅黑", "雅黑";
+	padding: 0px;
+	margin: 0px;
+	width: 100%;
+	height: 100%;
+}
+
+.mb-download {
+	background: url("../../images/download.gif") no-repeat scroll 6px 0
+		transparent;
+	height: 52px !important;
+}
+
+.tabIcon {
+	background-image: url(../../images/tabs.gif ) !important;
+}
+
+.icon-home {
+	background-image: url(../../images/desk.png) !important;
+}
+.icon-center{
+	background-image: url(../../images/home_1.png) !important;
+}
+.icon-expand-all {
+    background-image: url(../../images/expand-all.gif) !important;
+}
+.icon-collapse-all {
+    background-image: url(../../images/collapse-all.gif) !important;
+}
+.iconRefresh {
+    background-image: url(../../images/refresh.png) !important;
+}
+.banner {
+	height:59px;
+}
+#btn_div{
+	position: absolute;
+	width:365px;
+	top: 12px; right: 1px; 
+	height: 36px;
+	line-height:36px;
+	background:transparent;
+}
+#btn_div ul{
+	list-style: none;
+}
+#btn_div ul li{
+	margin-left: 4px;margin-right: 0px; margin-top: 4px;
+	float:left;  height: 24px; line-height: 24px;
+}
+.quitIcon {
+	background-image: url(../../images/quit.png ) !important;
+}
+.helpIcon {
+	background-image: url(../../images/help.png ) !important;
+}
+.homeIcon {
+	background-image: url(../../images/home.png ) !important;
+}
+#admin_1{
+    height: 50px;
+    padding-left: 0px;
+    padding-right: 0px;
+    position: absolute;
+}
+#banner{
+	width:100%;
+	height: 50px;
+	x-index:-1;
+}
+#title{
+	clear:both;
+	height: 50px;
+	width:390px;
+	border:0px;
+	color: White;
+    float: left;
+    font-size: 26px;
+    font-weight: bold;
+    padding-left: 2px;
+    top: 2px;
+    position: absolute;
+    background:transparent;
+}
+</style>
+</head>
+<body>
+	<div id="MainContext"></div>
+	<div class="msg blue" id="msgbox">
+		<div class="top">
+			<div class="title">系统消息</div>
+			<span title="关闭消息" id="msgclose"></span>
+		</div>
+		<div class="center">
+			<h3>
+				<span id="MsgTitle"></span>
+			</h3>
+			<br/>
+			<p>
+				<span id="MsgContent"></span>
+			</p>
+			<div style="position:absolute;bottom:20px;margin-bottom:20px">
+				<span id="MsgTime" style="padding-left:100px;"></span>
+			</div>
+		</div>
+		<div class="bottom">
+			<a href="javascript:showMessage();">查看</a>
+		</div>
+	</div>
+	<div id="showMessage" class="x-hidden">
+		<table style="width:100%;" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td colspan="3" style="line-height:30px;text-align:center"><span
+					style="font-weight:bold;font-size:13px" id="mtitle"></span></td>
+			</tr>
+			<tr style="line-height:1px">
+				<td colspan="3">
+					<HR border=0
+						style="FILTER: alpha(opacity=0,finishopacity=100,style=1);border-top-width: 0px; border-bottom-width: 0px; "
+						width="100%" color=#987cb9 SIZE=1></td>
+			</tr>
+			<tr>
+				<td width="10%"></td>
+				<td width="50%"><b>发送时间：</b><span id="mSendTime"></span>
+				</td>
+				<td width="40%"><b>发送人：</b><span id="mSendUser"></span>
+				</td>
+			</tr>
+			<tr style="line-height:1px">
+				<td colspan="3">
+					<HR
+						style="FILTER: alpha(opacity=0,finishopacity=100,style=1);border-top-width: 0px; border-bottom-width: 0px; "
+						width="100%" color=#987cb9 SIZE=1></td>
+			</tr>
+			<tr>
+				<td colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span id="mContent"></span>
+				</td>
+			</tr>
+		</table>
+	</div>	
+</body>
+</html>
+<script type="text/javascript">
+	var IFrame= "<iframe name='{0}' id='{1}' src='{2}' height='100%' width='100%' frameBorder='0' style='border-width: 0px;overflow-x:hidden;overflow-y:auto'/>";	
+	var title="昆明松岛综合业务办公平台";
+	var bannerTemplate='<div id="admin_1"><img id="banner" src="../../images/wrapBack.jpg" style="width:100%;z-index:-111;"/><div id="title">昆明松岛协同业务综合办公平台</div><div>'+
+		'<div id="btn_div"><ul><li id="txt_user" style="margin-left: 16px;width: 160px;"></li><li><span id="btn_home"></span></li><li><span id="btn_help"></span></li><li><span id="btn_quit"></span></li></ul></div>'+		
+		'</div></div>';
+	var bannerTemplateFoot='<div id="admin_7"></div>';
+	var mainPanel;
+	Ext.BLANK_IMAGE_URL = '../../images/s.gif';
+	//msg start
+	var MsgId;
+	var msg = new sheyMsg("msgbox", {
+		autoHide : 20
+	});
+	var msgWin = new Ext.Window({
+		height: 250,
+	    width: 400,
+	    title: '查看消息',
+	    modal: true,
+	    closeAction: 'hide',
+	    buttonAlign: 'right',
+	    buttons: [
+                  { 
+                	  text: '关闭', 
+                	  handler: function(){
+                		  msgWin.hide();
+                  	  }
+                  }
+              ],
+	    contentEl: 'showMessage'
+	})
+	function showMessage() {
+		msg.hide();
+		Ext.Ajax.request({
+	        url: "/wf/message/2/?rand="+Math.random(),       
+	        method: 'POST',
+	        params:{MsgId:MsgId},
+	        success: function (response) {
+	            var responseArray = Ext.util.JSON.decode(response.responseText);
+	            if (responseArray.success === true) {
+	            	Ext.getDom("mtitle").innerHTML  = responseArray.root.FTitle;
+	            	Ext.getDom("mSendTime").innerHTML  = responseArray.root.FSendTime;
+	            	Ext.getDom("mSendUser").innerHTML  = responseArray.root.FSendUser;
+	            	Ext.getDom("mContent").innerHTML  = responseArray.root.FContent;	            	
+	            	msgWin.show();
+	            }
+	        }
+		});
+	}
+	document.getElementById("msgclose").onclick = function() {
+		msg.hide();
+	}
+	
+	function readMessage() {
+		Ext.Ajax.request({
+	        url: "/wf/message/1/?rand="+Math.random(),  
+	        method: 'POST',
+	        success: function (response) {
+	            var responseArray = Ext.util.JSON.decode(response.responseText);
+	            if (responseArray.success == true) { 		            	
+	            	MsgId = responseArray.root.FId;
+					Ext.getDom("MsgTitle").innerHTML  = responseArray.root.FTitle;
+					Ext.getDom("MsgContent").innerHTML= responseArray.root.FContent;
+					Ext.getDom("MsgTime").innerHTML   = responseArray.root.FSendTime;
+					msg.show();
+	            }
+	        }
+		});
+	}
+	//msg end
+	Ext.onReady(function(){	
+		Ext.QuickTips.init();
+		var obj=checkUserLogin();
+		if(obj){
+			InitIndex(obj.root);
+			readMessage();
+		}
+		//检测未阅读消息
+		setInterval(readMessage,120*1000);	  
+	});
+	
+var ApiPanel = function () {
+	ApiPanel.superclass.constructor.call(this, {
+	        id: 'api-tree',
+	        region: 'west',
+	        useArrows: true,
+	        collapsible: true,
+	        split: true,
+	        title: "功能菜单",
+	        width: 211,
+	        minSize: 175,
+	        maxSize: 500,
+	        margins: '0 0 1 2',
+	        rootVisible: false,
+	        lines: false,
+	        autoScroll: true,
+	        bodyStyle:'background-color:#f5f5f5;',
+	        loader: new Ext.tree.TreeLoader({
+	        	dataUrl:'/system/SvrService/AppIndex/3/'
+	        }),
+	        root: {
+	            text: '功能菜单',
+	            id: 'root',
+	            expanded: true
+	        }
+	    });
+	    this.getSelectionModel().on('beforeselect', function (sm, node) {
+	        return node.isLeaf();
+	    }); 
+	};
+	Ext.extend(ApiPanel, Ext.tree.TreePanel, {
+	    initComponent: function () {
+	    	this.hiddenPkgs = [];
+	        Ext.apply(this, {
+	        	tbar:[ '->',{
+	                iconCls: 'icon-expand-all',
+					tooltip: '全部展开',
+	                handler: function(){ this.root.expand(true); },
+	                scope: this
+	            }, '-', {
+	                iconCls: 'icon-collapse-all',
+	                tooltip: '全部折叠',
+	                handler: function(){ this.root.collapse(true); },
+	                scope: this
+	            },'-',{
+                    iconCls:'iconRefresh',
+                    tooltip: "刷新",
+                    handler: function () {this.root.reload();},
+                    scope: this
+                }]
+	        });
+	        ApiPanel.superclass.initComponent.call(this);	        
+	    },
+	    selectNodeByID: function (id) {
+	        var node = this.getNodeById(id);
+	        if (node) {
+	            this.getSelectionModel().select(node);
+	        } else {
+	            this.getSelectionModel().clearSelections();
+	        }
+	    }
+	});
+var scrollerMenu = new Ext.ux.TabScrollerMenu({
+	    maxText: 15,
+	    pageSize: 8
+});  
+var MainPanel = function () {
+    MainPanel.superclass.constructor.call(this, {
+        id: 'doc-body',
+        region: "center",
+        margins: '0 2 1 0',
+        resizeTabs: false,
+        //minTabWidth: 135,
+        //tabWidth: 135,
+        enableTabScroll : true,
+        plugins: [new Ext.ux.TabCloseMenu(), scrollerMenu],
+        activeTab: 0,
+        items: [{
+            id: 'welcome-panel',
+            title: '工作台',
+            html:IFrame.format('welcome-panel','welcome-panel','../wf/Desk.html'),
+            iconCls: 'icon-home'
+        },{
+        	id: 'ProcessItem',
+            title: '项目中心',
+            html:IFrame.format('ProcessItem-panel','ProcessItem-panel','../wf/BusinessCenter.html'),
+            iconCls: 'icon-center'
+        }]
+    });
+};
+
+Ext.extend(MainPanel, Ext.TabPanel, {
+    initEvents: function () {
+        MainPanel.superclass.initEvents.call(this);
+        this.body.on('click', this.onClick, this);
+    },
+    onClick: function (e, target) {
+    },
+    loadModule: function (node) {
+        var id = 'tab-' + node.id;
+        var url= node.attributes.link;
+        var tab = this.getComponent(id);
+        if (tab) {
+            this.setActiveTab(tab);
+        } else {
+        	Ext.MessageBox.show({
+                msg: '正在加载页面数据, 请稍等...',
+                progressText: '加载页面...',
+                width:300,
+                wait:true,
+                waitConfig: {interval:200},
+                icon:'mb-download'
+            });
+        	setTimeout(function(){Ext.MessageBox.hide();},1000);
+            var p = this.add(new Ext.Panel({
+                id: id,
+                title: node.text,
+                tabTip: node.text,
+                closable: true,
+                html:IFrame.format(id,id,url),
+                iconCls: 'tabIcon'
+            }));            
+            this.setActiveTab(p);            
+        }
+    },
+    check:function(value){
+    	var id = 'tab-' + value;
+        var tab = this.getComponent(id);
+        if (tab) {
+            return true;
+        } else {
+        	return false;
+        }
+    },
+    loadModuleByString: function (value, text, href) {
+        var id = 'tab-' + value;
+        var tab = this.getComponent(id);
+        if (tab) {
+            this.setActiveTab(tab);
+        } else {
+        	Ext.MessageBox.show({
+                msg: '正在加载页面数据, 请稍等...',
+                progressText: '加载页面...',
+                width:300,
+                wait:true,
+                waitConfig: {interval:200},
+                icon:'mb-download'
+            });
+            var p = this.add(new Ext.Panel({
+                id: id,
+                title: text,
+                tabTip: text,
+                closable: true,
+                html:IFrame.format(id,id,href),
+                iconCls: 'tabIcon'
+            }));
+            this.setActiveTab(p);
+            Ext.MessageBox.hide();
+        }
+    }
+});
+
+//提供在IFrame中可以调用选择功能菜单；预留 如何解决权限问题还待研究
+function NavigateUrl(value, text, href) {
+	mainPanel.loadModuleByString(value, text, href);
+}
+function checkProcess(id){
+	return mainPanel.check(id);
+}
+function InitIndex(obj){
+	var apiTree = new ApiPanel();
+    mainPanel = new MainPanel();    
+    apiTree.addListener("click",function(node,e){
+    	if (node.isLeaf()&&node.attributes.link) {
+            e.stopEvent();            
+            mainPanel.loadModule(node);
+        }
+    });
+    mainPanel.addListener('tabchange', function (tp, tab) {
+        var id = tab.id.replace('tab-', '');
+        apiTree.selectNodeByID(id);
+    });
+    var viewport = new Ext.Viewport({
+        layout: "border",   
+        renderTo:'MainContext',
+        items: [
+            {
+                region: "north",       
+                margins: '0 0 2 2',
+                html: bannerTemplate,
+                height:50
+            },
+            apiTree,mainPanel
+        ]
+    });
+    
+    var btn_home=new Ext.Button({
+    	renderTo:'btn_home',
+    	id : 'home',
+    	height:22,
+    	text:'&nbsp;首页&nbsp;',
+    	iconCls:'homeIcon',    	
+    	handler:function(){
+    		window.open('/index.html');    		
+    	}
+    });
+    
+    var btn_quit=new Ext.Button({
+    	renderTo:'btn_quit',
+    	id : 'quit',
+    	height:22,
+    	text:'&nbsp;退出&nbsp;',
+    	iconCls:'quitIcon',    	
+    	handler:function(){
+    		Ext.Msg.confirm('系统提示', '确定退出系统吗', function (btn) {
+                if (btn == "yes") {
+                	Ext.Ajax.request({
+						url : '/user/logout/',
+						method : 'POST',						
+						success : function(response) {
+							var responseArray = Ext.util.JSON
+									.decode(response.responseText);
+							if(responseArray.success){
+								location.replace('loginApp.html');
+							}else{
+								showMessage(responseArray.message);
+								location.replace('loginApp.html');
+							}
+						}
+                	});
+                	
+				}
+        	});
+    	}
+    });
+    var btn_help=new Ext.Button({
+    	renderTo:'btn_help',
+    	id : 'help',
+    	height:22,
+    	text:'&nbsp;帮助&nbsp;',
+    	iconCls:'helpIcon',    	
+    	handler:function(){
+    		window.open ('help.html','系统帮助','height=480,width=400,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+    	}
+    });
+    Ext.getDom("txt_user").innerHTML="<span color='#000033'>当前用户："+obj.userName+"</span>";
+}
+
+
+</script>

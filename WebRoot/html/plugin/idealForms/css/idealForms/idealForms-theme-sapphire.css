@@ -1,0 +1,133 @@
+/*
+ * Ideal Forms "Sapphire" theme
+ * by Cedric Ruiz 
+ * elclanrs@gmail.com
+ *
+ * Version 0.72
+*/
+
+
+/* Selection highlight
+ 
+*******************************************/
+
+ul.idealSelect ul li:hover,
+label:hover span,
+label input[type="radio"] + span.selected { /* Hover */
+	background: #207ce5; 
+	background: -moz-linear-gradient(top, #499bea 0%, #207ce5 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#499bea), color-stop(100%,#207ce5));
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#499bea', endColorstr='#207ce5',GradientType=0 );
+	background: -o-linear-gradient(top, #499bea 0%,#207ce5 100%);
+	color:#fff;
+}
+
+label span em,label input[type="checkbox"] + span.selected:before { /* Checkmark */
+	color:#207ce5;
+}
+
+
+/* Text inputs 
+
+*******************************************/
+textarea,
+input[type="text"],
+input[type="password"]{
+	border:1px solid #666;
+}
+
+textarea:hover,
+input[type="text"]:hover,
+input[type="password"]:hover,
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input:focus + span,
+ul.idealSelect.focused div li,
+a.button:focus {
+	box-shadow: 0 0 3px #207ce5;
+	-webkit-box-shadow: 0 0 3px #207ce5;
+	-moz-box-shadow: 0 0 3px #207ce5;
+	border:1px solid #207ce5;
+}
+
+
+/* Select Menu
+ 
+*******************************************/
+
+ul.idealSelect div li { /* Header */
+	background: #222;
+	background: -moz-linear-gradient(top, #45484d 0%, #000000 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#45484d), color-stop(100%,#000000));
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=0 );
+	background: -o-linear-gradient(top, #45484d 0%,#000000 100%);
+	border:1px solid #000;
+	color:#fff;
+}
+
+ul.idealSelect:hover div li {
+	box-shadow: 0 0 5px #207ce5;
+}
+
+ul.idealSelect div span { /* Arrow */
+	border-top-color: #fff;
+}
+
+ul.idealSelect ul { /* Dropdown */
+	background: #cccccc;
+	background: -moz-linear-gradient(top, #cccccc 0%, #eeeeee 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cccccc), color-stop(100%,#eeeeee));
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cccccc', endColorstr='#eeeeee',GradientType=0 );
+	background: -o-linear-gradient(top, #cccccc 0%,#eeeeee 100%);
+	border:1px solid #222;
+	border-top:none;
+	color:#222
+}
+
+
+/* Button
+ 
+*******************************************/
+
+a.button { /* Default */
+	background: #eee;
+	background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5));
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 );
+	background: -o-linear-gradient(top, #ffffff 0%,#e5e5e5 100%);
+	color:#222;
+	border: 1px solid #666;
+}
+
+a.button:hover { /* Hover */
+	background: #499bea; 
+	background: -moz-linear-gradient(top, #499bea 0%, #207ce5 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#499bea), color-stop(100%,#207ce5));
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#499bea', endColorstr='#207ce5',GradientType=0 );
+	background: -o-linear-gradient(top, #499bea 0%,#207ce5 100%);
+	border:1px solid #222;
+	color:#fff
+}
+
+a.button:active { /* Pressed */
+	background:#ddd;
+	color:#222;
+}
+
+
+/* Radios and Checkboxes
+ 
+*******************************************/
+
+label span {
+	background: #ffffff;
+	background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5));
+	background: -o-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); 
+	border:1px solid #666;
+}
+
+label:active span {
+	background:#ddd
+}

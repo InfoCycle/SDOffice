@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>合同登记</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../ext/resources/css/ext-all.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/treenodeicon.css" />
+	<link rel="stylesheet" href="../../plugin/sexy/css/style.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/sexylightbox.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/sexy/css/jquery.lightbox.css" type="text/css"></link>
+	<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+	<script type="text/javascript" src="../../ext/ext-all.js"></script>
+	<script type="text/javascript" src="../../ext/adapter/ext/ext-basex.js"></script>
+	<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<!-- <script type="text/javascript" src="../../../fckeditor/fckeditor.js"></script> -->
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../plugin/tooltip/jquery.poshytip.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.easing.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/sexylightbox.jquery.min.js"></script>
+	<script type="text/javascript" src="../../plugin/sexy/scripts/jquery.lightbox.min.js"></script>
+	<script type="text/javascript" src="../buss/ReplyDetails.js"></script>
+	<script type="text/javascript">
+	var IFrame='<iframe id="UploadFile" src="{0}" style="width:100%;height:100%;border-width: 0px;overflow-x:hidden;overflow-y:hidden"/>';
+	var pageSize=20;
+	var EntrustUnitId = null;
+	var EntrustUnitName = null;
+	var dataStore = new Ext.data.JsonStore({
+		url: '/Buss/ContractService/1',
+	    idProperty: 'FId',
+	    root: 'root',
+	    totalProperty: 'totalProperty',
+	    fields: [
+	        {name: 'FId'},
+	        {name: 'fkTaskId'},
+	        {name: 'FContractNumbers'},
+	        {name: 'FContractName'},
+	        {name: 'FProjectType'},
+	        {name: 'FServiceMode'},
+	        {name: 'FServicePerion'},
+	        {name: 'FSigningDate'},
+	        {name: 'FInvesttScale'},
+	        {name: 'FContractFees'},
+	        {name: 'FOthers'},
+	        {name: 'FMainContractId'},
+	        {name: 'FEntrustUnitId'},
+	        {name: 'FEntrustUnitName'},
+	        {name: 'FOperateName'},
+	        {name: 'FOperateDate'},
+	        {name: 'FState'}
+	    ]
+	});
+	
+	Ext.onReady(function(){
+		var obj=checkUserLogin();	
+	    if(!obj) return;
+		Ext.QuickTips.init();
+	    Ext.form.Field.prototype.msgTarget = 'side';
+	    initForm();
+	});
+	
+	function LoadGridStore(){
+		Ext.apply(dataStore,{
+			baseParams:{
+				start:0,
+				limit:pageSize,
+				UnitId:EntrustUnitId
+			}
+		});
+		dataStore.load();
+	}
+	
+	function initForm(){
+		var mainViewport = new Ext.Viewport({
+				id : 'mainViewport',
+				layout : 'border',
+				items : [ {
+					xtype : 'panel',
+					region : 'west',
+					layout : 'border',
+					//collapsible: true,
+					autoScroll : true,
+					split : true,
+					width : 290,
+					title : '业主类别',
+					items : [ eutree ]
+				}, {
+					xtype : 'panel',
+					region : 'center',
+					layout: 'fit',
+					//collapsible: true,
+					split : true,
+					title : '合同列表',
+					items:[ContractGrid]
+				} ]
+			});
+		}
+		var treeloader = new Ext.tree.TreeLoader({
+			dataUrl : '/GetCode/ClientTree/0',
+			baseAttrs : {
+				uiProvider : Ext.ux.TreeCheckNodeUI
+			}
+		//添加 uiProvider 属性
+
+		});
+		var root = new Ext.tree.AsyncTreeNode({
+			id : "-100",
+			draggable : false,
+			expanded : true,
+			text : '分类别委托单位'
+		});
+
+		var eutree = new Ext.tree.TreePanel({
+			id : 'EUTree',
+			border : true,
+			margins : '0 2 0 0',
+			region : 'center',
+			split : true,
+			root : root,
+			animate : true,
+			enableDD : false,
+			autoScroll : true,
+			checkModel : 'single',
+			onlyLeafCheckable : true,
+			loader : treeloader,
+			tbar : [ '->', {
+				iconCls : 'icon-expand-all',
+				tooltip : '全部展开',
+				handler : function() {
+					this.root.expand(true);
+				},
+				scope : this
+			}, '-', {
+				iconCls : 'icon-collapse-all',
+				tooltip : '全部折叠',
+				handler : function() {
+					this.root.collapse(true);
+				},
+				scope : this
+			} ],
+			listeners : {
+				expandnode : function(node, e) {
+					//e.stopEvent();
+					/*if(node.isLeaf){
+					    node.getUI().getIconEl().src="../../images/subject.png";  
+					}*/
+					if (!node.isLeaf()) {
+						this.on('beforeload', function(node) {
+							this.loader.dataUrl = '/GetCode/ClientTree/'
+									+ node.id;
+						});
+						this.render();
+						node.expand();
+						node.select();
+					}
+				},
+				click : function(node, e) {
+					e.stopEvent();
+					if (!node.isLeaf()) {
+						this.on('beforeload', function(node) {
+							this.loader.dataUrl = '/GetCode/ClientTree/'
+									+ node.id;
+						});
+						this.render();
+						node.expand();
+						node.select();
+						EntrustUnitId = null;
+						EntrustUnitName = null;
+					} else {
+						if(node.attributes.isClient==0){
+							EntrustUnitId = null;
+							EntrustUnitName = null;
+							LoadGridStore();
+						}else{
+							EntrustUnitId = node.id;
+							EntrustUnitName = node.text;
+							LoadGridStore();
+						}
+						//alert(EntrustUnitId + '-' +EntrustUnitName);
+					}
+				},
+				dblclick : function(node, e) {
+					if (node.attributes.isClient == 0) {
+						if (node.isLeaf()) {
+							//node.getUI().checkbox.checked=false;
+							Ext.Msg.show({
+								title : '温馨提示',
+								msg : node.text + ' 不是委托单位，请重新选择！',
+								icon : Ext.Msg.INFO,
+								minWidth : 200,
+								buttons : Ext.Msg.OK
+							});
+						}
+					}
+				},
+				"checkchange" : function(node, state) {
+					if (node.attributes.isClient == 0) {
+						node.getUI().checkbox.checked = false;
+						Ext.Msg.show({
+							title : '温馨提示',
+							msg : node.text + ' 不是委托单位，请重新选择！',
+							icon : Ext.Msg.INFO,
+							minWidth : 200,
+							buttons : Ext.Msg.OK
+						});
+					}
+				}
+			}
+		});
+		
+		function FlashFiles(data){
+			//$.LightBoxObject.close();
+			var FId=Ext.getCmp('FId').getValue();
+			getFiles(FId);
+		}
+		
+		function getFiles(FId){
+			$.ajax({
+				url:'/Buss/ContractService/2',
+				type: 'POST',
+				data:{FTypeId:FId}, 
+				dataType: 'json',
+				async :  false,
+				success:function(data) {
+					//alert($.toJSON(data.root));
+					if(data.success){
+						showFiles(data);
+					}
+				}
+			});
+		}
+		
+		function showFiles(data){
+			var dr=new Array();
+			dr.push('<ul>');
+			$(data.root).each(function(i,entity){
+				dr.push('<li><a rel="sexylightbox[group]" href="'+entity.FPath+'" title="'+entity.FFileName+'">');
+				dr.push('<img alt="" src="'+entity.FPath+'">');
+				dr.push('</a></li>');
+			});
+			dr.push('</ul>');
+			//$('#img_container').empty().append('扫描件信息');
+			$('#img_container').empty().append(dr.join(new String()));
+			SexyLightbox.initialize({color:'white', dir: '../../plugin/sexy/sexyimages',loading:'../../plugin/sexy/sexyimages'});
+		}
+		
+		function wageFiles(FId){
+			   //$(this).click(function(){
+				   if(FId){
+					   var entitys={
+							   url:'/Buss/File/1',
+							   params:{TypeId:FId,url:'/userfiles/images/',Type:'contract'},
+							   size:'5 MB',
+							   type:'*.jpg;*.png;*.gif',
+							   description:Base64.encode('图像文件'),
+							   Fn:true
+					   };
+					   var entityJSON= Base64.encode($.toJSON(entitys));
+					   var win = $(IFrame.format('/html/module/controls/flashFiles.html?entitys='+entityJSON));
+					   $.lightbox(win, {
+						    width   : 550,
+							height  : 350,
+							modal  : true,
+							onClose:function(){
+								$("#UploadFile").attr("src","");
+							}
+					   });  
+					   return false;
+				   }else{
+					   showMessage('请先填写信息，在进行附件上传！',true);
+				   }	   
+				   
+			   //});
+		   }
+		
+		var sm=new Ext.grid.CheckboxSelectionModel({
+			singleSelect:true
+		});
+	
+		var ContractGrid = new Ext.grid.GridPanel({
+			ds : dataStore,
+			margins : '2 0 0 0',
+			id:'ContractGrid',
+			region : 'center',
+			frame:true,
+			viewConfig : {forceFit : false},
+			sm : sm,
+			tbar : {
+				xtype : 'toolbar',
+				region : 'center',
+				items : [{
+					xtype : 'button',
+					text : '新增',
+					iconCls : 'new',
+					handler : function() {
+						if(EntrustUnitId){
+							addContract();
+						}else{
+							showMessage('请选择委托单位！',true);
+						}
+					}
+				},{
+                    xtype: 'tbspacer',
+                    width: 5
+                },{
+					xtype : 'button',
+					text : '修改',
+					iconCls : 'edit',
+					handler : function() {
+						var grid = Ext.getCmp('ContractGrid');
+		                var record = grid.selModel.getSelected(); //得到被选择的行的数组
+			    		if(Ext.isEmpty(record)){
+			    			showMessage('请选择合同！',true);
+			    		}else{
+			    			var state = record.data.FState;
+			    			if(state==2){
+			    				showMessage('该合同已经锁定，不能修改！',true);
+			    			}else{
+			    				addContract();
+				    			Ext.getCmp('FId').setValue(record.data.FId);
+				    			Ext.getCmp('FContractName').setValue(record.data.FContractName);
+				    			Ext.getCmp('FContractNumbers').setValue(record.data.FContractNumbers);
+				    			Ext.getCmp('FProjectType').setValue(record.data.FProjectType);
+				    			Ext.getCmp('FServiceMode').setValue(record.data.FServiceMode);
+				    			Ext.getCmp('FServicePerion').setValue(record.data.FServicePerion);
+				    			var fdate = record.data.FSigningDate;
+				    			//alert(date);
+				    			Ext.getCmp('FSigningDate').setValue(fdate.substring(0,10));
+				    			Ext.getCmp('FInvesttScale').setValue(record.data.FInvesttScale);
+				    			Ext.getCmp('FContractFees').setValue(record.data.FContractFees);
+				    			Ext.getCmp('FOthers').setValue(record.data.FOthers);
+				    			if(record.data.FMainContractId==0){
+				    				Ext.getCmp('FMainContractId').setValue('无');
+				    			}else{
+				    				Ext.getCmp('FMainContractId').setValue(record.data.FMainContractId);
+				    			}
+								getFiles(record.data.FId);
+			    			}
+			    		}
+					}
+				},{
+                    xtype: 'tbspacer',
+                    width: 5
+                },{
+					xtype : 'button',
+					text : '删除',
+					iconCls : 'delete',
+					handler : function() {
+			         	var grid = Ext.getCmp('ContractGrid');
+		                var record = grid.selModel.getSelected(); //得到被选择的行的数组
+			    		if(Ext.isEmpty(record)){
+			    			showMessage('请选择合同！',true);
+			    		}else{
+			    			var fkTaskId = record.data.fkTaskId;
+			    			if(fkTaskId){
+			    				showMessage('该合同已经关联项目，不能删除！',true);
+			    			}else{
+			    				FUN_Delete(record.data.FId);
+			    			}
+			    		} 
+					}
+				},{
+                    xtype: 'tbspacer',
+                    width: 5
+                },{
+					xtype : 'button',
+					text : '作废',
+					iconCls : 'cancel',
+					handler : function() {
+			         	var grid = Ext.getCmp('ContractGrid');
+		                var record = grid.selModel.getSelected(); //得到被选择的行的数组
+			    		if(Ext.isEmpty(record)){
+			    			showMessage('请选择合同！',true);
+			    		}else{
+			    			var fkTaskId = record.data.fkTaskId;
+			    			if(fkTaskId){
+			    				showMessage('该合同已经关联项目，不能作废！',true);
+			    			}else{
+			    				FUN_Cancel(record.data.FId);
+			    			}
+			    		} 
+					}
+				},{
+                    xtype: 'tbspacer',
+                    width: 5
+                },{
+					xtype : 'button',
+					text : '锁定',
+					iconCls : 'lock',
+					handler : function() {
+			         	var grid = Ext.getCmp('ContractGrid');
+		                var record = grid.selModel.getSelected(); //得到被选择的行的数组
+			    		if(Ext.isEmpty(record)){
+			    			showMessage('请选择合同！',true);
+			    		}else{
+			    			FUN_Lock(record.data.FId);
+			    		} 
+					}
+				},{
+                    xtype: 'tbspacer',
+                    width: 5
+                },{
+					xtype : 'button',
+					text : '解锁',
+					iconCls : 'deblock',
+					handler : function() {
+			         	var grid = Ext.getCmp('ContractGrid');
+		                var record = grid.selModel.getSelected(); //得到被选择的行的数组
+			    		if(Ext.isEmpty(record)){
+			    			showMessage('请选择合同！',true);
+			    		}else{
+			    			var state = record.data.FState;
+			    			if(state==2){
+			    				FUN_Deblock(record.data.FId);
+			    			}else{
+			    				showMessage('该合同尚未锁定，不能解锁！',true);
+			    			}
+			    		} 
+					}
+				},{
+                    xtype: 'tbspacer',
+                    width: 5
+                },{
+                	xtype : 'button',
+					text : '查看详细信息',
+					iconCls : 'icon-query',
+					handler : function() {
+						var grid = Ext.getCmp('ContractGrid');
+		                var record = grid.selModel.getSelected(); //得到被选择的行的数组
+			    		if(Ext.isEmpty(record)){
+			    			showMessage('请选择项目！',true);
+			    		}else{
+			    			alert('sssss');
+			    		}
+					}
+                }]
+			},listeners: {
+				'render':function(grid){
+                    var gridEl = grid.getEl();                                        	
+					grid.store.on('load', function() { 
+						gridEl.select("div[class=x-grid3-row-checker]").each(function(x) { 
+							x.addClass('x-grid3-row-radioBtn'); 
+						 });
+						gridEl.select('div.x-grid3-hd-checker').removeClass('x-grid3-hd-checker');
+						});
+						grid.getView().on('rowupdated', function() { 
+								gridEl.select("div[class=x-grid3-row-checker]").each(function(x) { 
+									x.addClass('x-grid3-row-radioBtn');
+								});     											
+						});
+                    },          
+				'rowdblclick':function(grid, rowIndex, e){
+		     		var record=grid.getStore().getAt(rowIndex);
+		    		if(Ext.isEmpty(record)){
+		    			
+		    		}else{
+		    			addContract();
+		    			Ext.getCmp('FId').setValue(record.data.FId);
+		    			Ext.getCmp('FContractName').setValue(record.data.FContractName);
+		    			Ext.getCmp('FContractNumbers').setValue(record.data.FContractNumbers);
+		    			Ext.getCmp('FProjectType').setValue(record.data.FProjectType);
+		    			Ext.getCmp('FServiceMode').setValue(record.data.FServiceMode);
+		    			Ext.getCmp('FServicePerion').setValue(record.data.FServicePerion);
+		    			var fdate = record.data.FSigningDate;
+		    			Ext.getCmp('FSigningDate').setValue(fdate.substring(0,10));
+		    			Ext.getCmp('FInvesttScale').setValue(record.data.FInvesttScale);
+		    			Ext.getCmp('FContractFees').setValue(record.data.FContractFees);
+		    			Ext.getCmp('FOthers').setValue(record.data.FOthers);
+		    			if(record.data.FMainContractId==0){
+		    				Ext.getCmp('FMainContractId').setValue('无');
+		    			}else{
+		    				Ext.getCmp('FMainContractId').setValue(record.data.FMainContractId);
+		    			}
+						getFiles(record.data.FId);
+						var state = record.data.FState;
+		    			if(state==2){
+		    				Ext.getCmp('FContractName').setDisabled (true);
+		    				Ext.getCmp('FContractNumbers').setDisabled (true);
+		    				Ext.getCmp('FProjectType').setDisabled (true);
+		    				Ext.getCmp('FServiceMode').setDisabled (true);
+		    				Ext.getCmp('FServicePerion').setDisabled (true);
+		    				Ext.getCmp('FSigningDate').setDisabled (true);
+		    				Ext.getCmp('FInvesttScale').setDisabled (true);
+		    				Ext.getCmp('FContractFees').setDisabled (true);
+		    				Ext.getCmp('FOthers').setDisabled (true);
+		    				Ext.getCmp('FMainContractId').setDisabled (true);
+			    			Ext.getCmp('btnSave').setDisabled (true);
+			    			Ext.getCmp('btnUpload').setDisabled (true);
+		    			}
+		    		} 
+				}
+			},
+			columns : [ new Ext.grid.RowNumberer(),sm,
+			{
+				xtype : 'gridcolumn',
+				dataIndex : 'FId',
+				header : '合同编号',
+				hidden:true,
+				sortable : true,
+				width:80
+			},
+			{
+				xtype : 'gridcolumn',
+				dataIndex : 'FState',
+				header : '合同状态',
+				hidden:true,
+				sortable : true,
+				width:80
+			},
+			{
+				xtype : 'gridcolumn',
+				dataIndex : 'FContractNumbers',
+				header : '合同编号',
+				sortable : true,
+				width:100
+			},{
+				xtype : 'gridcolumn',
+				dataIndex : 'FContractName',
+				header : '合同名称',
+				sortable : true,
+				width:200
+			},{
+				xtype : 'gridcolumn',
+				dataIndex : 'FProjectType',
+				header : '项目类型',
+				sortable : true,
+				width:100
+			},{
+				xtype : 'gridcolumn',
+				dataIndex : 'FServiceMode',
+				header : '服务方式',
+				sortable : true,
+				width:100
+			},{
+		 		xtype : 'gridcolumn',
+				dataIndex : 'FServicePerion',
+				header : '服务期限',
+				sortable : true,
+				width:100
+			},{
+				xtype : 'gridcolumn',
+				dataIndex : 'FSigningDate',
+				header : '签订日期',
+				sortable : true,
+				width:100,
+				renderer:function(value){
+					return value.substring(0,10);
+				}
+			},{
+				xtype : 'gridcolumn',
+				dataIndex : 'FInvesttScale',
+				header : '投资规模',
+				sortable : true,
+				width:100
+			},{
+				xtype : 'gridcolumn',
+				dataIndex : 'FContractFees',
+				header : '合同收费',
+				sortable : true,
+				width:100
+			},{
+				xtype : 'gridcolumn',
+				dataIndex : 'FOperateName',
+				header : '填表人',
+				sortable : true,
+				width:100
+			},{
+				xtype : 'gridcolumn',
+				dataIndex : 'FOperateDate',
+				header : '填表时间',
+				sortable : true,
+				width:100,
+				renderer:function(value){
+					return value.substring(0,10);
+				}
+			},{
+				xtype : 'gridcolumn',
+				dataIndex : 'FOthers',
+				header : '其他',
+				sortable : true,
+				width:100
+			}],
+			bbar : {
+				xtype : 'paging',
+				displayInfo : true,
+				pageSize : pageSize,
+				store : dataStore,
+				displayMsg : ' 当前记录数:{0}-{1}条 &nbsp;&nbsp;总记录数: {2}条 ',
+				emptyMsg : ' 没有符合条件的记录 '
+			}
+		})
+		
+		function addContract(){
+			var ContractWindow = new Ext.Window({
+				width:770,
+				height:455,
+				title:'合同信息',
+				id:'ContractWindow',
+				layout:'fit',
+				plain:true,
+				resizable:false,
+				modal: true,
+				buttonAlign:'center',
+				autoScroll:true,
+				items:[{
+					xtype : 'hidden',
+					id : 'FId'
+				},{
+					xtype:'form',
+					id : 'editForm',
+					frame : true,
+					plain:true,
+					border : false,
+					layout:'form',
+					buttonAlign : 'center',
+					autoScroll:true,
+					items:[{
+						xtype:'fieldset',
+						title:'合同基本信息',
+						layout:'form',
+						items:[{
+							layout : 'column',
+							items:[{
+								columnWidth : .99,
+								defaultType : 'textfield',
+								layout:'form',
+								labelAlign : 'right',
+								labelWidth : 80,
+								defaults : {anchor : '96%'},
+								items : [ {
+									fieldLabel : '合同名称',
+									id : 'FContractName',
+									allowBlank:false,
+									blankText:'必填项'
+								} ]
+							}]
+						},{
+							layout : 'column',
+							items : [ {
+								columnWidth : .5,
+								defaultType : 'textfield',
+								labelAlign : 'right',
+								layout:'form',
+								labelWidth : 80,
+								defaults : {anchor : '90%'},
+								items : [ {
+									fieldLabel : '合同编号',
+									id : 'FContractNumbers',
+									allowBlank:false,
+									blankText:'必填项'
+								} ]
+							}, {
+								columnWidth : .5,
+								defaultType : 'textfield',
+								layout:'form',
+								labelAlign : 'right',
+								labelWidth : 80,
+								defaults : {anchor : '90%'},
+								items : [ {
+									fieldLabel : '项目类型',
+									id : 'FProjectType',
+									allowBlank:false,
+									blankText:'必填项'
+								} ]
+							} ]
+						},{
+							layout : 'column',
+							items : [ {
+								columnWidth : .5,
+								defaultType : 'textfield',
+								labelAlign : 'right',
+								layout:'form',
+								labelWidth : 80,
+								defaults : {anchor : '90%'},
+								items : [ {
+									fieldLabel : '服务方式',
+									id : 'FServiceMode',
+									allowBlank:false,
+									blankText:'必填项'
+								} ]
+							}, {
+								columnWidth : .5,
+								defaultType : 'textfield',
+								layout:'form',
+								labelAlign : 'right',
+								labelWidth : 80,
+								defaults : {anchor : '90%'},
+								items : [ {
+									fieldLabel : '服务期限',
+									id : 'FServicePerion',
+									allowBlank:false,
+									blankText:'必填项'
+								} ]
+							} ]
+						},{
+							layout : 'column',
+							items : [ {
+								columnWidth : .5,
+								defaultType : 'datefield',
+								labelAlign : 'right',
+								layout:'form',
+								labelWidth : 80,
+								defaults : {anchor : '90%'},
+								items : [ {
+									fieldLabel : '签订日期',
+									id : 'FSigningDate',
+									format: 'Y-m-d', 
+						        	emptyText: '请选择日期 ...' ,
+									allowBlank:false,
+									blankText:'必填项',
+									minValue:'1950-01-01',
+									maxValue:new Date()
+								} ]
+							}, {
+								columnWidth : .5,
+								defaultType : 'textfield',
+								layout:'form',
+								labelAlign : 'right',
+								labelWidth : 80,
+								defaults : {anchor : '90%'},
+								items : [ {
+									fieldLabel : '投资规模',
+									id : 'FInvesttScale',
+									allowBlank:false,
+									blankText:'必填项'
+								} ]
+							} ]
+						},{
+							layout : 'column',
+							items : [ {
+								columnWidth : .5,
+								defaultType : 'numberfield',
+								labelAlign : 'right',
+								layout:'form',
+								labelWidth : 80,
+								defaults : {anchor : '90%'},
+								items : [ {
+									fieldLabel : '合同收费',
+									id : 'FContractFees',
+									allowBlank:false,
+									blankText:'必填项'
+								} ]
+							}, {
+								columnWidth : .5,
+								defaultType : 'textfield',
+								layout:'form',
+								labelAlign : 'right',
+								labelWidth : 80,
+								defaults : {anchor : '90%'},
+								items : [ {
+									fieldLabel : '主合同编号',
+									id : 'FMainContractId'
+								} ]
+							} ]
+						},{
+							layout : 'column',
+							items:[{
+								columnWidth : .99,
+								defaultType : 'textfield',
+								layout:'form',
+								labelAlign : 'right',
+								labelWidth : 80,
+								defaults : {anchor : '96%'},
+								items : [ {
+									fieldLabel : '其他',
+									id : 'FOthers'
+								} ]
+							}]
+						}]
+					},{
+						xtype:'fieldset',
+						title:'扫描件信息',
+						height:160,
+						layout:'form',
+						items:[{
+							xtype:'panel',
+							cls:'img_container',
+							id:'img_container'
+						}]
+					}]
+				}],
+				buttons:[{
+					text:'保存',
+					id:'btnSave',
+					iconCls : 'save',
+					handler:function(){
+						if(Ext.getCmp('editForm').getForm().isValid()){
+							FUN_Save();
+						}else{
+							showMessage('操作失败！请填写必填项！',true);
+						}
+					}
+				},{
+					text:'上传扫描件',
+					id:'btnUpload',
+					iconCls : 'uploadfile',
+					handler:function(){
+						var fid = Ext.getCmp('FId').getValue();
+						if(fid){
+							wageFiles(fid);
+						}else{
+							showMessage('请先保存合同信息之后再上传扫描件！',true);
+						}
+					}
+				},{
+					text:'关闭',
+					id:'btnClose',
+					iconCls : 'cancel',
+					handler:function(){
+						ContractWindow.close();
+					}
+				}]
+			});
+			ContractWindow.show();
+		}
+		
+	function showContract(){
+		var showContract = new Ext.Window({
+			width:770,
+			height:580,
+			//title:'合同信息',
+			id:'showContract',
+			layout:'fit',
+			plain:true,
+			resizable:false,
+			modal: true,
+			buttonAlign:'center',
+			autoScroll:true,
+			items:[{
+				xtype : 'hidden',
+				id : 'FId'
+			},{
+				xtype:'form',
+				frame:true,
+				plain:true,
+				items:[{
+					xtype:'fieldset',
+					layout:'form',
+					title:'项目信息',
+					items:[{
+						layout : 'column',
+						items:[{
+							columnWidth : .99,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '96%'},
+							items : [ {
+								fieldLabel : '项目名称',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FTaskName'
+							} ]
+						}]
+					}]
+				}]
+			},{
+				xtype:'form',
+				frame:true,
+				plain:true,
+				items:[{
+					xtype:'fieldset',
+					layout:'form',
+					title:'业主信息',
+					items:[{
+						layout : 'column',
+						items:[ {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							labelAlign : 'right',
+							layout:'form',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '委托方名称',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FName'
+							} ]
+						}, {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '委托方地址',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FAddress'
+							} ]
+						} ]
+					},{
+						layout : 'column',
+						items:[ {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							labelAlign : 'right',
+							layout:'form',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '委托方联系人',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FLinkMan'
+							} ]
+						}, {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '委托方电话',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FLinkManPhone'
+							} ]
+						} ]
+					}]
+				}]
+			},{
+				xtype:'form',
+				frame : true,
+				plain:true, 
+				items:[{
+					xtype:'fieldset',
+					layout:'form',
+					title:'合同信息',
+					items:[{
+						layout : 'column',
+						items:[{
+							columnWidth : .99,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '96%'},
+							items : [ {
+								fieldLabel : '合同名称',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FContractName'
+							} ]
+						}]
+					},{
+						layout : 'column',
+						items : [ {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							labelAlign : 'right',
+							layout:'form',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '合同编号',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FContractNumbers'
+							} ]
+						}, {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '项目类型',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FProjectType'
+							} ]
+						} ]
+					},{
+						layout : 'column',
+						items : [ {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							labelAlign : 'right',
+							layout:'form',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '服务方式',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FServiceMode'
+							} ]
+						}, {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '服务期限',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FServicePerion'
+							} ]
+						} ]
+					},{
+						layout : 'column',
+						items : [ {
+							columnWidth : .5,
+							defaultType : 'datefield',
+							labelAlign : 'right',
+							layout:'form',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '签订日期',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FSigningDate',
+								format: 'Y-m-d'
+							} ]
+						}, {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '投资规模',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FInvesttScale'
+							} ]
+						} ]
+					},{
+						layout : 'column',
+						items : [ {
+							columnWidth : .5,
+							defaultType : 'numberfield',
+							labelAlign : 'right',
+							layout:'form',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '合同收费',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FContractFees'
+							} ]
+						}, {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '主合同编号',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FMainContractId'
+							} ]
+						} ]
+					},{
+						layout : 'column',
+						items:[{
+							columnWidth : .99,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '96%'},
+							items : [ {
+								fieldLabel : '其他',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FOthers'
+							} ]
+						}]
+					}]
+				}]
+			},{
+				xtype:'form',
+				frame:true,
+				plain:true,
+				items:[{
+					xtype:'fieldset',
+					layout:'form',
+					title:'项目组信息',
+					items:[{
+						layout : 'column',
+						items:[ {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							labelAlign : 'right',
+							layout:'form',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '项目负责人',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FProjMgrName'
+							} ]
+						}, {
+							columnWidth : .5,
+							defaultType : 'textfield',
+							layout:'form',
+							labelAlign : 'right',
+							labelWidth : 80,
+							defaults : {anchor : '90%'},
+							items : [ {
+								fieldLabel : '项目组成员',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FProjMgrNames'
+							} ]
+						} ]
+					},{
+						layout : 'column',
+						items:[ {
+							columnWidth : .99,
+							defaultType : 'textfield',
+							labelAlign : 'right',
+							layout:'form',
+							labelWidth : 80,
+							defaults : {anchor : '96%'},
+							items : [ {
+								fieldLabel : '其他',
+								readOnly : true,
+								style:"background:#DFE8F7",
+								id : 'FOthers1'
+							} ]
+						}]
+					}]
+				}]
+			},{
+				xtype:'fieldset',
+				title:'扫描件信息',
+				height:160,
+				layout:'form',
+				items:[{
+					xtype:'panel',
+					cls:'img_container',
+					id:'img_container'
+				}]
+			}]
+		});
+		showContract.show();
+	}
+	
+	function FUN_Deblock(id){
+		Ext.Msg.confirm('系统提示','确定解锁该合同信息吗？', function (btn) {
+        	 if (btn == "yes") {
+        			Ext.Ajax.request({
+        	         	url:'/Buss/ContractService/7',
+        	     		method : 'post',
+        	     		params : {
+        	     			FId:id
+        	     		},
+        	     		success : function(response){
+        	     			var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+        	     			if(responseArray.success){
+        	     				    Ext.MessageBox.show({
+        	     					title:'系统提示',
+        	     					msg:'数据操作成功！',
+        	     					width:300,
+        	     					buttons: Ext.Msg.OK,
+        	     					icon: Ext.MessageBox.INFO
+        	     				});
+        	     				dataStore.reload();
+        	     				//newsWindow.close();
+        	     			}else{
+        	     				Ext.MessageBox.show({
+        	     					title:'系统提示',
+        	     					msg:'数据操作失败！',
+        	     					width:300,
+        	     					buttons: Ext.Msg.OK,
+        	     					icon: Ext.MessageBox.INFO
+        	     				});
+        	     			}
+        	     		},
+        	     		failure : function(response) {
+        	     			showMessage('网络错误，保存失败！',true);
+        	     		}
+        	     	}); 
+        	 }
+		});
+	}
+	
+	function FUN_Lock(id){
+		Ext.Msg.confirm('系统提示','确定 锁定该合同信息吗？', function (btn) {
+        	 if (btn == "yes") {
+        			Ext.Ajax.request({
+        	         	url:'/Buss/ContractService/6',
+        	     		method : 'post',
+        	     		params : {
+        	     			FId:id
+        	     		},
+        	     		success : function(response){
+        	     			var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+        	     			if(responseArray.success){
+        	     				    Ext.MessageBox.show({
+        	     					title:'系统提示',
+        	     					msg:'数据操作成功！',
+        	     					width:300,
+        	     					buttons: Ext.Msg.OK,
+        	     					icon: Ext.MessageBox.INFO
+        	     				});
+        	     				dataStore.reload();
+        	     				//newsWindow.close();
+        	     			}else{
+        	     				Ext.MessageBox.show({
+        	     					title:'系统提示',
+        	     					msg:'数据操作失败！',
+        	     					width:300,
+        	     					buttons: Ext.Msg.OK,
+        	     					icon: Ext.MessageBox.INFO
+        	     				});
+        	     			}
+        	     		},
+        	     		failure : function(response) {
+        	     			showMessage('网络错误，保存失败！',true);
+        	     		}
+        	     	}); 
+        	 }
+		});
+	}
+	
+	function FUN_Cancel(id){
+		Ext.Msg.confirm('系统提示','确定 作废该合同信息吗？', function (btn) {
+        	 if (btn == "yes") {
+        			Ext.Ajax.request({
+        	         	url:'/Buss/ContractService/5',
+        	     		method : 'post',
+        	     		params : {
+        	     			FId:id
+        	     		},
+        	     		success : function(response){
+        	     			var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+        	     			if(responseArray.success){
+        	     				    Ext.MessageBox.show({
+        	     					title:'系统提示',
+        	     					msg:'数据操作成功！',
+        	     					width:300,
+        	     					buttons: Ext.Msg.OK,
+        	     					icon: Ext.MessageBox.INFO
+        	     				});
+        	     				dataStore.reload();
+        	     				//newsWindow.close();
+        	     			}else{
+        	     				Ext.MessageBox.show({
+        	     					title:'系统提示',
+        	     					msg:'数据操作失败！',
+        	     					width:300,
+        	     					buttons: Ext.Msg.OK,
+        	     					icon: Ext.MessageBox.INFO
+        	     				});
+        	     			}
+        	     		},
+        	     		failure : function(response) {
+        	     			showMessage('网络错误，保存失败！',true);
+        	     		}
+        	     	}); 
+        	 }
+		});
+	}
+	
+	function FUN_Delete(id){
+		Ext.Msg.confirm('系统提示','确定 删除该合同信息吗？', function (btn) {
+        	 if (btn == "yes") {
+        			Ext.Ajax.request({
+        	         	url:'/Buss/ContractService/4',
+        	     		method : 'post',
+        	     		params : {
+        	     			FId:id
+        	     		},
+        	     		success : function(response){
+        	     			var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+        	     			if(responseArray.success){
+        	     				    Ext.MessageBox.show({
+        	     					title:'系统提示',
+        	     					msg:'数据操作成功！',
+        	     					width:300,
+        	     					buttons: Ext.Msg.OK,
+        	     					icon: Ext.MessageBox.INFO
+        	     				});
+        	     				dataStore.reload();
+        	     				//newsWindow.close();
+        	     			}else{
+        	     				Ext.MessageBox.show({
+        	     					title:'系统提示',
+        	     					msg:'数据操作失败！',
+        	     					width:300,
+        	     					buttons: Ext.Msg.OK,
+        	     					icon: Ext.MessageBox.INFO
+        	     				});
+        	     			}
+        	     		},
+        	     		failure : function(response) {
+        	     			showMessage('网络错误，保存失败！',true);
+        	     		}
+        	     	}); 
+        	 }
+		});
+	}
+	
+	function FUN_Save(){
+		Ext.Ajax.request({
+         	url:'/Buss/ContractService/3',
+     		method : 'post',
+     		params : {
+     			FId:Ext.getCmp('FId').getValue(),
+     			FContractName:Ext.getCmp('FContractName').getValue(), 
+     			FContractNumbers:Ext.getCmp('FContractNumbers').getValue(),                            				
+     			FProjectType:Ext.getCmp('FProjectType').getValue(),
+     			FServiceMode:Ext.getCmp('FServiceMode').getValue(),
+     			FServicePerion:Ext.getCmp('FServicePerion').getValue(), 
+     			FSigningDate:Ext.getCmp('FSigningDate').getValue(),
+     			FInvesttScale:Ext.getCmp('FInvesttScale').getValue(),
+     			FContractFees:Ext.getCmp('FContractFees').getValue(),
+     			FOthers:Ext.getCmp('FOthers').getValue(),
+     			FEntrustUnitId:EntrustUnitId,
+     			FEntrustUnitName:EntrustUnitName
+     		},
+     		success : function(response){
+     			var responseArray = Ext.util.JSON.decode(response.responseText);	                            				
+     			if(responseArray.success){
+     				    Ext.MessageBox.show({
+     					title:'系统提示',
+     					msg:'数据操作成功！',
+     					width:300,
+     					buttons: Ext.Msg.OK,
+     					icon: Ext.MessageBox.INFO
+     				});
+     				Ext.getCmp('FId').setValue(responseArray.root.FId);
+     				dataStore.reload();
+     			}else{
+     				Ext.MessageBox.show({
+     					title:'系统提示',
+     					msg:'数据操作失败！',
+     					width:300,
+     					buttons: Ext.Msg.OK,
+     					icon: Ext.MessageBox.INFO
+     				});
+     			}
+     		},
+     		failure : function(response) {
+     			showMessage('网络错误，保存失败！',true);
+     		}
+     	}); 
+	}
+	</script>
+  </head>
+  
+  <body>
+
+  </body>
+</html>

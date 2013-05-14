@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE> New Document </TITLE>
+  <meta http-equiv="content-type" content="text/html; charset=gbk2312">
+  <link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css">
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	<script type="text/javascript" src="../../plugin/js/jquery.json-2.4.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="jgxLoader.js"></script>
+	<script type="text/javascript" src="../../js/jquery.form.js"></script>
+</head>
+<body>
+	<h2>Editable DataGrid</h2>
+	<div class="demo-info" style="margin-bottom:10px">
+		<div class="demo-tip icon-tip"></div>
+		<div>Click the row to start editing.</div>
+	</div>
+	
+	<table id="tt" style="width:700px;height:auto"
+			data-options="iconCls:'icon-edit',singleSelect:true,idField:'itemid',url:'datagrid_data2.json'"
+			title="Editable DataGrid">
+		<thead>
+			<tr>
+				<th  data-options="field:'itemid',width:80">Item ID</th>
+				<th data-options="field:'productid',width:100,formatter:productFormatter,
+						editor:{
+							type:'combobox',
+							options:{
+								valueField:'productid',
+								textField:'name',
+								data:products,
+								required:true
+							}
+						}">Product</th>
+				<th data-options="field:'listprice',width:80,align:'right',editor:{type:'numberbox',options:{precision:1}}">List Price</th>
+				<th data-options="field:'unitcost',width:80,align:'right',editor:'numberbox'">Unit Cost</th>
+				<th data-options="field:'attr1',width:250,editor:'text'">Attribute</th>
+				<th data-options="field:'status',width:60,align:'center',editor:{type:'checkbox',options:{on:'P',off:''}}">Status</th>
+			</tr>
+		</thead>
+	</table>
+	<br/>
+ <div id="p" class="easyui-progressbar" style="width:400px;"></div> 
+	<table id="day_health" style="width:700px;height:200px"
+			data-options="iconCls:'icon-edit',singleSelect:true,idField:'itemid',url:''"
+			title="">
+		<thead>
+			<tr>			
+			</tr>
+		</thead>
+	</table>
+	http://www.jeasyui.com/tutorial/
+	<script>		
+		var products = [
+		    {productid:'FI-SW-01',name:'Koi'},
+		    {productid:'K9-DL-01',name:'Dalmation'},
+		    {productid:'RP-SN-01',name:'Rattlesnake'},
+		    {productid:'RP-LI-02',name:'Iguana'},
+		    {productid:'FL-DSH-01',name:'Manx'},
+		    {productid:'FL-DLH-02',name:'Persian'},
+		    {productid:'AV-CB-01',name:'Amazon Parrot'}
+		];
+		function productFormatter(value){
+			for(var i=0; i<products.length; i++){
+				if (products[i].productid == value) return products[i].name;
+			}
+			return value;
+		}
+		$.extend($.fn.datagrid.defaults.editors, {
+			numberspinner: {
+				init: function(container, options){
+					var input = $('<input type="text">').appendTo(container);
+					return input.numberspinner(options);
+				},
+				destroy: function(target){
+					$(target).numberspinner('destroy');
+				},
+				getValue: function(target){
+					return $(target).numberspinner('getValue');
+				},
+				setValue: function(target, value){
+					$(target).numberspinner('setValue',value);
+				},
+				resize: function(target, width){
+					$(target).numberspinner('resize',width);
+				}
+			}
+		});
+		$(function(){
+			var lastIndex;
+			/*$('#tt').datagrid({
+				toolbar:[{
+					text:'append',
+					iconCls:'icon-add',
+					handler:function(){
+						$('#tt').datagrid('endEdit', lastIndex);
+						$('#tt').datagrid('appendRow',{
+							itemid:'',
+							productid:'',
+							listprice:'',
+							unitprice:'',
+							attr1:'',
+							status:'P'
+						});
+						lastIndex = $('#tt').datagrid('getRows').length-1;
+						$('#tt').datagrid('selectRow', lastIndex);
+						$('#tt').datagrid('beginEdit', lastIndex);
+					}
+				},'-',{
+					text:'delete',
+					iconCls:'icon-remove',
+					handler:function(){
+						var row = $('#tt').datagrid('getSelected');
+						if (row){
+							var index = $('#tt').datagrid('getRowIndex', row);
+							$('#tt').datagrid('deleteRow', index);
+						}
+					}
+				},'-',{
+					text:'accept',
+					iconCls:'icon-save',
+					handler:function(){
+						$('#tt').datagrid('acceptChanges');
+					}
+				},'-',{
+					text:'reject',
+					iconCls:'icon-undo',
+					handler:function(){
+						$('#tt').datagrid('rejectChanges');
+					}
+				},'-',{
+					text:'GetChanges',
+					iconCls:'icon-search',
+					handler:function(){
+						var rows = $('#tt').datagrid('getChanges');
+						alert('changed rows: ' + rows.length + ' lines');
+					}
+				}],
+				onBeforeLoad:function(){
+					$(this).datagrid('rejectChanges');
+				},
+				onClickRow:function(rowIndex){
+					if (lastIndex != rowIndex){
+						$('#tt').datagrid('endEdit', lastIndex);
+						$('#tt').datagrid('beginEdit', rowIndex);
+					}
+					lastIndex = rowIndex;
+				}
+			});
+*/
+			///////////////////////////////////////////////////多表头
+			$('#day_health').datagrid({
+                url: "datagrid_data2.json",
+                pagination: true,
+                total: 8,
+                pageSize: 8,
+                pageList: [8,10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+                rownumbers: true,
+                fit: true,        //自动大小
+                fitColumns: true, //自适应列宽
+                singleSelect: true,  //是否单选
+                idField: 'Project_id',
+                columns: [
+				[ {field:'f1',title:'考评内容',width:100,align:'center', rowspan:2
+                   },{field:'f2',title:'分值',width:100,align:'center', rowspan:2,
+                        formatter:function(value,rec){
+                           return value;
+                        }
+                   }, {title:'考评得分',colspan:3},
+				   {field:'f6',title:'部门说明',width:100,align:'center', rowspan:2,
+						editor:{type:'validatebox',options:{precision:1,required:false}}					
+                   },{field:'f7',title:'公司说明',width:100,align:'center', rowspan:2,
+						editor:{type:'validatebox',options:{precision:1,required:false}}
+                   },
+				],[ 
+                    {field:'unitcost',title:'部门评分',width:120,rowspan:1,
+						editor:{type: 'numberspinner',options:{min: 10, max: 100,editable: true}}//,editor:'numberbox'
+					},
+                    {field:'f4',title:'公司评分',width:220,rowspan:1,
+						editor:{type: 'numberspinner',options:{min: 10, max: 100,editable: true}}
+                       //editor: 'datebox'						 
+                    },
+                    {field:'f5',title:'综合得分',width:150,rowspan:1, 
+						editor:{type: 'numberspinner',options:{min: 10, max: 100,editable: true}}}
+                ]],
+				onClickRow:function(rowIndex){
+					if (lastIndex != rowIndex){
+						$('#day_health').datagrid('endEdit', lastIndex);
+						$('#day_health').datagrid('beginEdit', rowIndex);
+					}
+					lastIndex = rowIndex;
+				}
+            });
+		});
+	</script>
+  
+ </BODY>
+</HTML>

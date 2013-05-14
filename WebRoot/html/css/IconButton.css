@@ -1,0 +1,176 @@
+
+
+
+.user{ 
+	background-image:url(../images/user.gif);
+}
+.key{ 
+	background-image:url(../images/key.gif);
+}   
+.rand{ 
+	background-image:url(../images/rand.gif);
+} 
+.insert{ 
+	background-image:url(../images/insert.gif) !important;
+}  
+.save{ 
+	background-image:url(../images/save.gif) !important;
+}
+.delete{ 
+	background-image:url(../images/delete.png) !important;
+}
+.view{ 
+	background-image:url(../images/query.gif) !important;
+}
+.ok{ 
+	background-image:url(../images/commit.png) !important;
+}
+.add{ 
+	background-image:url(../images/add.gif) !important;
+}
+.cancel{ 
+	background-image:url(../images/fresh.png) !important;
+}
+.fresh{ 
+	background-image:url(../images/fresh.png) !important;
+}
+.close
+{
+    background-image:url(../images/cancel.gif) !important;
+}
+.icon-reset {
+    background-image: url(../images/reset.gif) !important;
+}
+.icon-query {
+    background-image: url(../images/search.gif) !important;
+}
+.icon-excel {
+    background-image: url(../images/excel.gif) !important;
+}
+.icon-set {
+    background-image: url(../images/process.png) !important;
+}
+.certificate{
+	background-image: url(../images/certificate.png) !important;
+}
+.new{ 
+	background-image:url(../images/insert.png) !important;
+}
+.newItem{ 
+	background-image:url(../images/insertItem.png) !important;
+}
+.edit{ 
+	background-image:url(../images/edit.png) !important;
+}
+.back{ 
+	background-image:url(../images/back.png) !important;
+}
+.isused{ 
+	background-image:url(../images/process.png) !important;
+}
+.previous{ 
+	background-image:url(../ext/resources/images/default/grid/page-prev.gif) !important;
+}
+.next{ 
+	background-image:url(../ext/resources/images/default/grid/page-next.gif) !important;
+}
+.refresh{ 
+	background-image:url(../images/refresh.png) !important;
+}
+.signup{ 
+	background-image:url(../images/signup.png) !important;
+}
+.registry{ 
+	background-image:url(../images/registry.png) !important;
+}
+.print{ 
+	background-image:url(../images/print.png) !important;
+}
+.sendinfo{ 
+	background-image:url(../images/sendinfo.png) !important;
+}
+.upload{ 
+	background-image:url(../images/upload.png) !important;
+}
+.uploadfile{ 
+	background-image:url(../images/fileUpload.png) !important;
+}
+.mb-download {
+	background: url("../images/download.gif") no-repeat scroll 6px 0
+		transparent;
+	height: 52px !important;
+}
+.icon-logoutS {
+    background-image: url(../images/logoutS.png) !important;
+}
+.icon-updateS {
+    background-image: url(../images/updateS.png) !important;
+}
+.icon-updateE {
+    background-image: url(../images/updateE.png) !important;
+}
+
+.query-extb{
+	 background-image: url(../images/extbut/querybut.png) !important;
+}
+.query1-extb{
+	 background-image: url(../images/extbut/query1but.png) !important;
+}
+.ok-extb{
+	 background-image: url(../images/extbut/okbut.png) !important;
+}
+.delete-extb{
+	 background-image: url(../images/extbut/deletebut.png) !important;
+}
+.checkfile-extb{
+	 background-image: url(../images/extbut/checkfilebut.png) !important;
+}
+.f-extb{
+	 background-image: url(../images/extbut/fbut.png) !important;
+}
+.insertbut-extb{
+	 background-image: url(../images/extbut/insertbut.png) !important;
+}
+.quite-extb{
+	background-image: url(../images/extbut/quitebut.png) !important;
+}
+.save-extb{
+	background-image: url(../images/extbut/savebut.png) !important;
+}
+.insertbut-easytb{
+	 background: url(../images/extbut/insertbut.png) no-repeat;
+}
+.delete-easytb{
+	 background: url(../images/extbut/deletebut.png) no-repeat;
+}
+.save-easytb{
+	background: url(../images/extbut/savebut.png) no-repeat;
+}
+.lock-esaytb{
+	background: url(../images/password.gif) no-repeat;
+}
+.release-esaytb{
+	background: url(../images/key.png) no-repeat;
+}
+.query-esaytb{
+	 background: url(../images/extbut/querybut.png)no-repeat;
+}
+.query1-esaytb{
+	 background: url(../images/extbut/query1but.png)no-repeat;
+}
+.checkfile-esaytb{
+	 background: url(../images/extbut/checkfilebut.png) no-repeat;
+}
+.fileuoload-esaytb{
+	background: url(../images/fileUpload.png) no-repeat;
+}
+.okbut-esaybt{
+	background:url(../images/extbut/okbut.png) no-repeat;
+}
+.title-esaytitle{
+	background:url(../../favicon.ico) no-repeat;
+}
+img
+{
+	cursor:pointer;
+}

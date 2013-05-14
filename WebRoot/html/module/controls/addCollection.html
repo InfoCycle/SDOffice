@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>addCollection.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="../../plugin/jBox/Skins2/Gray/jbox.css" type="text/css"></link>
+    
+    <link rel="stylesheet" href="../../plugin/easyui/themes/gray/easyui.css" type="text/css"></link>
+ 	<link rel="stylesheet" href="../../plugin/easyui/themes/icon.css" type="text/css"></link>
+    
+    <script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+    <script type="text/javascript" src="../../plugin/easyui/jquery.easyui.min.js"></script>		
+	<script type="text/javascript" src="../../plugin/easyui/easyui-lang-zh_CN.js"></script>
+    
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-2.3.min.js"></script>
+	<script type="text/javascript" src="../../plugin/jBox/jquery.jBox-zh-CN.js"></script>
+	<script type="text/javascript">
+		
+		function save(){
+			var taskfid=$('#FId').val();
+			var receivable=$('#Receivable').val();
+			var contractYj=$('#ContractYJ').val();
+			var supporterreceipt=$('#SupporterReceipt').val();
+			if(supporterreceipt-(receivable+contractYj)>0){
+				//alert(receivable+";---"+supporterreceipt+";");
+				if(contractYj==0){
+					$.jBox.error('协作单位收费不能大于项目收费', '系统提示');
+				}else{
+					$.jBox.error('协作单位收费不能大于项目预计收费', '系统提示');
+				}
+				return false;
+			}
+			$.jBox.tip("正在保存，请稍等..", 'loading');
+			if(taskfid!=""){
+				$.post(
+				"/buss/collection/0",
+				{
+					"CFReceivable":receivable,
+					"CFTaskId":taskfid,
+					"CFSupporterReceipt":supporterreceipt,
+					"CFOutstanding":receivable,
+					"FContractYjCharge":$('#ContractYJ').val()
+				},
+				function(data){
+					if(data.success){
+						$.jBox.tip(data.message, 'success');
+						
+						parent.select();
+					}else{
+						$.jBox.tip(data.message, 'failure');
+					}
+				});
+			}else{
+				$.jBox.tip("请先选择项目", 'failure');
+			}
+		}
+		function selectc(){
+				//alert($('#name').val());
+			$("#tabletask").datagrid('load',{
+				name:$('#name').val(),
+				number:$('#number').val(),
+				pm:$('#pm').val(),
+			});
+		}
+  		function onclickr(rowIndex, rowData){
+				$('#wname').val(rowData.FTaskName);	
+				$('#wnumber').val(rowData.FTaskNumbers);
+				$('#wpm').val(rowData.taskPm);
+				$('#FId').val(rowData.FId);
+				$('#ContractYJ').val(rowData.FContractYjCharge*10000);
+				$('#Receivable').val(0);
+				$('#SupporterReceipt').val(0);
+  			}
+  		function mychang(){
+  			if($('#Receivable').val()>0){
+  				$('#ContractYJ').val(0);
+  			}
+  		}
+  			
+	</script>
+  </head>
+  
+  <body>
+  	<input type="hidden" id="FId" name="FId"  value=""/>
+  	<div class="easyui-layout" data-options="fit:true" >
+  		<div data-options="region:'center'">
+  			<div class="easyui-panel"  data-options="fit:true,border:false,split:true" style="background:#fafafa;padding:20px;">
+  				<div style="width:96%;padding:5px;">
+  					<label for="name" style="width:20%;">项目名称:</label>
+	  				<input id="wname" class="easyui-validatebox" type="text" name="name" style="width:85%;" onfocus="blur()"/>
+  				</div>
+  				<div style="width:96%;padding:5px;">
+  					<label for="name" style="width:20%;">项目编号:</label>
+	  				<input id="wnumber" class="easyui-validatebox" type="text" name="number" style="width:85%;" onfocus="blur()"/>
+  				</div>
+  				<div style="width:96%;padding:5px;">
+  					<label for="wpm" style="width:20%;">项目经理:</label>
+	  				<input id="wpm" class="easyui-validatebox" type="text" name="pm" style="width:33%;"  onfocus="blur()"/>
+	  				<label for="ContractYJ" style="width:20%;">预计收费:</label>
+	  				<input id="ContractYJ" class="easyui-validatebox" type="text" name="pm" style="width:35%;"  onfocus="blur()"/>(元)
+  				</div>
+  				<div style="width:96%;padding:5px;">
+  					<label for="Receivable" style="width:20%;">项目应收费:</label>
+	  				<input id="Receivable" class="easyui-numberbox" type="text" name="Receivable" style="width:28%;" onchange='mychange()'/>(元)
+	  				<label for="SupporterReceipt" style="width:20%;">协作单位收费:</label>
+	  				<input id="SupporterReceipt" class="easyui-numberbox" type="text" name="SupporterReceipt" style="width:28%;"/>(元)
+  				</div>
+  				<div style="width:96%;padding:20px;">
+  					<center>
+	  					<a href="#" class="easyui-linkbutton" onclick="save()">保存</a> 
+					</center>
+  				</div>
+  			</div>
+  		</div>
+  		<div data-options="region:'north',split:true" title="项目列表" style="height:240%;">
+  			<table id="tabletask" class="easyui-datagrid" url="/buss/pro/0" singleSelect="true" iconCls="icon-save"
+		  	rownumbers="true" pagination="true" data-options="fit:true,toolbar:'#tb',onClickRow:function(rowIndex,rowData){onclickr(rowIndex, rowData)}" >
+				<thead>  
+					<tr> 
+						<th data-options="align:'center'" field="FTaskNumbers" width="250%">项目编号</th>
+					    <th data-options="align:'center'" field="FTaskName" width="150%">项目名称</th>
+					    <th data-options="align:'center'" field="taskPm" width="150%">项目经理</th>
+					</tr>  
+				</thead>  
+			</table>
+			<div id="tb" style="padding:2px;height:auto">
+				<div>
+					项目名称:<input id="name" class="easyui-validatebox" style="width:100px"/> 
+					项目编号:<input id="number" class="easyui-validatebox" style="width:100px"/> 
+					项目经理:<input id="pm" class="easyui-validatebox" style="width:100px"/> 
+					<a href="#" class="easyui-linkbutton" onclick="selectc()">查询</a>
+				</div>
+			</div>
+  		</div>
+  	</div>
+  </body>
+  <script>
+  		
+  </script>
+</html>

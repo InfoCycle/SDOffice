@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>员工管理</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../css/treenodeicon.css" type="text/css"></link>
+     <link rel="stylesheet" href="../../plugin/styles/kendo.common.css" type="text/css" />
+     <link rel="stylesheet" href="../../plugin/styles/kendo.default.css" type="text/css" />
+	 <link rel="stylesheet" type="text/css" href="../../css/menu.css" /> 
+	 <link rel="stylesheet" href="../../css/IconButton.css" type="text/css"></link>
+	 <link rel="stylesheet" type="text/css" href="../../ext/resources/css/ext-all.css" />		
+	 <link rel="stylesheet" href="../../ext/resources/css/xtheme-gray.css" type="text/css"></link>
+	<script type="text/javascript" src="../../plugin/js/jquery.js"></script>
+	
+	<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+	<script type="text/javascript" src="../../ext/ext-all.js"></script>
+	<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../js/utils.js"></script>
+	
+	<script type="text/javascript" src="../../ext/ux/PanelResizer.js"></script>
+	<script type="text/javascript" src="../../ext/ux/ProgressBarPager.js"></script>
+	<script type="text/javascript">
+		Ext.onReady(function(){
+			var dataStore=new Ext.data.JsonStore({
+				url:"/employee/0/",
+				idProperty: 'FId',
+				root: 'root',
+				 totalProperty: 'totalProperty',
+				 fields: [
+				 	{name:'FBelongsDept'},
+				 	{name:'FBelongsDeptId'},
+				 	{name:'FBirthDay'},
+				 	{name:'FContact'},
+				 	{name:'FContractRs'},
+				 	{name:'FCultureDegree'},
+				 	{name:'FFamilyDetailedAddress'},
+				 	{name:'FId'},
+				 	{name:'FIdcardNumber'},
+				 	{name:'FIntoCompanyTime'},
+				 	{name:'FLaborContractExpiresTime'},
+				 	{name:'FLaborIs'},
+				 	{name:'FMajor'},
+				 	{name:'FMaritalStatus'},
+				 	{name:'FNational'},
+				 	{name:'FNativePlace'},
+				 	{name:'FNowRpr'},
+				 	{name:'FNumbers'},
+				 	{name:'FPolitical'},
+				 	{name:'FProfessional'},
+				 	{name:'FSex'},
+				 	{name:'FStaffName'},
+				 	{name:'FStaffState'},
+				 	{name:'FTechnical'},
+				 	{name:'FTheLaborContractTime'},
+				 	{name:'FToWorkTime'}
+				 ]
+			});
+			
+			var grid=new Ext.grid.GridPanel({
+				title:'<font size=2>员工管理</font>',
+				id:'employeeGrid',
+				store:dataStore,
+				region: 'center',
+				columns:[{
+						xtype: 'actioncolumn',
+                		width: 30,
+                		items: [{
+                			icon:'../../images/delete.png',
+                			tooltip: '删除',
+				        	handler:function(p2,rowIndex, colIndex){
+				        		Ext.Msg.confirm('系统提示','确认要删除所选信息吗？',function(btn){
+				        			if(btn=="yes"){
+				    					var rec = dataStore.getAt(rowIndex);
+				    					$.post(
+				    						"/employee/7/",
+				    						{
+				    							"FBelongsDept":rec.get("FBelongsDept"),
+				    							"FBelongsDeptId":rec.get("FBelongsDeptId"),
+				    							"FBirthDay":rec.get("FBirthDay"),
+				    							"FContact":rec.get("FContact"),
+				    							"FContractRs":rec.get("FContractRs"),
+				    							"FCultureDegree":rec.get("FCultureDegree"),
+				    							"FFamilyDetailedAddress":rec.get("FFamilyDetailedAddress"),
+				    							"FId":rec.get("FId"),
+				    							"FIdcardNumber":rec.get("FIdcardNumber"),
+				    							"FIntoCompanyTime":rec.get("FIntoCompanyTime"),
+				    							"FLaborContractExpiresTime":rec.get("FLaborContractExpiresTime"),
+				    							"FLaborIs":rec.get("FLaborIs"),
+				    							"FMajor":rec.get("FMajor"),
+				    							"FMaritalStatus":rec.get("FMaritalStatus"),
+				    							"FNational":rec.get("FNational"),
+				    							"FNativePlace":rec.get("FNativePlace"),
+				    							"FNowRpr":rec.get("FNowRpr"),
+				    							"FNumbers":rec.get("FNumbers"),
+				    							"FPolitical":rec.get("FPolitical"),
+				    							"FProfessional":rec.get("FProfessional"),
+				    							"FSex":rec.get("FSex"),
+				    							"FStaffName":rec.get("FStaffName"),
+				    							"FStaffState":rec.get("FStaffState"),
+				    							"FTechnical":rec.get("FTechnical"),
+				    							"FTheLaborContractTime":rec.get("FTheLaborContractTime"),
+				    							"FToWorkTime":rec.get("FToWorkTime")
+				    						},
+				    						function(data){
+				    							if(data){
+				    								showMessage(data.message);
+				    								dataStore.reload({params:{start:0, limit:10}});
+				    							}else{
+				    								showMessage("网络错误!请稍后再试...");
+				    							}
+				    						}
+				    					);
+				    				}
+				        		});
+				        	}
+                		}]
+					},{
+						xtype: 'actioncolumn',
+                		width: 30,
+                		items: [{
+                			icon:'../../images/edit.png',
+                			tooltip: '修改',
+                			handler:function(p2,rowIndex, colIndex){
+                				var rec = dataStore.getAt(rowIndex);
+                				window.location.href="/html/module/employee/employeeinfo.html?id="+rec.get("FId");
+                			}
+                		}]
+					},{
+						dataIndex: 'FNumbers',
+						header: '自编号',
+						sortable: true,
+						width: 60
+				 	},{
+						dataIndex: 'FStaffName',
+						header: '姓名',
+						sortable: true,
+						width: 80
+				 	},{
+						dataIndex: 'FSex',
+						header: '性别',
+						sortable: true,
+						width: 120
+				 	},{
+						dataIndex: 'FNativePlace',
+						header: '籍贯',
+						sortable: true,
+						width: 120
+				 	},{
+						dataIndex: 'FIdcardNumber',
+						header: '身份证号',
+						sortable: true,
+						width: 120
+				 	},{
+						dataIndex: 'FCultureDegree',
+						header: '文化程度',
+						sortable: true,
+						width: 120
+				 	},{
+						dataIndex: 'FMajor',
+						header: '专业',
+						sortable: true,
+						width: 120
+				 	},{
+						dataIndex: 'FTechnical',
+						header: '技术职称',
+						sortable: true,
+						width: 120
+				 	},{
+						dataIndex: 'FContact',
+						header: '联系方式',
+						sortable: true,
+						width: 120
+				 	},{
+						dataIndex: 'FBelongsDept',
+						header: '部门',
+						sortable: true,
+						width: 120
+				 	},{
+						dataIndex: 'FStaffState',
+						header: '状态',
+						sortable: true,
+						width: 120
+				 	}
+				],
+				 tbar:{
+				     	xtype:"container",
+						layout:'table',
+						items:[{
+								id:'form1',
+								layout:"form",
+								labelAlign:'right',
+								labelWidth:60,
+								frame:true,
+								items:[{
+									id:'cselect',
+									xtype:"combo",
+									fieldLabel:"查询方式",
+									store:new Ext.data.SimpleStore({
+												fields:["name","value"],
+													data:[
+																["按部门",0],
+																["按姓名",1],
+																["按状态",2],
+																["按身份证",3],
+																["按员工类型",4]
+															]}),
+									displayField:'name',
+							        valueField  :'value',
+							        mode : "local",
+								    triggerAction : "all",
+									editable:false,
+									emptyText:'请选择查询方式',
+									listeners : {
+									select:function(index){
+									var et={"0":"请输入部门名称",
+												"1":"请输入姓名关键字(如:张、张某某)",
+												"2":"请输入状态(在职、离职)",
+												"3":"请输入身份证号码",
+												"4":"请输入(内部员工、外协人员)"}
+									Ext.getCmp("form1").findById("select").emptyText=et[index.value];
+									Ext.getCmp("select").reset();
+													}
+												},
+												width:200
+											},{
+												id:'select',
+												xtype:"textfield",
+												fieldLabel:"查询条件",
+												emptyText:'请先选择查询方式',
+												width:200
+											}
+										]
+							},{
+								xtype:"container",
+								width:10,
+								height:40,
+							},{
+								xtype:"button",
+								iconCls:'query-extb',
+								height:40,
+								width:60,
+								text:'<font size=2>查询</font>',
+								handler:selectf
+							},{
+								xtype:"button",
+								iconCls:'query1-extb',
+								height:40,
+								width:60,
+								text:'<font size=2>清空查询</font>',
+								handler:function(){
+									dataStore.lastOptions=null;
+									dataStore.baseParams={};
+									dataStore.reload({params:{start:0, limit:10}});
+									Ext.getCmp("form1").findById("select").emptyText="请选择查询方式";
+									Ext.getCmp("cselect").setValue();
+									Ext.getCmp("select").setValue();
+								}
+							},{
+								xtype:"container",
+								width:50,
+								height:40,
+							},{
+								xtype:'button',
+								iconCls:'insertbut-extb',
+								height:40,
+								text:'<font size=2>添加员工</font>',
+								handler:add
+							}
+						]
+				},
+				 bbar : new Ext.PagingToolbar({
+ 					 pageSize: 10,
+            		store: dataStore,
+            		displayInfo: true,
+            		plugins: new Ext.ux.ProgressBarPager()
+ 					})
+			});
+			
+			//查询方法
+			function selectf(){
+				var way=$.trim(Ext.getCmp("cselect").getValue());
+				var iterm=$.trim(Ext.getCmp("select").getValue());
+				if(way==""){
+					showMessage("请选择查询方式!");
+				}else{
+					if(iterm==""){
+						showMessage("请输入查询条件!");
+					}else{
+						if(way==4){
+							if(iterm=="在职员工"||iterm=="外协人员"){
+									if(iterm=="在职员工"){
+										iterm=1;
+									}else{
+										iterm=0;
+									}
+								}else{
+									showMessage("请输入“外协人员”或“内部员工”");
+									return false;
+								}
+						}
+						
+						dataStore.lastOptions=null;
+						dataStore.baseParams={
+						    Way:way,
+						    Iterm:iterm
+						}
+						dataStore.reload({params:{start:0, limit:10}});
+					}
+				}
+			}
+			function selectByT(way,iterm){
+				
+			}
+			//添加方法
+			function add(){
+				window.location.href="/html/module/employee/employeeinfo.html";
+			}
+			//查看方法
+			function look(){
+				var grid=Ext.getCmp('employeeGrid');
+				var records=grid.selModel.getSelections();
+				var relenth=records.length;
+				if(relenth>1){
+					showMessage("最多选择一条数据");
+					return false;
+				}
+				if(relenth<1){
+					showMessage("至少选择一条数据");
+					return false;
+				}
+				var eid=records[0].get('FId');
+				window.location.href="/html/module/employee/employeeinfo.html?id="+eid;
+			}
+			
+			
+			var mainViewport = new Ext.Viewport({
+					id : 'mainViewport',
+					layout : 'fit',
+					border : false,
+					items : [ {
+						xtype : 'panel',
+						id : 'EUPanel',
+						layout : 'border',
+						border : false,
+						items : [grid]
+					} ]
+			});
+			dataStore.load({params:{start:0, limit:10}});	
+		});
+	</script>
+
+  </head>
+  
+  <body>
+  </body>
+</html>

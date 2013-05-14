@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>权限维护</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../ext/resources/css/ext-all.css"
+	type="text/css" />
+<link rel="stylesheet" href="../../ext/resources/css/ext-patch.css"
+	type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../css/IconButton.css" />
+<script type="text/javascript" src="../../ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="../../ext/ext-all.js"></script>
+<script type="text/javascript" src="../../ext/locale/ext-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../js/utils.js"></script>
+</head>
+<body>
+</body>
+</html>
+<script type="text/javascript">
+	var userGroupDS = new Ext.data.JsonStore({
+		url : '/system/SvrService/OrgUserFunction/1',
+		idProperty : 'FId',
+		root : 'root',
+		totalProperty : 'totalProperty',
+		autoLoad : true,
+		fields : [ {
+			name : 'FId'
+		}, {
+			name : 'FName'
+		}, {
+			name : 'FContent'
+		}, {
+			name : 'FSort'
+		} ]
+	});
+	var processDS = new Ext.data.JsonStore({
+		url : '/wf/process/3/',
+		idProperty : 'FId',
+		root : 'root',
+		totalProperty : 'totalProperty',
+		autoLoad : true,
+		fields : [ {
+			name : 'FId'
+		}, {
+			name : 'FTypeName'
+		}]
+	})
+	var checkModel = new Ext.grid.CheckboxSelectionModel({
+		singleSelect : false
+	});
+	checkModel.handleMouseDown=Ext.emptyFn();
+	
+	function onCellClick(grid, rowIdx, colIdx, e){		
+		if(colIdx==4){
+			if(!checkModel.isSelected(rowIdx)){
+				showMessage('业务类型未选中,不允许分配操作权限！');
+				return false;
+			}
+			var record = grid.getStore().getAt(rowIdx);
+			var typeid = record.get('FId');			
+			var station_grid =Ext.getCmp("userGroup");
+			var station_record = station_grid.getSelectionModel().getSelected();
+			if(!station_record){
+				showMessage('岗位未选中,不允许分配操作权限！');
+				return false;
+			}
+			var stationId = station_record.get('FId');
+			showOperate(typeid,stationId);
+		}
+	}
+	function showOperate(typeId,unitStationId){		
+		alert(typeId+'='+unitStationId)		
+	}
+	function operateRenderer(value, cellmeta, record, rowIndex, columnIndex, store){
+		var str = "<input type='button' value='分配操作权限' >";
+		return str;
+	}
+	Ext.onReady(function() {
+				Ext.QuickTips.init();
+				Ext.form.Field.prototype.msgTarget = 'side';				
+				var mainViewport = new Ext.Viewport(
+						{
+							id : 'mainViewport',
+							border : false,
+							layout : 'fit',
+							items : [ {
+								xtype : 'panel',
+								id : 'contentPanel',
+								layout : 'border',
+								tbar : [
+										{
+											xtype : 'button',
+											text : '新增',
+											tooltip : '新增用户组',
+											iconCls : 'newItem',
+											hidden:true,
+											handler : function() {
+												addNewUserGroup()
+											}
+										},
+										{
+											xtype : 'button',
+											text : '删除',
+											tooltip : '删除用户组无法恢复',
+											iconCls : 'delete',
+											hidden:true,
+											handler : function() {
+												var grid = Ext
+														.getCmp("userGroup");
+												var record = grid
+														.getSelectionModel()
+														.getSelected();
+												if (record) {
+													var FId = record.data.FId;
+													Ext.Msg
+															.confirm(
+																	'系统提示',
+																	'删除后无法恢复，确定删除选择的用户组吗？',
+																	function(
+																			btn) {
+																		if (btn == "yes") {
+																			Ext.Ajax
+																					.request({
+																						url : '/system/SvrService/OrgUserFunction/6',
+																						method : 'post',
+																						params : {
+																							FId : FId
+																						},
+																						success : function(
+																								response) {
+																							var responseArray = Ext.util.JSON
+																									.decode(response.responseText);
+																							if (responseArray.success) {
+																								var OrgUserTree = Ext
+																										.getCmp("userTree");
+																								var FunctionTree = Ext
+																										.getCmp("functionTree");
+																								userGroupDS
+																										.remove(userGroupDS
+																												.getById(FId));
+																								clearNodeCheck(OrgUserTree.root);
+																								clearNodeCheck(FunctionTree.root);
+																							} else {
+																								Ext.MessageBox
+																										.show({
+																											title : '系统提示',
+																											msg : '人员信息删除失败！',
+																											width : 300,
+																											buttons : Ext.Msg.OK,
+																											icon : Ext.MessageBox.INFO
+																										});
+																							}
+																						},
+																						failure : function(
+																								response) {
+																							showMessage(
+																									'网络错误，用户组信息删除失败！',
+																									true);
+																						}
+																					});
+																		} else {
+																			return;
+																		}
+																	});
+												} else {
+													showMessage('请选中需要删除的用户组！');
+												}
+											}
+										},
+										{
+											xtype : 'button',
+											text : '保存权限',
+											tooltip : '保存用户组权限设置',
+											iconCls : 'save',
+											handler : function() {
+												var grid = Ext
+														.getCmp("userGroup");
+												var FId = grid
+														.getSelectionModel()
+														.getSelected().get(
+																'FId');
+												if (!FId) {
+													showMessage("请先选中左边的岗位，再选右边的业务类型或者功能菜单！");
+													return false;
+												}
+												var functionTree = Ext
+														.getCmp("functionTree");
+												var processType = Ext
+														.getCmp("processType");
+												//功能菜单
+												var functionIds = functionTree
+														.getChecked();
+												if (functionIds.length == 0) {
+													showMessage("没有选择功能菜单，不允许保存！");
+													return false;
+												}
+												var checkFunctionIds = new Array;
+												Ext.each(functionIds, function(
+														node) {
+													checkFunctionIds
+															.push(node.id);
+												});
+
+												//业务类型
+												var process_record = checkModel.getSelections();
+												
+												var checkTypeIds = new Array;
+												Ext.each(
+														process_record,
+														function(record) {
+															checkTypeIds.push(record.data.FId);
+														}
+												);
+												Ext.Msg.wait(
+														"正在提交数据，请稍候......",
+														"请稍后");
+												Ext.Ajax.request({
+															url : "/system/SvrService/OrgUserFunction/5",
+															params : {
+																FId : FId,
+																functionIdList : checkFunctionIds.toString(),
+																typeIdList : checkTypeIds.toString()
+															},
+															method : 'POST',
+															success : function(
+																	response) {
+																var responseArray = Ext.util.JSON
+																		.decode(response.responseText);
+																if (responseArray.success === true) {
+																	showMessage("权限设置成功！");
+																} else {
+																	showMessage("权限设置失败！",true);
+																}
+															},
+															failure : function(response) {
+																showMessage("网络初始化失败！",true)
+															}
+														});
+												Ext.MessageBox.hide();
+											}
+										} ],
+								items : [
+										{
+											xtype : 'grid',
+											id : 'userGroup',
+											width : 260,
+											margins : '0 2 0 0',
+											region : 'west',
+											ds : userGroupDS,
+											split : true,
+											sm : new Ext.grid.RowSelectionModel(
+													{
+														singleSelect : true,
+														listeners : {
+															rowselect : function(
+																	sm, row,
+																	rec) {																
+																changeUserGroup(rec.data.FId);
+															}
+														}
+													}),
+											listeners : {
+												dblclick : function(grid,
+														rowIndex, e) {
+													var grid = Ext
+															.getCmp("userGroup");
+													var rec = grid
+															.getSelectionModel()
+															.getSelected();
+													addNewUserGroup(rec);
+												}
+											},
+											columns : [
+													new Ext.grid.RowNumberer(),
+													{
+														xtype : 'gridcolumn',
+														dataIndex : 'FId',
+														hidden : true
+													}, {
+														xtype : 'gridcolumn',
+														align : 'left',
+														dataIndex : 'FName',
+														header : '岗位名称',
+														sortable : true,
+														width : 120
+													}, {
+														xtype : 'gridcolumn',
+														align : 'center',
+														dataIndex : 'FContent',
+														header : '备注',
+														hidden : true,
+														width : 180
+													} ]
+										},
+										{
+											 xtype: 'treepanel',
+							                    id: 'functionTree',
+							                    margins: '0 0 0 5',
+							                    width:320,
+							                    region: 'east',
+							                    lines: true,
+							                    checkModel: 'cascade',
+							                    autoScroll: true,
+							                    onlyLeafCheckable: false,
+							                    root: {
+							                    	id:'0',
+							                        text: '功能菜单',
+							                        expanded:true
+							                    },
+							                    loader: new Ext.tree.TreeLoader({
+							        	        	dataUrl:'/system/SvrService/FunctionTree/getTree/'
+							        	        }),
+							        	        listeners:{
+							        	        	checkchange:function(node, checked){
+							        	        		treecheck(node,checked);
+							        	        	}
+							        	        }
+										},
+										{
+											xtype : 'grid',
+											id : 'processType',
+											region : 'center',
+											ds : processDS,
+											split : true,
+											sm : checkModel,
+											columns : [
+													new Ext.grid.RowNumberer(),	
+													checkModel,
+													{
+														xtype : 'gridcolumn',
+														dataIndex : 'FId',
+														hidden : true
+													}, {
+														xtype : 'gridcolumn',
+														align : 'left',
+														dataIndex : 'FTypeName',
+														header : '业务类型名称',
+														sortable : true,
+														width : 160
+													}, {
+														xtype : 'gridcolumn',
+														align : 'left',
+														dataIndex : 'FId',
+														header : '操作控制',
+														renderer:operateRenderer,
+														width : 160
+													} 
+											],
+											listeners:{
+												 cellClick:onCellClick
+											}
+										}
+							            ]
+							        }
+							    ]
+						});
+				
+				function addNewUserGroup(record) {
+					function fnSave() {
+						if (!form.getForm().isValid()) {
+							showMessage("数据未填写完整！");
+							return;
+						}
+						Ext.Ajax.request({
+							url : "/system/SvrService/OrgUserFunction/4",
+							params : {
+								FId : Ext.getCmp("FId").getValue(),
+								FName : Ext.getCmp("FName").getValue(),
+								FSort : Ext.getCmp("FSort").getValue(),
+								FContent : Ext.getCmp("FContent").getValue()
+							},
+							method : 'POST',
+							success : function(response) {
+								var responseArray = Ext.util.JSON
+										.decode(response.responseText);
+								if (responseArray.success === true) {
+									Ext.getCmp('userGroupWin').destroy();
+									userGroupDS.reload();
+								} else {
+									showMessage(responseArray.message, true);
+								}
+							},
+							failure : function(response) {
+								showMessage("网络初始化失败！", true)
+							}
+						});
+					}
+					var form = new Ext.FormPanel({
+						frame : true,
+						buttonAlign : 'center',
+						labelWidth : 150,
+						labelAlign : 'right',
+						items : [ {
+							xtype : 'hidden',
+							id : 'FId'
+						}, {
+							xtype : 'textfield',
+							fieldLabel : '权限组名称',
+							id : 'FName',
+							allowBlank : false
+						}, {
+							xtype : 'numberfield',
+							fieldLabel : '排序',
+							id : 'FSort',
+							allowBlank : false
+						}, {
+							xtype : 'textarea',
+							fieldLabel : '权限组备注',
+							id : 'FContent',
+							width : 150
+						} ],
+						buttons : [ {
+							text : '确定',
+							handler : fnSave
+						}, {
+							text : '取消',
+							handler : function() {
+								Ext.getCmp('userGroupWin').destroy();
+							}
+						} ]
+					});
+					if (record) {
+						form.getForm().loadRecord(record);
+					}
+					var win = new Ext.Window({
+						id : 'userGroupWin',
+						modal : true,
+						title : '新增用户组',
+						layout : 'fit',
+						width : 410,
+						height : 200,
+						resizable : false,
+						closable : false,
+						items : [ form ]
+					})
+					win.show();
+				}
+
+				function setNodeCheck(node, pm) {
+					if (!node)
+						return;
+					for (x in pm) {
+						if (node.attributes.id == pm[x]) {
+							if (!node.hasChildNodes()) {
+								node.getUI().toggleCheck(true);
+								node.attributes.checked = true;
+							}
+							break;
+						}
+					}
+					;
+					if (node.hasChildNodes()) {
+						for ( var i = 0; i < node.childNodes.length; i++) {
+							setNodeCheck(node.childNodes[i], pm);
+						}
+					}
+				}
+
+				function clearNodeCheck(node) {
+					if (!node)
+						return;
+					node.getUI().toggleCheck(false);
+					node.attributes.checked = false;
+					if (node.hasChildNodes()) {
+						for ( var i = 0; i < node.childNodes.length; i++) {
+							clearNodeCheck(node.childNodes[i]);
+						}
+					}
+				}
+				function getRowIndex(typeidArray){
+					var grid = Ext.getCmp("processType");
+					var store= grid.getStore();
+					var type = new Array();
+					type.push(-1);
+					for(i in typeidArray){
+						var index = store.find('FId',typeidArray[i]);
+						if(index>-1){
+							type.push(index);
+						}
+					}
+					return type;
+				}
+				//选择用户组后获取此用户组对应的菜单和人员
+				function changeUserGroup(id) {									
+					//var userTree = Ext.getCmp("userTree");
+					var functionTree = Ext.getCmp("functionTree");
+					//获取岗位对应的业务类型
+					var url = '/system/SvrService/OrgUserFunction/7?userGroupId='
+							+ id;
+					//同步请求
+					Ext.Ajax.request({
+				        url: url,       
+				        method: 'GET',
+				        success: function (response) {
+				            var responseArray = Ext.util.JSON.decode(response.responseText);
+				            if (responseArray.success) { 
+				            	functionId =responseArray.functionId;
+				            	typeid = responseArray.typeid;
+				            	var fId = functionId.split(',');
+				            	//选中对应的业务类型
+				            	var rowIndexs=getRowIndex(typeid.split(','));
+								checkModel.selectRows(rowIndexs);
+								
+								clearNodeCheck(functionTree.root);
+								setNodeCheck(functionTree.root, fId);
+				            } else {
+				            	showMessage('无法获取数据！',true);
+				            }
+				        }
+					});					
+				}
+
+				////树形控件的选择
+				function treecheck(node, checked) {
+					node.expand();
+					if (node.hasChildNodes()) {
+						ChildWithParent(node, checked);
+					}
+					//如果是选中状态,则选中所有父节点
+					if (checked) {
+						ParentWithChild1(node, checked);
+					}
+					//如果不选中
+					else {
+						ParentWithChild2(node, checked);
+					}
+				}
+				//选择结点，影响所有子节点
+				function ChildWithParent(node, bool) {
+					if (node) {
+						node.attributes.checked = bool;
+						if (node.hasChildNodes()) {
+							node.eachChild(function(child) {
+								child.ui.toggleCheck(bool);
+								child.attributes.checked = bool;
+								ChildWithParent(child, bool);
+							});
+						}
+					}
+				}
+				//如果是选中状态，则选中父节点---递归
+				function ParentWithChild1(node, bool) {
+					if (node.parentNode.getUI().checkbox) {
+						var parent = node.parentNode;
+						parent.attributes.checked = bool;
+						parent.getUI().checkbox.checked = bool;
+						ParentWithChild1(parent, bool);
+					}
+				}
+				//如果是不选中状态，则遍历父节点，如果该父节点下的所有节点都为不选中，则取消选中
+				function ParentWithChild2(node, bool) {
+					if (node.parentNode.getUI().checkbox) {
+						var parent = node.parentNode;
+						var temp = false;
+						parent.eachChild(function(child) {
+							if (child.getUI().checkbox.checked == true) {
+								temp = true;
+								return false;
+							}
+						});
+						if (!temp) {
+							parent.attributes.checked = bool;
+							parent.getUI().checkbox.checked = bool;
+							temp = false;
+							ParentWithChild2(parent, bool);
+						}
+					}
+				}
+			})
+</script>
